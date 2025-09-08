@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
@@ -27,7 +26,6 @@ const avatarOptions = [
 
 export default function RegisterPage() {
   const router = useRouter()
-  const t = useTranslations()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

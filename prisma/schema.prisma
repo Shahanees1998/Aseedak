@@ -70,6 +70,7 @@ model User {
   gameRooms     GameRoom[]
   gamePlayers   GamePlayer[]
   notifications Notification[]
+  purchases     UserPurchase[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -91,14 +92,79 @@ model Avatar {
   @@map("avatars")
 }
 
+model Character {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String
+  imageUrl    String
+  packId      String   @db.ObjectId
+  pack        CharacterPack @relation(fields: [packId], references: [id])
+  isUnlocked  Boolean  @default(false)
+  price       Int      @default(0) // Price in cents
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("characters")
+}
+
+model CharacterPack {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String
+  imageUrl    String
+  price       Int      @default(0) // Price in cents
+  isActive    Boolean  @default(true)
+  characters  Character[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("character_packs")
+}
+
+model WordDeck {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  description String
+  category    String
+  difficulty  String
+  price       Int      @default(0) // Price in cents
+  isActive    Boolean  @default(true)
+  words       Word[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("word_decks")
+}
+
+model UserPurchase {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
+  user        User     @relation(fields: [userId], references: [id])
+  type        String   // "character", "character_pack", "word_deck"
+  itemId      String   @db.ObjectId
+  stripePaymentIntentId String?
+  amount      Int      // Amount paid in cents
+  status      String   @default("completed") // "pending", "completed", "failed", "refunded"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_purchases")
+}
+
 model Word {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
   word1      String
   word2      String
   word3      String
-  category   String // e.g., "animals", "food", "objects"
-  difficulty String // "easy", "medium", "hard"
-  isActive   Boolean @default(true)
+  category   String    // e.g., "animals", "food", "objects"
+  difficulty String    // "easy", "medium", "hard"
+  isActive   Boolean   @default(true)
+  deckId     String?   @db.ObjectId
+  deck       WordDeck? @relation(fields: [deckId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

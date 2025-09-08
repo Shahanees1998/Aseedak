@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Card } from 'primereact/card'
@@ -12,7 +11,6 @@ import Link from 'next/link'
 export default function VerifyEmailPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const t = useTranslations()
   const [email, setEmail] = useState(searchParams.get('email') || '')
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)

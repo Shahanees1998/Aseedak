@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
@@ -14,7 +13,6 @@ import { signIn } from 'next-auth/react'
 
 export default function LoginPage() {
   const router = useRouter()
-  const t = useTranslations()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -37,9 +35,9 @@ export default function LoginPage() {
 
       if (result?.error) {
         if (result.error === 'CredentialsSignin') {
-          setError(t('auth.login.invalidCredentials'))
+          setError('Invalid email or password')
         } else {
-          setError(t('auth.login.verifyFirst'))
+          setError('Please verify your email before signing in')
         }
       } else {
         router.push('/dashboard')
@@ -64,8 +62,8 @@ export default function LoginPage() {
         <div className="p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">{t('auth.login.title')}</h1>
-            <p className="text-gray-300">{t('auth.login.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <p className="text-gray-300">Sign in to continue your word elimination journey</p>
           </div>
 
           {/* Error Message */}
@@ -80,23 +78,23 @@ export default function LoginPage() {
           {/* Login Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-white mb-2">{t('auth.login.email')}</label>
+              <label className="block text-white mb-2">Email</label>
               <InputText
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder={t('auth.login.email')}
+                placeholder="Enter your email"
                 className="w-full"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-white mb-2">{t('auth.login.password')}</label>
+              <label className="block text-white mb-2">Password</label>
               <Password
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
-                placeholder={t('auth.login.password')}
+                placeholder="Enter your password"
                 className="w-full"
                 inputClassName="w-full"
                 toggleMask
@@ -112,7 +110,7 @@ export default function LoginPage() {
                   onChange={(e) => handleInputChange('rememberMe', e.checked)}
                 />
                 <label htmlFor="rememberMe" className="ml-2 text-white">
-                  {t('auth.login.rememberMe')}
+                  Remember me
                 </label>
               </div>
               <div className="flex flex-col space-y-1">
@@ -120,20 +118,20 @@ export default function LoginPage() {
                   href="/auth/forgot-password" 
                   className="text-blue-400 hover:text-blue-300 text-sm"
                 >
-                  {t('auth.login.forgotPassword')}
+                  Forgot password?
                 </Link>
                 <Link 
                   href="/auth/verify-email" 
                   className="text-blue-400 hover:text-blue-300 text-sm"
                 >
-                  {t('auth.login.verifyEmail')}
+                  Verify email?
                 </Link>
               </div>
             </div>
 
             <Button
               type="submit"
-              label={t('auth.login.signIn')}
+              label="Sign In"
               loading={loading}
               className="w-full p-button-primary"
             />
@@ -164,12 +162,12 @@ export default function LoginPage() {
           {/* Sign Up Link */}
           <div className="text-center mt-6">
             <p className="text-gray-300">
-              {t('auth.login.noAccount')}{' '}
+              Don't have an account?{' '}
               <Link 
                 href="/auth/register" 
                 className="text-blue-400 hover:text-blue-300 font-medium"
               >
-                {t('auth.login.signUp')}
+                Sign up
               </Link>
             </p>
           </div>

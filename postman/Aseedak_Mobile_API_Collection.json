@@ -1,0 +1,324 @@
+{
+  "info": {
+    "name": "Aseedak Mobile API Collection",
+    "description": "Complete API collection for Aseedak mobile app development - All endpoints for React Native app",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{auth_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "room_code",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"avatar\": \"IMAGE1\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "auth", "login"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Game Rooms",
+      "item": [
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Game Room\",\n  \"maxPlayers\": 4,\n  \"difficulty\": \"easy\",\n  \"category\": \"animals\",\n  \"timeLimit\": 60\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/game-rooms/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "game-rooms", "create"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Join Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/join",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "game-rooms", "{{room_code}}", "join"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Room Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "game-rooms", "{{room_code}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Claim Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"apple\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/claim-word",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "game-rooms", "{{room_code}}", "claim-word"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Word Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"confirmed\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/confirm-word-claim",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "game-rooms", "{{room_code}}", "confirm-word-claim"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Store",
+      "item": [
+        {
+          "name": "Get Characters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/mobile/store/characters",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "store", "characters"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Word Decks",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/mobile/store/word-decks",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "store", "word-decks"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Purchases",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"character_pack\",\n  \"itemId\": \"character_pack_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/purchases/create-payment-intent",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "purchases", "create-payment-intent"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentIntentId\": \"pi_stripe_payment_intent_id\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/mobile/purchases/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["api", "mobile", "purchases", "confirm"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-set auth token from login response",
+          "if (pm.response && pm.response.json && pm.response.json().token) {",
+          "    pm.collectionVariables.set('auth_token', pm.response.json().token);",
+          "}"
+        ]
+      }
+    }
+  ]
+}
