@@ -1,13 +1,19 @@
 import Stripe from 'stripe'
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set')
-}
+let stripe: Stripe | null = null
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: '2023-10-16',
-  typescript: true,
-})
+export function getStripe(): Stripe {
+  if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not set')
+    }
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2023-10-16',
+      typescript: true,
+    })
+  }
+  return stripe
+}
 
 export const STRIPE_CONFIG = {
   plans: {
@@ -70,7 +76,7 @@ export async function createStripeCustomer(hotel: {
   country: string
   zipCode?: string
 }) {
-  return await stripe.customers.create({
+  return await getStripe().customers.create({
     name: hotel.name,
     email: hotel.email,
     address: {
@@ -91,7 +97,7 @@ export async function createStripeSubscription(
   priceId: string,
   hotelId: string
 ) {
-  return await stripe.subscriptions.create({
+  return await getStripe().subscriptions.create({
     customer: customerId,
     items: [{ price: priceId }],
     metadata: {
@@ -110,7 +116,7 @@ export async function createCheckoutSession(
   successUrl: string,
   cancelUrl: string
 ) {
-  return await stripe.checkout.sessions.create({
+  return await getStripe().checkout.sessions.create({
     customer: customerId,
     payment_method_types: ['card'],
     line_items: [

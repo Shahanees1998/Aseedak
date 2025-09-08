@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 
 const prisma = new PrismaClient()
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     const validatedData = confirmSchema.parse(body)
 
     // Get payment intent from Stripe
-    const paymentIntent = await stripe.paymentIntents.retrieve(validatedData.paymentIntentId)
+    const paymentIntent = await getStripe().paymentIntents.retrieve(validatedData.paymentIntentId)
 
     if (paymentIntent.status !== 'succeeded') {
       return NextResponse.json(

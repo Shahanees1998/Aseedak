@@ -1,17 +1,30 @@
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
+import { Inter } from 'next/font/google'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import { Providers } from '../providers'
+import type { Metadata } from 'next'
+import '../globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'Aseedak - Word Elimination Game',
+  description: 'Multiplayer word-based elimination game where players guess words to eliminate targets',
+}
 
 const locales = ['en', 'ar']
 
 export default async function LocaleLayout({
   children,
-  params: { locale }
+  params
 }: {
   children: React.ReactNode
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await params
+  
   // Validate that the incoming `locale` parameter is valid
   if (!locales.includes(locale)) {
     notFound()
@@ -23,18 +36,12 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
-      <body>
-        <NextIntlClientProvider messages={messages}>
-          <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-            {/* Language Switcher */}
-            <div className="fixed top-4 right-4 z-50">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2">
-                <LanguageSwitcher />
-              </div>
-            </div>
+      <body className={inter.className}>
+        <Providers>
+          <NextIntlClientProvider messages={messages}>
             {children}
-          </div>
-        </NextIntlClientProvider>
+          </NextIntlClientProvider>
+        </Providers>
       </body>
     </html>
   )

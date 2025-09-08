@@ -137,6 +137,9 @@ export async function POST(
         where: {
           roomId: killConfirmation.room.id,
           status: 'ALIVE'
+        },
+        include: {
+          user: true
         }
       })
 

@@ -43,7 +43,8 @@ const handler = NextAuth({
             name: `${user.firstName} ${user.lastName}`,
             username: user.username,
             avatar: user.avatar,
-            role: user.role
+            role: user.role,
+            profileImageUrl: user.profileImageUrl || undefined
           }
         } catch (error) {
           console.error('Auth error:', error)
@@ -105,8 +106,7 @@ const handler = NextAuth({
     }
   },
   pages: {
-    signIn: '/auth/login',
-    signUp: '/auth/register'
+    signIn: '/auth/login'
   },
   session: {
     strategy: 'jwt'

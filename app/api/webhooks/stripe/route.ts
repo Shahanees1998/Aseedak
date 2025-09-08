@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { PrismaClient } from '@prisma/client'
 import Stripe from 'stripe'
 
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
@@ -28,24 +28,24 @@ export async function POST(request: NextRequest) {
 
   try {
     switch (event.type) {
-      case 'customer.subscription.created':
-        await handleSubscriptionCreated(event.data.object as Stripe.Subscription)
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        console.log('Payment succeeded:', paymentIntent.id)
+        
+        // Handle successful payment for in-app purchases
+        if (paymentIntent.metadata?.userId && paymentIntent.metadata?.purchaseType) {
+          await handleSuccessfulPurchase(
+            paymentIntent.metadata.userId,
+            paymentIntent.metadata.purchaseType,
+            paymentIntent.metadata.purchaseId,
+            paymentIntent.id
+          )
+        }
         break
 
-      case 'customer.subscription.updated':
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription)
-        break
-
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object as Stripe.Subscription)
-        break
-
-      case 'invoice.payment_succeeded':
-        await handlePaymentSucceeded(event.data.object as Stripe.Invoice)
-        break
-
-      case 'invoice.payment_failed':
-        await handlePaymentFailed(event.data.object as Stripe.Invoice)
+      case 'payment_intent.payment_failed':
+        const failedPayment = event.data.object as Stripe.PaymentIntent
+        console.log('Payment failed:', failedPayment.id)
         break
 
       default:
@@ -54,134 +54,32 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ received: true })
   } catch (error) {
-    console.error('Webhook handler error:', error)
-    return NextResponse.json(
-      { error: 'Webhook handler failed' },
-      { status: 500 }
-    )
+    console.error('Webhook error:', error)
+    return NextResponse.json({ error: 'Webhook error' }, { status: 500 })
   }
 }
 
-async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  const hotelId = subscription.metadata.hotelId
-  
-  if (!hotelId) {
-    console.error('No hotelId in subscription metadata')
-    return
-  }
+async function handleSuccessfulPurchase(
+  userId: string,
+  purchaseType: string,
+  purchaseId: string,
+  paymentIntentId: string
+) {
+  try {
+    // Create a record of the successful purchase
+    await prisma.userPurchase.create({
+      data: {
+        userId,
+        type: purchaseType,
+        itemId: purchaseId,
+        stripePaymentIntentId: paymentIntentId,
+        amount: 0, // Amount will be stored in Stripe
+        status: 'completed'
+      }
+    })
 
-  await prisma.hotel.update({
-    where: { id: hotelId },
-    data: {
-      subscriptionStatus: 'ACTIVE',
-      subscriptionId: subscription.id,
-      subscriptionStart: new Date(subscription.current_period_start * 1000),
-      subscriptionEnd: new Date(subscription.current_period_end * 1000),
-    },
-  })
-
-  // Create subscription record
-  await prisma.subscription.create({
-    data: {
-      hotelId,
-      stripeCustomerId: subscription.customer as string,
-      stripeSubscriptionId: subscription.id,
-      plan: subscription.items.data[0].price.nickname || 'premium',
-      status: 'ACTIVE',
-      currentPeriodStart: new Date(subscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
-    },
-  })
-
-  console.log(`Subscription created for hotel ${hotelId}`)
-}
-
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const hotelId = subscription.metadata.hotelId
-  
-  if (!hotelId) {
-    console.error('No hotelId in subscription metadata')
-    return
-  }
-
-  await prisma.hotel.update({
-    where: { id: hotelId },
-    data: {
-      subscriptionStatus: subscription.status.toUpperCase() as any,
-      subscriptionEnd: new Date(subscription.current_period_end * 1000),
-    },
-  })
-
-  await prisma.subscription.updateMany({
-    where: { stripeSubscriptionId: subscription.id },
-    data: {
-      status: subscription.status.toUpperCase() as any,
-      currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-      cancelAtPeriodEnd: subscription.cancel_at_period_end,
-    },
-  })
-
-  console.log(`Subscription updated for hotel ${hotelId}`)
-}
-
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  const hotelId = subscription.metadata.hotelId
-  
-  if (!hotelId) {
-    console.error('No hotelId in subscription metadata')
-    return
-  }
-
-  await prisma.hotel.update({
-    where: { id: hotelId },
-    data: {
-      subscriptionStatus: 'CANCELLED',
-    },
-  })
-
-  await prisma.subscription.updateMany({
-    where: { stripeSubscriptionId: subscription.id },
-    data: {
-      status: 'CANCELLED',
-    },
-  })
-
-  console.log(`Subscription cancelled for hotel ${hotelId}`)
-}
-
-async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
-  if (invoice.subscription) {
-    const subscription = await stripe.subscriptions.retrieve(
-      invoice.subscription as string
-    )
-    const hotelId = subscription.metadata.hotelId
-
-    if (hotelId) {
-      await prisma.hotel.update({
-        where: { id: hotelId },
-        data: {
-          subscriptionStatus: 'ACTIVE',
-        },
-      })
-    }
-  }
-}
-
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
-  if (invoice.subscription) {
-    const subscription = await stripe.subscriptions.retrieve(
-      invoice.subscription as string
-    )
-    const hotelId = subscription.metadata.hotelId
-
-    if (hotelId) {
-      await prisma.hotel.update({
-        where: { id: hotelId },
-        data: {
-          subscriptionStatus: 'PAST_DUE',
-        },
-      })
-    }
+    console.log(`Purchase recorded for user ${userId}: ${purchaseType}`)
+  } catch (error) {
+    console.error('Error recording purchase:', error)
   }
 }

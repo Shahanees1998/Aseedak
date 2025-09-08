@@ -11,18 +11,6 @@ import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 import Link from 'next/link'
 
-const avatarOptions = [
-  { label: 'Avatar 1', value: 'IMAGE1' },
-  { label: 'Avatar 2', value: 'IMAGE2' },
-  { label: 'Avatar 3', value: 'IMAGE3' },
-  { label: 'Avatar 4', value: 'IMAGE4' },
-  { label: 'Avatar 5', value: 'IMAGE5' },
-  { label: 'Avatar 6', value: 'IMAGE6' },
-  { label: 'Avatar 7', value: 'IMAGE7' },
-  { label: 'Avatar 8', value: 'IMAGE8' },
-  { label: 'Avatar 9', value: 'IMAGE9' },
-  { label: 'Avatar 10', value: 'IMAGE10' }
-]
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -33,7 +21,6 @@ export default function RegisterPage() {
     email: '',
     password: '',
     confirmPassword: '',
-    avatar: 'IMAGE1',
     agreeToTerms: false
   })
   const [loading, setLoading] = useState(false)
@@ -68,8 +55,7 @@ export default function RegisterPage() {
           lastName: formData.lastName,
           username: formData.username,
           email: formData.email,
-          password: formData.password,
-          avatar: formData.avatar
+          password: formData.password
         })
       })
 
@@ -161,16 +147,6 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div>
-              <label className="block text-white mb-2">Avatar</label>
-              <Dropdown
-                value={formData.avatar}
-                onChange={(e) => handleInputChange('avatar', e.value)}
-                options={avatarOptions}
-                placeholder="Select an avatar"
-                className="w-full"
-              />
-            </div>
 
             <div>
               <label className="block text-white mb-2">Password</label>

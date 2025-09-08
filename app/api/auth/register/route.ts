@@ -12,8 +12,7 @@ const registerSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  avatar: z.enum(['IMAGE1', 'IMAGE2', 'IMAGE3', 'IMAGE4', 'IMAGE5', 'IMAGE6', 'IMAGE7', 'IMAGE8', 'IMAGE9', 'IMAGE10'])
+  password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
 export async function POST(request: NextRequest) {
@@ -55,7 +54,7 @@ export async function POST(request: NextRequest) {
         username: validatedData.username,
         email: validatedData.email,
         password: hashedPassword,
-        avatar: validatedData.avatar,
+        avatar: null,
         role: 'USER',
         emailVerified: false,
         emailVerifyToken: otp,

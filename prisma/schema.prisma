@@ -49,8 +49,12 @@ model User {
   lastName  String
   username  String     @unique
   role      UserRole   @default(USER)
-  avatar    AvatarType @default(IMAGE1)
+  avatar    AvatarType?
   isActive  Boolean    @default(true)
+
+  // Profile image (Cloudinary)
+  profileImageUrl      String?
+  profileImagePublicId String?
 
   // Password reset
   resetToken       String?

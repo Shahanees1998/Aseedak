@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 
 const prisma = new PrismaClient()
 
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe Payment Intent
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount: price,
       currency: 'usd',
       metadata: {

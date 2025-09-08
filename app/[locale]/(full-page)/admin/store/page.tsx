@@ -410,7 +410,7 @@ export default function AdminDashboard() {
       <div className="flex items-center">
         <AvatarDisplay 
           avatarType={rowData.avatar}
-          size="small" 
+          size="normal" 
           className="mr-2"
         />
         <span className="capitalize">{rowData.avatar.toLowerCase()}</span>

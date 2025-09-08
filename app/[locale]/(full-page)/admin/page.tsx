@@ -410,7 +410,7 @@ export default function AdminDashboard() {
       <div className="flex items-center">
         <AvatarDisplay 
           avatarType={rowData.avatar}
-          size="small" 
+          size="normal" 
           className="mr-2"
         />
         <span className="capitalize">{rowData.avatar.toLowerCase()}</span>
@@ -575,9 +575,9 @@ export default function AdminDashboard() {
         {/* Message */}
         {message && (
           <div className="mb-6">
-            <Message 
-              severity="success" 
-              text={message} 
+          <Message 
+            severity="success" 
+            text={message} 
               className="mb-2"
             />
             <Button 
@@ -846,7 +846,7 @@ export default function AdminDashboard() {
           <form onSubmit={handleWordSubmit} className="space-y-4">
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-white mb-2">Word 1</label>
+                <label className="block text-white mb-2">Word 1 *</label>
                 <InputText
                   value={wordForm.word1}
                   onChange={(e) => setWordForm(prev => ({ ...prev, word1: e.target.value }))}
@@ -855,7 +855,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <div>
-                <label className="block text-white mb-2">Word 2</label>
+                <label className="block text-white mb-2">Word 2 *</label>
                 <InputText
                   value={wordForm.word2}
                   onChange={(e) => setWordForm(prev => ({ ...prev, word2: e.target.value }))}
@@ -864,7 +864,7 @@ export default function AdminDashboard() {
                 />
               </div>
               <div>
-                <label className="block text-white mb-2">Word 3</label>
+                <label className="block text-white mb-2">Word 3 *</label>
                 <InputText
                   value={wordForm.word3}
                   onChange={(e) => setWordForm(prev => ({ ...prev, word3: e.target.value }))}
@@ -872,6 +872,12 @@ export default function AdminDashboard() {
                   required
                 />
               </div>
+            </div>
+            
+            <div className="bg-blue-100 border border-blue-300 rounded p-3 mb-4">
+              <p className="text-blue-800 text-sm">
+                <strong>Note:</strong> All three words are mandatory. Each word set will be randomly assigned to players during games.
+              </p>
             </div>
             
             <div className="grid grid-cols-2 gap-4">

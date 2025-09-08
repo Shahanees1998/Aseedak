@@ -1,21 +1,14 @@
-import nodemailer from 'nodemailer'
+import sgMail from '@sendgrid/mail'
 
-const transporter = nodemailer.createTransporter({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-})
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY!)
 
 export async function sendPasswordResetEmail(email: string, resetToken: string) {
   const resetUrl = `${process.env.NEXTAUTH_URL}/auth/reset-password?token=${resetToken}`
   
-  const mailOptions = {
-    from: process.env.SMTP_FROM || 'noreply@aseedak.com',
+  const msg = {
     to: email,
+    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Reset Your Aseedak Password',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -65,7 +58,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   }
 
   try {
-    await transporter.sendMail(mailOptions)
+    await sgMail.send(msg)
     console.log('Password reset email sent successfully')
   } catch (error) {
     console.error('Error sending password reset email:', error)
@@ -74,9 +67,9 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
 }
 
 export async function sendOTPEmail(email: string, firstName: string, otp: string) {
-  const mailOptions = {
-    from: process.env.SMTP_FROM || 'noreply@aseedak.com',
+  const msg = {
     to: email,
+    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Verify Your Aseedak Account',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -119,7 +112,7 @@ export async function sendOTPEmail(email: string, firstName: string, otp: string
   }
 
   try {
-    await transporter.sendMail(mailOptions)
+    await sgMail.send(msg)
     console.log('OTP email sent successfully')
   } catch (error) {
     console.error('Error sending OTP email:', error)
@@ -128,9 +121,9 @@ export async function sendOTPEmail(email: string, firstName: string, otp: string
 }
 
 export async function sendWelcomeEmail(email: string, firstName: string) {
-  const mailOptions = {
-    from: process.env.SMTP_FROM || 'noreply@aseedak.com',
+  const msg = {
     to: email,
+    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Welcome to Aseedak!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -181,7 +174,7 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
   }
 
   try {
-    await transporter.sendMail(mailOptions)
+    await sgMail.send(msg)
     console.log('Welcome email sent successfully')
   } catch (error) {
     console.error('Error sending welcome email:', error)

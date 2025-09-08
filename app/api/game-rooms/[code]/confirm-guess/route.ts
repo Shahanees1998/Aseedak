@@ -127,7 +127,7 @@ export async function POST(
           data: {
             eliminatedPlayer: targetPlayer.user,
             killerPlayer: guesserPlayer.user,
-            word: guessLog.data?.word
+            word: (guessLog.data as any)?.word
           }
         }
       })
@@ -289,7 +289,7 @@ export async function POST(
           playerId: guesserPlayer.id,
           targetId: targetPlayer.id,
           data: {
-            word: guessLog.data?.word,
+            word: (guessLog.data as any)?.word,
             guesser: guesserPlayer.user,
             target: targetPlayer.user
           }

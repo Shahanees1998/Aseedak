@@ -25,6 +25,7 @@ interface GamePlayer {
   status: 'ALIVE' | 'ELIMINATED' | 'WINNER'
   position: number
   kills: number
+  targetId?: string
   word1?: string
   word2?: string
   word3?: string
@@ -69,7 +70,7 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
   const [message, setMessage] = useState('')
   const [gameLogs, setGameLogs] = useState<GameLog[]>([])
   const [wordClaimDialogVisible, setWordClaimDialogVisible] = useState(false)
-  const [claimWord, setClaimWord] = useState('')
+  const [wordToClaim, setWordToClaim] = useState('')
   const [confirmWordDialogVisible, setConfirmWordDialogVisible] = useState(false)
   const [pendingWordClaim, setPendingWordClaim] = useState<any>(null)
   const [timeLeft, setTimeLeft] = useState(0)
@@ -232,7 +233,7 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
   }
 
   const claimWord = async () => {
-    if (!claimWord.trim()) return
+    if (!wordToClaim.trim()) return
 
     try {
       const response = await fetch(`/api/game-rooms/${params.code}/claim-word`, {
@@ -240,12 +241,12 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ word: claimWord.trim() })
+        body: JSON.stringify({ word: wordToClaim.trim() })
       })
 
       if (response.ok) {
         setWordClaimDialogVisible(false)
-        setClaimWord('')
+        setWordToClaim('')
         setMessage('Word claim sent! Waiting for target confirmation...')
       } else {
         const errorData = await response.json()
@@ -384,12 +385,19 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
 
         {/* Status Message */}
         {message && (
-          <Message 
-            severity="info" 
-            text={message} 
-            className="mb-6"
-            onClose={() => setMessage('')}
-          />
+          <div className="mb-6">
+            <Message 
+              severity="info" 
+              text={message} 
+              className="mb-2"
+            />
+            <Button 
+              label="Dismiss" 
+              size="small"
+              onClick={() => setMessage('')}
+              className="p-button-text p-button-sm"
+            />
+          </div>
         )}
 
         {/* Game Status */}
@@ -439,7 +447,7 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
                     <div className="flex items-center space-x-3">
                       <AvatarDisplay 
                         avatarType={player.user.avatar}
-                        size="small"
+                        size="normal"
                         className={player.status === 'ALIVE' ? 'ring-2 ring-green-500' : 'opacity-50'}
                       />
                       <div>
@@ -505,7 +513,7 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
                       <div className="flex items-center space-x-2 p-2 bg-white/10 rounded">
                         <AvatarDisplay 
                           avatarType={getTargetPlayer()?.user.avatar || 'IMAGE1'}
-                          size="small"
+                          size="normal"
                         />
                         <span className="text-white">{getTargetPlayer()?.user.username}</span>
                       </div>
@@ -575,8 +583,8 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
             <div>
               <label className="block text-white mb-2">Enter the word your target said:</label>
               <InputText
-                value={claimWord}
-                onChange={(e) => setClaimWord(e.target.value)}
+                value={wordToClaim}
+                onChange={(e) => setWordToClaim(e.target.value)}
                 placeholder="Type the word here"
                 className="w-full"
                 autoFocus
@@ -591,7 +599,7 @@ export default function GameRoomPage({ params }: { params: { code: string } }) {
               <Button
                 label="Claim Word"
                 onClick={claimWord}
-                disabled={!claimWord.trim()}
+                disabled={!wordToClaim.trim()}
                 className="p-button-primary"
               />
             </div>
