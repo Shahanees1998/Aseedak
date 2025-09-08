@@ -11,321 +11,229 @@ datasource db {
 }
 
 enum UserRole {
-  SUPER_ADMIN
-  HOTEL_ADMIN
+  ADMIN
+  USER
 }
 
-enum SubscriptionStatus {
-  ACTIVE
-  INACTIVE
-  CANCELLED
-  PAST_DUE
+enum GameStatus {
+  WAITING
+  STARTING
+  IN_PROGRESS
+  FINISHED
 }
 
-enum ReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-  SHARED_EXTERNALLY
+enum PlayerStatus {
+  ALIVE
+  ELIMINATED
+  WINNER
 }
 
-enum FormFieldType {
-  TEXT
-  TEXTAREA
-  RATING
-  MULTIPLE_CHOICE
-  SINGLE_CHOICE
-  EMAIL
-  PHONE
-  FILE_UPLOAD
+enum AvatarType {
+  IMAGE1
+  IMAGE2
+  IMAGE3
+  IMAGE4
+  IMAGE5
+  IMAGE6
+  IMAGE7
+  IMAGE8
+  IMAGE9
+  IMAGE10
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  email     String   @unique
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  email     String     @unique
   password  String
   firstName String
   lastName  String
-  role      UserRole
-  hotelId   String?  @db.ObjectId
-  hotel     Hotel?   @relation(fields: [hotelId], references: [id])
-  
+  username  String     @unique
+  role      UserRole   @default(USER)
+  avatar    AvatarType @default(IMAGE1)
+  isActive  Boolean    @default(true)
+
   // Password reset
-  resetToken         String?
-  resetTokenExpiry   DateTime?
-  
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
+  // Game statistics
+  gamesPlayed Int @default(0)
+  gamesWon    Int @default(0)
+  totalKills  Int @default(0)
+
   // Relations
+  gameRooms     GameRoom[]
+  gamePlayers   GamePlayer[]
   notifications Notification[]
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
 }
 
-model Hotel {
-  id                String             @id @default(auto()) @map("_id") @db.ObjectId
-  name              String
-  slug              String             @unique
-  email             String             @unique
-  phone             String?
-  address           String
-  city              String
-  state             String
-  country           String
-  zipCode           String?
-  website           String?
-  googleReviewUrl   String?  // Google Reviews URL for the hotel
-  description       String?
-  logo              String?
-  primaryColor      String             @default("#3B82F6")
-  secondaryColor    String             @default("#1E40AF")
-  
-  // Subscription
-  subscriptionId    String?            @unique
-  subscriptionStatus SubscriptionStatus @default(INACTIVE)
-  subscriptionPlan  String?           // basic, premium, enterprise
-  subscriptionStart DateTime?
-  subscriptionEnd   DateTime?
-  
-  // Settings
-  isActive          Boolean            @default(true)
-  allowExternalSharing Boolean         @default(true)
-  autoApproveReviews Boolean          @default(false)
-  
-  // Relations
-  users             User[]
-  reviews           Review[]
-  forms             Form[]
-  qrCodes           QRCode[]
-  subscription      Subscription?
-  supportMessages   SupportMessage[]
-  refunds           Refund[]
-  suspensions       HotelSuspension[]
-  
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
-
-  @@map("hotels")
-}
-
-model Form {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId     String       @db.ObjectId
-  hotel       Hotel        @relation(fields: [hotelId], references: [id])
+model Avatar {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  type        AvatarType @unique
   name        String
-  description String?
-  isActive    Boolean      @default(true)
-  isDefault   Boolean      @default(false)
-  fields      FormField[]
-  reviews     Review[]
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  description String
+  imageUrl    String
+  isUnlocked  Boolean    @default(true)
 
-  @@map("forms")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("avatars")
 }
 
-model FormField {
-  id          String         @id @default(auto()) @map("_id") @db.ObjectId
-  formId      String         @db.ObjectId
-  form        Form           @relation(fields: [formId], references: [id])
-  label       String
-  type        FormFieldType
-  required    Boolean        @default(false)
-  placeholder String?
-  options     String[]       // For multiple choice fields
-  order       Int            @default(0)
-  
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+model Word {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  word1      String
+  word2      String
+  word3      String
+  category   String // e.g., "animals", "food", "objects"
+  difficulty String // "easy", "medium", "hard"
+  isActive   Boolean @default(true)
 
-  @@map("form_fields")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("words")
 }
 
-model Review {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId     String       @db.ObjectId
-  hotel       Hotel        @relation(fields: [hotelId], references: [id])
-  formId      String       @db.ObjectId
-  form        Form         @relation(fields: [formId], references: [id])
-  
-  // Guest info
-  guestName   String?
-  guestEmail  String?
-  guestPhone  String?
-  
-  // Review content
-  responses   Json         // Store form responses as JSON
-  overallRating Int?       // Overall rating if applicable
-  status      ReviewStatus @default(PENDING)
-  
-  // External sharing
-  sharedOnGoogle Boolean   @default(false)
-  sharedOnTripAdvisor Boolean @default(false)
-  externalUrls Json?       // Store external review URLs
-  
-  // Admin actions
-  adminNotes  String?
-  adminId     String?      @db.ObjectId
-  
-  // Media files
-  mediaFiles  MediaFile[]
-  
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+model GameRoom {
+  id         String     @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  code       String     @unique
+  maxPlayers Int        @default(8)
+  status     GameStatus @default(WAITING)
+  createdBy  String     @db.ObjectId
+  creator    User       @relation(fields: [createdBy], references: [id])
 
-  @@map("reviews")
-}
+  // Game settings
+  wordSet      String[] // Array of word IDs
+  currentRound Int      @default(1)
+  timeLimit    Int      @default(60) // seconds per turn
 
-model QRCode {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId     String   @db.ObjectId
-  hotel       Hotel    @relation(fields: [hotelId], references: [id])
-  name        String
-  description String?
-  url         String   @unique
-  imageUrl    String?  // Generated QR code image
-  isActive    Boolean  @default(true)
-  scanCount   Int      @default(0)
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("qr_codes")
-}
-
-model Subscription {
-  id                String             @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId           String             @unique @db.ObjectId
-  hotel             Hotel              @relation(fields: [hotelId], references: [id])
-  stripeCustomerId  String             @unique
-  stripeSubscriptionId String?        @unique
-  plan              String             // basic, premium, enterprise
-  status            SubscriptionStatus
-  currentPeriodStart DateTime
-  currentPeriodEnd   DateTime
-  cancelAtPeriodEnd Boolean            @default(false)
-  
   // Relations
-  refunds           Refund[]
-  
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  players           GamePlayer[]
+  gameLogs          GameLog[]
+  killConfirmations KillConfirmation[]
 
-  @@map("subscriptions")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  startedAt  DateTime?
+  finishedAt DateTime?
+
+  @@map("game_rooms")
+}
+
+model GamePlayer {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId String   @db.ObjectId
+  user   User     @relation(fields: [userId], references: [id])
+  roomId String   @db.ObjectId
+  room   GameRoom @relation(fields: [roomId], references: [id])
+
+  // Player state
+  status   PlayerStatus @default(ALIVE)
+  position Int // Order in the game
+  targetId String?      @db.ObjectId // ID of the player they need to eliminate
+  target   GamePlayer?  @relation("PlayerTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  hunters  GamePlayer[] @relation("PlayerTarget")
+
+  // Assigned words
+  word1 String?
+  word2 String?
+  word3 String?
+
+  // Game statistics
+  kills        Int       @default(0)
+  eliminatedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations for kill confirmations
+  killerConfirmations KillConfirmation[] @relation("KillerConfirmations")
+  targetConfirmations KillConfirmation[] @relation("TargetConfirmations")
+
+  @@unique([userId, roomId])
+  @@map("game_players")
+}
+
+model KillConfirmation {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId String   @db.ObjectId
+  room   GameRoom @relation(fields: [roomId], references: [id])
+
+  // Players involved
+  killerId String     @db.ObjectId
+  killer   GamePlayer @relation("KillerConfirmations", fields: [killerId], references: [id])
+  targetId String     @db.ObjectId
+  target   GamePlayer @relation("TargetConfirmations", fields: [targetId], references: [id])
+
+  // Confirmation status
+  status  String // "pending", "accepted", "rejected"
+  message String? // Optional message from killer
+
+  createdAt   DateTime  @default(now())
+  respondedAt DateTime?
+
+  @@map("kill_confirmations")
+}
+
+model GameLog {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomId String   @db.ObjectId
+  room   GameRoom @relation(fields: [roomId], references: [id])
+
+  // Log details
+  type    String // "elimination", "kill_request", "game_start", "game_end", "player_join", "player_leave"
+  message String
+  data    Json? // Additional data
+
+  // Related players
+  playerId String? @db.ObjectId
+  targetId String? @db.ObjectId
+
+  createdAt DateTime @default(now())
+
+  @@map("game_logs")
 }
 
 model Notification {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  title     String
-  message   String
-  type      String   // info, warning, success, error
-  isRead    Boolean  @default(false)
-  data      Json?    // Additional data
-  
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId  String  @db.ObjectId
+  user    User    @relation(fields: [userId], references: [id])
+  title   String
+  message String
+  type    String // "game_invite", "elimination", "game_start", "game_end", "system"
+  isRead  Boolean @default(false)
+  data    Json? // Additional data (roomId, gameId, etc.)
+
   createdAt DateTime @default(now())
 
   @@map("notifications")
 }
 
-model MediaFile {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  reviewId  String   @db.ObjectId
-  review    Review   @relation(fields: [reviewId], references: [id])
-  fileName  String
-  fileUrl   String
-  fileType  String   // image, video
-  fileSize  Int      // in bytes
-  mimeType  String
-  
+model TermsAndConditions {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  version  String  @unique
+  content  String
+  isActive Boolean @default(false)
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@map("media_files")
-}
-
-model SupportMessage {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId     String   @db.ObjectId
-  hotel       Hotel    @relation(fields: [hotelId], references: [id])
-  subject     String
-  category    String   // general, technical, billing, feature, bug, account, other
-  message     String
-  priority    String   // low, medium, high, urgent
-  status      String   // pending, in_progress, resolved, closed
-  hotelName   String
-  hotelEmail  String
-  hotelPhone  String?
-  
-  // Admin response
-  adminResponse String?
-  adminId       String? @db.ObjectId
-  respondedAt   DateTime?
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("support_messages")
-}
-
-model Refund {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId         String   @db.ObjectId
-  hotel           Hotel    @relation(fields: [hotelId], references: [id])
-  subscriptionId  String?  @db.ObjectId
-  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
-  
-  // Refund details
-  amount          Float    // Amount to refund in dollars
-  reason          String   // Reason for refund
-  status          String   // pending, processing, completed, failed, cancelled
-  stripeRefundId  String?  // Stripe refund ID
-  
-  // Admin details
-  processedBy     String?  @db.ObjectId // Super admin who processed
-  processedAt     DateTime?
-  notes           String?  // Additional notes
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  @@map("refunds")
-}
-
-model HotelSuspension {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  hotelId     String   @db.ObjectId
-  hotel       Hotel    @relation(fields: [hotelId], references: [id])
-  
-  // Suspension details
-  reason      String   // Reason for suspension
-  type        String   // temporary, permanent, payment_issue, violation, etc.
-  status      String   // active, lifted, expired
-  duration    Int?     // Duration in days (for temporary suspensions)
-  
-  // Dates
-  suspendedAt DateTime @default(now())
-  expiresAt   DateTime?
-  liftedAt    DateTime?
-  
-  // Admin details
-  suspendedBy String   @db.ObjectId // Super admin who suspended
-  liftedBy    String?  @db.ObjectId // Super admin who lifted suspension
-  notes       String?  // Additional notes
-  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("hotel_suspensions")
+  @@map("terms_and_conditions")
 }
 
 model SystemSettings {
   id    String @id @default(auto()) @map("_id") @db.ObjectId
   key   String @unique
   value Json
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

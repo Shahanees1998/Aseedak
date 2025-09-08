@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { code: string } }
+) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session) {
+      return NextResponse.json(
+        { message: 'Authentication required' },
+        { status: 401 }
+      )
+    }
+
+    const room = await prisma.gameRoom.findUnique({
+      where: { code: params.code },
+      include: {
+        players: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true
+              }
+            }
+          },
+          orderBy: { position: 'asc' }
+        },
+        creator: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true
+          }
+        }
+      }
+    })
+
+    if (!room) {
+      return NextResponse.json(
+        { message: 'Room not found' },
+        { status: 404 }
+      )
+    }
+
+    return NextResponse.json({ room })
+
+  } catch (error) {
+    console.error('Error fetching room:', error)
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
+}

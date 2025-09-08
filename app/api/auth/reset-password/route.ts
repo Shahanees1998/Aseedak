@@ -1,33 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
 
 const resetPasswordSchema = z.object({
   token: z.string().min(1, 'Reset token is required'),
-  password: z.string().min(8, 'Password must be at least 8 characters')
+  password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    
+    // Validate input
     const validatedData = resetPasswordSchema.parse(body)
-
+    
     // Find user with valid reset token
     const user = await prisma.user.findFirst({
       where: {
         resetToken: validatedData.token,
         resetTokenExpiry: {
-          gt: new Date() // Token must not be expired
+          gt: new Date()
         }
       }
     })
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Invalid or expired reset token' },
+        { message: 'Invalid or expired reset token' },
         { status: 400 }
       )
     }
@@ -45,23 +47,25 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
-      message: 'Password has been reset successfully'
-    })
+    return NextResponse.json(
+      { message: 'Password reset successfully' },
+      { status: 200 }
+    )
 
   } catch (error) {
-    console.error('Reset password error:', error)
-    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { message: error.errors[0].message },
         { status: 400 }
       )
     }
-    
+
+    console.error('Reset password error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { message: 'Internal server error' },
       { status: 500 }
     )
+  } finally {
+    await prisma.$disconnect()
   }
 }

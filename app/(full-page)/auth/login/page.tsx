@@ -2,21 +2,24 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { signIn, getSession } from 'next-auth/react'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Password } from 'primereact/password'
 import { Card } from 'primereact/card'
 import { Message } from 'primereact/message'
+import { Checkbox } from 'primereact/checkbox'
 import Link from 'next/link'
-import toast from 'react-hot-toast'
+import { signIn } from 'next-auth/react'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const router = useRouter()
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -25,104 +28,139 @@ export default function LoginPage() {
 
     try {
       const result = await signIn('credentials', {
-        email,
-        password,
+        email: formData.email,
+        password: formData.password,
         redirect: false
       })
 
       if (result?.error) {
         setError('Invalid email or password')
-        toast.error('Invalid email or password')
       } else {
-        const session = await getSession()
-        if (session?.user?.role === 'SUPER_ADMIN') {
-          router.push('/super-admin')
-        } else if (session?.user?.role === 'HOTEL_ADMIN') {
-          router.push('/hotel-dashboard')
-        } else {
-          router.push('/')
-        }
-        toast.success('Login successful!')
+        router.push('/dashboard')
       }
     } catch (error) {
       setError('An error occurred. Please try again.')
-      toast.error('An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-md w-full mx-4">
-        <Card className="p-6">
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-blue-600 mb-2">HotelFeedback Pro</h1>
-            <h2 className="text-2xl font-semibold text-gray-900">Sign In</h2>
-            <p className="text-gray-600 mt-2">Access your hotel dashboard</p>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
+        <div className="p-8">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+            <p className="text-gray-300">Sign in to continue your word elimination journey</p>
           </div>
 
+          {/* Error Message */}
           {error && (
-            <Message severity="error" text={error} className="mb-4" />
+            <Message 
+              severity="error" 
+              text={error} 
+              className="mb-4"
+            />
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
+              <label className="block text-white mb-2">Email</label>
               <InputText
-                id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
                 placeholder="Enter your email"
+                className="w-full"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
+              <label className="block text-white mb-2">Password</label>
               <Password
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full"
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
                 placeholder="Enter your password"
+                className="w-full"
+                inputClassName="w-full"
                 toggleMask
-                feedback={false}
                 required
               />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <Checkbox
+                  inputId="rememberMe"
+                  checked={formData.rememberMe}
+                  onChange={(e) => handleInputChange('rememberMe', e.checked)}
+                />
+                <label htmlFor="rememberMe" className="ml-2 text-white">
+                  Remember me
+                </label>
+              </div>
+              <Link 
+                href="/auth/forgot-password" 
+                className="text-blue-400 hover:text-blue-300 text-sm"
+              >
+                Forgot password?
+              </Link>
             </div>
 
             <Button
               type="submit"
               label="Sign In"
-              className="w-full"
               loading={loading}
-              disabled={loading}
+              className="w-full p-button-primary"
             />
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Divider */}
+          <div className="my-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-white/20"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-transparent text-gray-300">Or continue with</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Login */}
+          <div className="space-y-3">
+            <Button
+              label="Continue with Google"
+              icon="pi pi-google"
+              className="w-full p-button-outlined p-button-secondary"
+              onClick={() => signIn('google')}
+            />
+          </div>
+
+          {/* Sign Up Link */}
+          <div className="text-center mt-6">
+            <p className="text-gray-300">
               Don't have an account?{' '}
-              <Link href="/auth/register" className="text-blue-600 hover:text-blue-500 font-medium">
-                Sign up for free
+              <Link 
+                href="/auth/register" 
+                className="text-blue-400 hover:text-blue-300 font-medium"
+              >
+                Sign up
               </Link>
             </p>
           </div>
-
-          <div className="mt-4 text-center">
-            <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
-              Forgot your password?
-            </Link>
-          </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   )
 }

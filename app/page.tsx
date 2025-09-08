@@ -1,224 +1,200 @@
-import Link from 'next/link'
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from 'primereact/button'
+import { InputText } from 'primereact/inputtext'
 import { Card } from 'primereact/card'
+import { Divider } from 'primereact/divider'
 import { Badge } from 'primereact/badge'
+import AvatarDisplay from '@/components/AvatarDisplay'
+import Link from 'next/link'
 
 export default function HomePage() {
+  const router = useRouter()
+  const [roomCode, setRoomCode] = useState('')
+
+  const handleJoinRoom = () => {
+    if (roomCode.trim()) {
+      router.push(`/game/${roomCode}`)
+    }
+  }
+
+  const handleCreateRoom = () => {
+    router.push('/create-room')
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">HotelFeedback Pro</h1>
-            </div>
-            <div className="flex gap-4">
-              <Link href="/auth/login">
-                <Button label="Sign In" text />
-              </Link>
-              <Link href="/auth/register">
-                <Button label="Get Started" />
-              </Link>
-            </div>
+      <header className="container mx-auto px-4 py-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <AvatarDisplay 
+              avatarType="IMAGE1"
+              size="large" 
+              className="ring-4 ring-purple-500"
+            />
+            <h1 className="text-3xl font-bold text-white">Aseedak</h1>
+          </div>
+          <div className="flex space-x-4">
+            <Link href="/auth/login">
+              <Button label="Login" className="p-button-outlined p-button-secondary" />
+            </Link>
+            <Link href="/auth/register">
+              <Button label="Sign Up" className="p-button-primary" />
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Transform Guest Feedback into
-            <span className="text-blue-600"> Business Growth</span>
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Collect, manage, and leverage guest reviews with our comprehensive SaaS platform. 
-            QR codes, automated filtering, and seamless external sharing - all in one solution.
+      <main className="container mx-auto px-4 py-12">
+        <div className="text-center mb-12">
+          <h2 className="text-6xl font-bold text-white mb-6">
+            Word Elimination Game
+          </h2>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Join the ultimate word-based elimination game! Guess words to eliminate your targets 
+            and be the last player standing in this thrilling multiplayer experience.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Link href="/auth/register">
-              <Button label="Start Free Trial" size="large" />
-            </Link>
-            <Button label="Watch Demo" severity="secondary" size="large" />
-          </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Everything You Need to Manage Guest Feedback
-            </h2>
-            <p className="text-lg text-gray-600">
-              Powerful tools designed specifically for hotels and hospitality businesses
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-qrcode text-4xl text-blue-600 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">QR Code Integration</h3>
-                <p className="text-gray-600">
-                  Generate dynamic QR codes for easy guest access. No app downloads required.
-                </p>
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-star text-4xl text-yellow-500 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">Smart Review Filtering</h3>
-                <p className="text-gray-600">
-                  Automatically filter reviews. Low ratings stay private, high ratings get shared externally.
-                </p>
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-cog text-4xl text-green-600 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">Customizable Forms</h3>
-                <p className="text-gray-600">
-                  Create custom feedback forms or use our proven templates for maximum engagement.
-                </p>
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-chart-line text-4xl text-purple-600 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">Analytics & Reports</h3>
-                <p className="text-gray-600">
-                  Track trends, satisfaction scores, and response rates with detailed analytics.
-                </p>
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-share-alt text-4xl text-red-600 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">External Sharing</h3>
-                <p className="text-gray-600">
-                  Seamlessly share positive reviews on Google and TripAdvisor to boost your online presence.
-                </p>
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <i className="pi pi-bell text-4xl text-orange-600 mb-4"></i>
-                <h3 className="text-xl font-semibold mb-2">Real-time Notifications</h3>
-                <p className="text-gray-600">
-                  Get instant alerts for new feedback and important updates via email and dashboard.
-                </p>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-lg text-gray-600">
-              Choose the plan that fits your hotel's needs
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2">Basic</h3>
-                <div className="text-4xl font-bold text-blue-600 mb-4">$29<span className="text-lg text-gray-500">/month</span></div>
-                <ul className="text-left space-y-2 mb-6">
-                  <li>✓ Up to 100 reviews/month</li>
-                  <li>✓ QR code generation</li>
-                  <li>✓ Basic analytics</li>
-                  <li>✓ Email support</li>
-                </ul>
-                <Button label="Get Started" className="w-full" />
-              </div>
-            </Card>
-
-            <Card className="dashboard-card border-2 border-blue-600">
-              <div className="text-center">
-                <Badge value="Most Popular" className="mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Premium</h3>
-                <div className="text-4xl font-bold text-blue-600 mb-4">$79<span className="text-lg text-gray-500">/month</span></div>
-                <ul className="text-left space-y-2 mb-6">
-                  <li>✓ Up to 500 reviews/month</li>
-                  <li>✓ Custom forms</li>
-                  <li>✓ Advanced analytics</li>
-                  <li>✓ External sharing</li>
-                  <li>✓ Priority support</li>
-                </ul>
-                <Button label="Get Started" className="w-full" />
-              </div>
-            </Card>
-
-            <Card className="dashboard-card">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2">Enterprise</h3>
-                <div className="text-4xl font-bold text-blue-600 mb-4">$199<span className="text-lg text-gray-500">/month</span></div>
-                <ul className="text-left space-y-2 mb-6">
-                  <li>✓ Unlimited reviews</li>
-                  <li>✓ White-label options</li>
-                  <li>✓ Custom integrations</li>
-                  <li>✓ Dedicated support</li>
-                  <li>✓ API access</li>
-                </ul>
-                <Button label="Contact Sales" className="w-full" severity="secondary" />
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">HotelFeedback Pro</h3>
-              <p className="text-gray-400">
-                The complete guest feedback management solution for hotels.
+        {/* Game Features */}
+        <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <Card className="text-center bg-white/10 backdrop-blur-sm border-white/20">
+            <div className="p-6">
+              <AvatarDisplay 
+                avatarType="IMAGE2"
+                size="xlarge" 
+                className="mb-4"
+              />
+              <h3 className="text-xl font-semibold text-white mb-2">Multiplayer Rooms</h3>
+              <p className="text-gray-300">
+                Create or join rooms with up to 8 players for intense word battles
               </p>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/features">Features</Link></li>
-                <li><Link href="/pricing">Pricing</Link></li>
-                <li><Link href="/integrations">Integrations</Link></li>
-              </ul>
+          </Card>
+
+          <Card className="text-center bg-white/10 backdrop-blur-sm border-white/20">
+            <div className="p-6">
+              <AvatarDisplay 
+                avatarType="IMAGE3"
+                size="xlarge" 
+                className="mb-4"
+              />
+              <h3 className="text-xl font-semibold text-white mb-2">Real-time Action</h3>
+              <p className="text-gray-300">
+                Experience live eliminations and word guessing with instant updates
+              </p>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/help">Help Center</Link></li>
-                <li><Link href="/contact">Contact Us</Link></li>
-                <li><Link href="/status">Status</Link></li>
-              </ul>
+          </Card>
+
+          <Card className="text-center bg-white/10 backdrop-blur-sm border-white/20">
+            <div className="p-6">
+              <AvatarDisplay 
+                avatarType="IMAGE4"
+                size="xlarge" 
+                className="mb-4"
+              />
+              <h3 className="text-xl font-semibold text-white mb-2">Custom Avatars</h3>
+              <p className="text-gray-300">
+                Choose from various avatars and track your game statistics
+              </p>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li><Link href="/privacy">Privacy Policy</Link></li>
-                <li><Link href="/terms">Terms of Service</Link></li>
-                <li><Link href="/security">Security</Link></li>
-              </ul>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="max-w-md mx-auto">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <div className="p-6">
+              <h3 className="text-2xl font-semibold text-white mb-6 text-center">
+                Quick Start
+              </h3>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-white mb-2">Join Room</label>
+                  <div className="flex space-x-2">
+                    <InputText
+                      value={roomCode}
+                      onChange={(e) => setRoomCode(e.target.value)}
+                      placeholder="Enter room code"
+                      className="flex-1"
+                    />
+                    <Button 
+                      label="Join" 
+                      onClick={handleJoinRoom}
+                      disabled={!roomCode.trim()}
+                      className="p-button-primary"
+                    />
+                  </div>
+                </div>
+
+                <Divider className="border-white/20" />
+
+                <div className="text-center">
+                  <Button 
+                    label="Create New Room" 
+                    onClick={handleCreateRoom}
+                    className="p-button-success w-full"
+                    icon="pi pi-plus"
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2024 HotelFeedback Pro. All rights reserved.</p>
+          </Card>
+        </div>
+
+        {/* Game Rules */}
+        <div className="mt-16 max-w-4xl mx-auto">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <div className="p-8">
+              <h3 className="text-3xl font-semibold text-white mb-6 text-center">
+                How to Play
+              </h3>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="text-xl font-semibold text-white mb-4">Game Setup</h4>
+                  <ul className="space-y-2 text-gray-300">
+                    <li>• Join a room with other players</li>
+                    <li>• Each player gets assigned 3 words</li>
+                    <li>• You get a target player to eliminate</li>
+                    <li>• Game starts when room is full</li>
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="text-xl font-semibold text-white mb-4">Gameplay</h4>
+                  <ul className="space-y-2 text-gray-300">
+                    <li>• Guess words to eliminate your target</li>
+                    <li>• Target confirms if guess is correct</li>
+                    <li>• Eliminated player's target becomes yours</li>
+                    <li>• Last player standing wins!</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="container mx-auto px-4 py-8 mt-16">
+        <div className="text-center text-gray-400">
+          <p>&copy; 2024 Aseedak. All rights reserved.</p>
+          <div className="mt-4 space-x-6">
+            <Link href="/terms" className="hover:text-white transition-colors">
+              Terms & Conditions
+            </Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/contact" className="hover:text-white transition-colors">
+              Contact
+            </Link>
           </div>
         </div>
       </footer>

@@ -6,8 +6,8 @@ import { Providers } from './providers'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Hotel Feedback SaaS',
-  description: 'Professional guest feedback and review management platform for hotels',
+  title: 'Aseedak - Word Elimination Game',
+  description: 'Multiplayer word-based elimination game where players guess words to eliminate targets',
 }
 
 export default function RootLayout({

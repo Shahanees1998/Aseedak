@@ -1,0 +1,87 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { PrismaClient } from '@prisma/client'
+import { z } from 'zod'
+
+const prisma = new PrismaClient()
+
+const wordSchema = z.object({
+  word1: z.string().min(1, 'Word 1 is required'),
+  word2: z.string().min(1, 'Word 2 is required'),
+  word3: z.string().min(1, 'Word 3 is required'),
+  category: z.string().min(1, 'Category is required'),
+  difficulty: z.enum(['easy', 'medium', 'hard']),
+  isActive: z.boolean().default(true)
+})
+
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const words = await prisma.word.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return NextResponse.json({ words })
+
+  } catch (error) {
+    console.error('Error fetching words:', error)
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession()
+    
+    if (!session || session.user.role !== 'ADMIN') {
+      return NextResponse.json(
+        { message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const body = await request.json()
+    const validatedData = wordSchema.parse(body)
+
+    const word = await prisma.word.create({
+      data: validatedData
+    })
+
+    return NextResponse.json(
+      { 
+        message: 'Word created successfully',
+        word 
+      },
+      { status: 201 }
+    )
+
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { message: error.errors[0].message },
+        { status: 400 }
+      )
+    }
+
+    console.error('Error creating word:', error)
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    )
+  } finally {
+    await prisma.$disconnect()
+  }
+}

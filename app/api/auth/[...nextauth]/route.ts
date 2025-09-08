@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from 'next-auth/providers/google'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 
@@ -18,56 +19,89 @@ const handler = NextAuth({
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
-          },
-          include: {
-            hotel: true
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          })
+
+          if (!user || !user.isActive) {
+            return null
           }
-        })
 
-        if (!user) {
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
+
+          if (!isPasswordValid) {
+            return null
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+            name: `${user.firstName} ${user.lastName}`,
+            username: user.username,
+            avatar: user.avatar,
+            role: user.role
+          }
+        } catch (error) {
+          console.error('Auth error:', error)
           return null
-        }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
-
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: `${user.firstName} ${user.lastName}`,
-          role: user.role,
-          hotelId: user.hotelId,
-          hotel: user.hotel
         }
       }
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     })
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
+        token.username = user.username
+        token.avatar = user.avatar
         token.role = user.role
-        token.hotelId = user.hotelId
-        token.hotel = user.hotel
       }
       return token
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.sub
-        session.user.role = token.role
-        session.user.hotelId = token.hotelId
-        session.user.hotel = token.hotel
+        session.user.id = token.sub!
+        session.user.username = token.username as string
+        session.user.avatar = token.avatar as string
+        session.user.role = token.role as string
       }
       return session
+    },
+    async signIn({ user, account, profile }) {
+      if (account?.provider === 'google') {
+        try {
+          // Check if user exists
+          const existingUser = await prisma.user.findUnique({
+            where: { email: user.email! }
+          })
+
+          if (!existingUser) {
+            // Create new user
+            await prisma.user.create({
+              data: {
+                email: user.email!,
+                firstName: user.name?.split(' ')[0] || 'User',
+                lastName: user.name?.split(' ').slice(1).join(' ') || '',
+                username: user.email!.split('@')[0],
+                password: '', // No password for OAuth users
+                avatar: 'IMAGE1',
+                role: 'USER'
+              }
+            })
+          }
+        } catch (error) {
+          console.error('Google sign-in error:', error)
+          return false
+        }
+      }
+      return true
     }
   },
   pages: {
@@ -76,7 +110,8 @@ const handler = NextAuth({
   },
   session: {
     strategy: 'jwt'
-  }
+  },
+  secret: process.env.NEXTAUTH_SECRET
 })
 
 export { handler as GET, handler as POST }

@@ -8,300 +8,231 @@ import { Password } from 'primereact/password'
 import { Card } from 'primereact/card'
 import { Message } from 'primereact/message'
 import { Dropdown } from 'primereact/dropdown'
+import { Checkbox } from 'primereact/checkbox'
 import Link from 'next/link'
-import toast from 'react-hot-toast'
 
-const subscriptionPlans = [
-  { label: 'Basic - $29/month', value: 'basic' },
-  { label: 'Premium - $79/month', value: 'premium' },
-  { label: 'Enterprise - $199/month', value: 'enterprise' }
+const avatarOptions = [
+  { label: 'Avatar 1', value: 'IMAGE1' },
+  { label: 'Avatar 2', value: 'IMAGE2' },
+  { label: 'Avatar 3', value: 'IMAGE3' },
+  { label: 'Avatar 4', value: 'IMAGE4' },
+  { label: 'Avatar 5', value: 'IMAGE5' },
+  { label: 'Avatar 6', value: 'IMAGE6' },
+  { label: 'Avatar 7', value: 'IMAGE7' },
+  { label: 'Avatar 8', value: 'IMAGE8' },
+  { label: 'Avatar 9', value: 'IMAGE9' },
+  { label: 'Avatar 10', value: 'IMAGE10' }
 ]
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
-    hotelName: '',
-    hotelEmail: '',
-    hotelPhone: '',
-    hotelAddress: '',
-    hotelCity: '',
-    hotelState: '',
-    hotelCountry: '',
-    hotelZipCode: '',
-    subscriptionPlan: 'premium'
+    avatar: 'IMAGE1',
+    agreeToTerms: false
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
 
+    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
       setLoading(false)
       return
     }
 
+    if (!formData.agreeToTerms) {
+      setError('Please agree to the terms and conditions')
+      setLoading(false)
+      return
+    }
+
     try {
-      const response = await fetch('/api/hotels/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          avatar: formData.avatar
+        })
       })
 
-      const data = await response.json()
-
       if (response.ok) {
-        toast.success('Registration successful! Please check your email for verification.')
-        router.push('/auth/login')
+        router.push('/auth/login?message=Registration successful! Please sign in.')
       } else {
-        setError(data.error || 'Registration failed')
-        toast.error(data.error || 'Registration failed')
+        const data = await response.json()
+        setError(data.message || 'Registration failed')
       }
     } catch (error) {
       setError('An error occurred. Please try again.')
-      toast.error('An error occurred. Please try again.')
     } finally {
       setLoading(false)
     }
   }
 
+  const handleInputChange = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+  }
+
   return (
-    <div className="min-h-screen py-12 bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-2xl mx-auto px-4">
-        <Card className="p-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
+        <div className="p-8">
+          {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-blue-600 mb-2">HotelFeedback Pro</h1>
-            <h2 className="text-2xl font-semibold text-gray-900">Create Your Account</h2>
-            <p className="text-gray-600 mt-2">Start your free trial today</p>
+            <h1 className="text-3xl font-bold text-white mb-2">Join Aseedak</h1>
+            <p className="text-gray-300">Create your account and start playing</p>
           </div>
 
+          {/* Error Message */}
           {error && (
-            <Message severity="error" text={error} className="mb-6" />
+            <Message 
+              severity="error" 
+              text={error} 
+              className="mb-4"
+            />
           )}
 
+          {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    First Name
-                  </label>
-                  <InputText
-                    value={formData.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Last Name
-                  </label>
-                  <InputText
-                    value={formData.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Account Information */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
-                  </label>
-                  <InputText
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
-                  </label>
-                  <Password
-                    value={formData.password}
-                    onChange={(e) => handleInputChange('password', e.target.value)}
-                    className="w-full"
-                    toggleMask
-                    feedback={false}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Confirm Password
-                  </label>
-                  <Password
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                    className="w-full"
-                    toggleMask
-                    feedback={false}
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Hotel Information */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Hotel Information</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Hotel Name
-                  </label>
-                  <InputText
-                    value={formData.hotelName}
-                    onChange={(e) => handleInputChange('hotelName', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Hotel Email
-                    </label>
-                    <InputText
-                      type="email"
-                      value={formData.hotelEmail}
-                      onChange={(e) => handleInputChange('hotelEmail', e.target.value)}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Hotel Phone
-                    </label>
-                    <InputText
-                      value={formData.hotelPhone}
-                      onChange={(e) => handleInputChange('hotelPhone', e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <InputText
-                    value={formData.hotelAddress}
-                    onChange={(e) => handleInputChange('hotelAddress', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      City
-                    </label>
-                    <InputText
-                      value={formData.hotelCity}
-                      onChange={(e) => handleInputChange('hotelCity', e.target.value)}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      State
-                    </label>
-                    <InputText
-                      value={formData.hotelState}
-                      onChange={(e) => handleInputChange('hotelState', e.target.value)}
-                      className="w-full"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Zip Code
-                    </label>
-                    <InputText
-                      value={formData.hotelZipCode}
-                      onChange={(e) => handleInputChange('hotelZipCode', e.target.value)}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Country
-                  </label>
-                  <InputText
-                    value={formData.hotelCountry}
-                    onChange={(e) => handleInputChange('hotelCountry', e.target.value)}
-                    className="w-full"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Subscription Plan */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Subscription Plan</h3>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Choose Your Plan
-                </label>
-                <Dropdown
-                  value={formData.subscriptionPlan}
-                  onChange={(e) => handleInputChange('subscriptionPlan', e.value)}
-                  options={subscriptionPlans}
+                <label className="block text-white mb-2">First Name</label>
+                <InputText
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  placeholder="First name"
                   className="w-full"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-white mb-2">Last Name</label>
+                <InputText
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  placeholder="Last name"
+                  className="w-full"
+                  required
                 />
               </div>
             </div>
 
+            <div>
+              <label className="block text-white mb-2">Username</label>
+              <InputText
+                value={formData.username}
+                onChange={(e) => handleInputChange('username', e.target.value)}
+                placeholder="Choose a username"
+                className="w-full"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-white mb-2">Email</label>
+              <InputText
+                type="email"
+                value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="Enter your email"
+                className="w-full"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-white mb-2">Avatar</label>
+              <Dropdown
+                value={formData.avatar}
+                onChange={(e) => handleInputChange('avatar', e.value)}
+                options={avatarOptions}
+                placeholder="Select an avatar"
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="block text-white mb-2">Password</label>
+              <Password
+                value={formData.password}
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                placeholder="Create a password"
+                className="w-full"
+                inputClassName="w-full"
+                toggleMask
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-white mb-2">Confirm Password</label>
+              <Password
+                value={formData.confirmPassword}
+                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                placeholder="Confirm your password"
+                className="w-full"
+                inputClassName="w-full"
+                toggleMask
+                required
+              />
+            </div>
+
+            <div className="flex items-center">
+              <Checkbox
+                inputId="agreeToTerms"
+                checked={formData.agreeToTerms}
+                onChange={(e) => handleInputChange('agreeToTerms', e.checked)}
+              />
+              <label htmlFor="agreeToTerms" className="ml-2 text-white text-sm">
+                I agree to the{' '}
+                <Link href="/terms" className="text-blue-400 hover:text-blue-300">
+                  Terms and Conditions
+                </Link>
+              </label>
+            </div>
+
             <Button
               type="submit"
-              label="Create Account & Start Free Trial"
-              className="w-full"
-              size="large"
+              label="Create Account"
               loading={loading}
-              disabled={loading}
+              className="w-full p-button-primary"
             />
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          {/* Sign In Link */}
+          <div className="text-center mt-6">
+            <p className="text-gray-300">
               Already have an account?{' '}
-              <Link href="/auth/login" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link 
+                href="/auth/login" 
+                className="text-blue-400 hover:text-blue-300 font-medium"
+              >
                 Sign in
               </Link>
             </p>
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   )
 }

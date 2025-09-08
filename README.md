@@ -1,65 +1,57 @@
-# Hotel Feedback SaaS Platform
+# Aseedak - Word Elimination Game
 
-A comprehensive SaaS platform for hotels to collect, manage, and leverage guest feedback through QR codes, customizable forms, and automated review filtering.
+A real-time multiplayer word-based elimination game built with Next.js, Prisma, and Pusher.
 
-## Features
+## 🎮 Game Overview
 
-### 🏨 Hotel Management
-- Multi-tenant architecture with hotel-specific portals
-- Custom branding and theming per hotel
-- Subscription-based billing with Stripe integration
-- Role-based access control (Super Admin, Hotel Admin)
+Aseedak is an exciting multiplayer game where players guess words to eliminate their targets. Each player gets assigned 3 words and a target player. The goal is to guess your target's words to eliminate them, while avoiding being eliminated yourself. The last player standing wins!
 
-### 📱 Guest Feedback Collection
-- QR code generation for easy guest access
-- Mobile-friendly feedback forms
-- Customizable form builder with multiple field types
-- No app download required for guests
+## ✨ Features
 
-### ⭐ Smart Review Management
-- Automatic review filtering (1-3 stars stay private, 4-5 stars for external sharing)
-- Integration with Google Reviews and TripAdvisor
-- Internal dashboard for review management
-- Real-time notifications and alerts
+### 🎯 Core Game Features
+- **Real-time Multiplayer**: Up to 8 players per room
+- **Word-based Elimination**: Guess words to eliminate targets
+- **Dynamic Target Assignment**: When a player is eliminated, their target becomes yours
+- **Live Game Updates**: Real-time notifications and game state updates
+- **Game Statistics**: Track games played, won, and total kills
 
-### 📊 Analytics & Reporting
-- Comprehensive analytics dashboard
-- Review trends and satisfaction scores
-- Response rate tracking
-- Custom reports and insights
+### 👤 User Management
+- **User Registration & Authentication**: Secure login with NextAuth
+- **Password Reset**: Email-based password recovery
+- **Profile Management**: Customizable avatars and user information
+- **Account Deletion**: Users can delete their accounts
 
-### 🔧 Super Admin Panel
-- System-wide oversight and management
-- Hotel onboarding and subscription management
-- Analytics and reporting across all hotels
-- System settings and configuration
+### 🎨 Avatar System
+- **8 Unique Avatars**: Warrior, Mage, Archer, Ninja, Knight, Wizard, Assassin, Paladin
+- **Admin Assignment**: Admins can assign avatars to users
+- **Visual Identity**: Each avatar has distinct visual representation
 
-## Tech Stack
+### 🛠️ Admin Features
+- **Word Management**: CRUD operations for word sets (3 words per set)
+- **User Management**: View, edit, suspend, and manage users
+- **Game Monitoring**: Track all game rooms and results
+- **System Settings**: Configure game parameters
 
-- **Frontend**: Next.js 14, React, TypeScript, PrimeReact
-- **Backend**: Next.js API Routes, Prisma ORM
-- **Database**: MongoDB
-- **Authentication**: NextAuth.js
-- **Payments**: Stripe
-- **QR Codes**: qrcode library
-- **Styling**: PrimeFlex, SCSS
-- **Deployment**: Digital Ocean (recommended)
+### 🏠 Room System
+- **Room Creation**: Create custom game rooms with specific settings
+- **Room Codes**: Easy sharing with unique room codes
+- **Game Settings**: Configure difficulty, category, time limits, and player count
+- **Private Rooms**: Optional private room functionality
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
-
-- Node.js 18+ 
+- Node.js 18.x or higher
 - MongoDB database
-- Stripe account (for payments)
-- Email service (SMTP)
+- Pusher account (for real-time features)
+- SMTP email service (for password reset)
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd hotel-feedback-saas
+   git clone https://github.com/Shahanees1998/Aseedak.git
+   cd Aseedak
    ```
 
 2. **Install dependencies**
@@ -74,11 +66,13 @@ A comprehensive SaaS platform for hotels to collect, manage, and leverage guest 
    
    Fill in your environment variables:
    ```env
-   DATABASE_URL="mongodb://localhost:27017/hotel-feedback-saas"
+   DATABASE_URL="mongodb://localhost:27017/aseedak"
    NEXTAUTH_URL="http://localhost:3000"
-   NEXTAUTH_SECRET="your-secret-key"
-   STRIPE_PUBLISHABLE_KEY="pk_test_..."
-   STRIPE_SECRET_KEY="sk_test_..."
+   NEXTAUTH_SECRET="your-nextauth-secret-key"
+   PUSHER_APP_ID="your-pusher-app-id"
+   PUSHER_KEY="your-pusher-key"
+   PUSHER_SECRET="your-pusher-secret"
+   PUSHER_CLUSTER="your-pusher-cluster"
    SMTP_HOST="smtp.gmail.com"
    SMTP_PORT="587"
    SMTP_USER="your-email@gmail.com"
@@ -91,193 +85,165 @@ A comprehensive SaaS platform for hotels to collect, manage, and leverage guest 
    npx prisma db push
    ```
 
-5. **Create a super admin user**
-   ```bash
-   # You'll need to manually create a super admin user in the database
-   # or use the API endpoint to create one
-   ```
-
-6. **Run the development server**
+5. **Run the development server**
    ```bash
    npm run dev
    ```
 
-7. **Open your browser**
-   Navigate to `http://localhost:3000`
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Project Structure
+## 🎮 How to Play
 
-```
-hotel-feedback-saas/
-├── app/
-│   ├── api/                    # API routes
-│   │   ├── auth/              # Authentication endpoints
-│   │   ├── hotels/            # Hotel management
-│   │   ├── guest-feedback/    # Guest feedback forms
-│   │   ├── qr-codes/          # QR code generation
-│   │   └── super-admin/        # Super admin endpoints
-│   ├── (full-page)/           # Full-page layouts
-│   │   ├── auth/              # Authentication pages
-│   │   ├── hotel-dashboard/   # Hotel admin dashboard
-│   │   ├── super-admin/       # Super admin panel
-│   │   └── guest-feedback/    # Guest feedback forms
-│   ├── components/            # Reusable components
-│   ├── hooks/                 # Custom React hooks
-│   ├── lib/                   # Utility libraries
-│   └── types/                 # TypeScript type definitions
-├── prisma/
-│   └── schema.prisma          # Database schema
-├── public/                     # Static assets
-└── styles/                     # Global styles
-```
+### Game Setup
+1. **Create Account**: Register with email and choose an avatar
+2. **Join Room**: Enter a room code or create a new room
+3. **Wait for Players**: Room fills up or creator starts the game
+4. **Get Assigned**: Receive 3 words and a target player
 
-## Key Components
+### Gameplay
+1. **Make Guesses**: Guess words that might belong to your target
+2. **Target Confirms**: Target player confirms if the guess is correct
+3. **Elimination**: Correct guesses eliminate the target player
+4. **Target Transfer**: Eliminated player's target becomes yours
+5. **Win Condition**: Be the last player standing!
 
-### Authentication System
-- NextAuth.js with credentials provider
-- Role-based access control
-- Session management with JWT
+### Game Rules
+- Each player has 3 unique words
+- You can only guess words (not ask questions)
+- Target must confirm guesses honestly
+- Eliminated players cannot participate further
+- Game continues until one player remains
+
+## 🏗️ Architecture
+
+### Tech Stack
+- **Frontend**: Next.js 14, React, TypeScript, PrimeReact
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: MongoDB
+- **Authentication**: NextAuth.js
+- **Real-time**: Pusher
+- **Styling**: Tailwind CSS, PrimeReact Components
 
 ### Database Schema
-- Multi-tenant design with hotel isolation
-- Comprehensive review and form management
-- Subscription and billing tracking
+- **Users**: Player accounts with avatars and statistics
+- **Words**: Word sets with categories and difficulty levels
+- **GameRooms**: Game sessions with settings and status
+- **GamePlayers**: Player state within games
+- **GameLogs**: Game events and eliminations
+- **Notifications**: User notifications and alerts
 
-### Guest Feedback Flow
-1. Hotel generates QR code
-2. Guest scans QR code → mobile-friendly form
-3. Form submission → automatic filtering
-4. High ratings → external sharing prompts
-5. Low ratings → internal dashboard only
+### API Endpoints
+- **Authentication**: `/api/auth/*` - Login, register, password reset
+- **Admin**: `/api/admin/*` - Word and user management
+- **Game Rooms**: `/api/game-rooms/*` - Room creation, joining, gameplay
+- **Pusher**: `/api/pusher/*` - Real-time communication
 
-### Hotel Dashboard
-- Real-time statistics and metrics
-- Review management and approval
-- Form customization and QR code generation
-- Analytics and reporting
+## 🔧 Configuration
 
-### Super Admin Panel
-- System-wide hotel management
-- Subscription oversight
-- Analytics across all hotels
-- System configuration
+### Game Settings
+- **Max Players**: 2-8 players per room
+- **Time Limits**: 30-300 seconds per turn
+- **Difficulty Levels**: Easy, Medium, Hard
+- **Categories**: Animals, Food, Objects, Places, Actions, Colors
 
-## API Endpoints
+### Admin Configuration
+- **Word Management**: Add/edit word sets with 3 words each
+- **User Management**: Suspend/activate user accounts
+- **Avatar Assignment**: Assign avatars to users
+- **Game Monitoring**: View all active games and results
 
-### Authentication
-- `POST /api/auth/[...nextauth]` - NextAuth endpoints
-- `POST /api/hotels/register` - Hotel registration
+## 🚀 Deployment
 
-### Guest Feedback
-- `GET /api/guest-feedback/[hotelSlug]` - Get hotel's feedback form
-- `POST /api/guest-feedback/[hotelSlug]/submit` - Submit feedback
+### Production Setup
+1. **Database**: Set up MongoDB Atlas or self-hosted MongoDB
+2. **Environment**: Configure production environment variables
+3. **Pusher**: Set up Pusher channels for real-time features
+4. **Email**: Configure SMTP for password reset emails
+5. **Deploy**: Deploy to Vercel, Netlify, or your preferred platform
 
-### QR Codes
-- `POST /api/qr-codes/generate` - Generate QR code
+### Environment Variables
+```env
+DATABASE_URL="your-production-mongodb-url"
+NEXTAUTH_URL="https://your-domain.com"
+NEXTAUTH_SECRET="your-production-secret"
+PUSHER_APP_ID="your-pusher-app-id"
+PUSHER_KEY="your-pusher-key"
+PUSHER_SECRET="your-pusher-secret"
+PUSHER_CLUSTER="your-pusher-cluster"
+SMTP_HOST="your-smtp-host"
+SMTP_PORT="587"
+SMTP_USER="your-smtp-user"
+SMTP_PASS="your-smtp-password"
+SMTP_FROM="noreply@your-domain.com"
+```
 
-### Hotel Management
-- `GET /api/hotels` - List hotels (Super Admin)
-- `PUT /api/hotels/[id]` - Update hotel
-- `DELETE /api/hotels/[id]` - Delete hotel
+## 📱 Features Overview
 
-## Deployment
+### User Features
+- ✅ User registration and login
+- ✅ Password reset via email
+- ✅ Profile management
+- ✅ Avatar selection
+- ✅ Game statistics tracking
+- ✅ Account deletion
 
-### Digital Ocean Setup
+### Game Features
+- ✅ Real-time multiplayer rooms
+- ✅ Word-based elimination gameplay
+- ✅ Dynamic target assignment
+- ✅ Live game updates
+- ✅ Game result tracking
+- ✅ Room creation and joining
 
-1. **Create Droplet**
-   - Ubuntu 22.04 LTS
-   - Minimum 2GB RAM, 1 CPU
-   - 25GB SSD storage
+### Admin Features
+- ✅ Word set management (CRUD)
+- ✅ User management and suspension
+- ✅ Avatar assignment
+- ✅ Game monitoring
+- ✅ System configuration
 
-2. **Install Dependencies**
-   ```bash
-   # Update system
-   sudo apt update && sudo apt upgrade -y
-   
-   # Install Node.js
-   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-   
-   # Install PM2
-   sudo npm install -g pm2
-   
-   # Install MongoDB
-   wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add -
-   echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-   sudo apt-get update
-   sudo apt-get install -y mongodb-org
-   sudo systemctl start mongod
-   sudo systemctl enable mongod
-   ```
+### Technical Features
+- ✅ Real-time communication with Pusher
+- ✅ Secure authentication with NextAuth
+- ✅ Database management with Prisma
+- ✅ Responsive design with Tailwind CSS
+- ✅ Type-safe development with TypeScript
 
-3. **Deploy Application**
-   ```bash
-   # Clone repository
-   git clone <repository-url>
-   cd hotel-feedback-saas
-   
-   # Install dependencies
-   npm install
-   
-   # Build application
-   npm run build
-   
-   # Start with PM2
-   pm2 start npm --name "hotel-feedback-saas" -- start
-   pm2 save
-   pm2 startup
-   ```
-
-4. **Configure Nginx**
-   ```nginx
-   server {
-       listen 80;
-       server_name your-domain.com;
-       
-       location / {
-           proxy_pass http://localhost:3000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection 'upgrade';
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-           proxy_set_header X-Forwarded-Proto $scheme;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
-
-## Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `DATABASE_URL` | MongoDB connection string | Yes |
-| `NEXTAUTH_URL` | Application URL | Yes |
-| `NEXTAUTH_SECRET` | NextAuth secret key | Yes |
-| `STRIPE_PUBLISHABLE_KEY` | Stripe publishable key | Yes |
-| `STRIPE_SECRET_KEY` | Stripe secret key | Yes |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook secret | Yes |
-| `SMTP_HOST` | SMTP server host | Yes |
-| `SMTP_PORT` | SMTP server port | Yes |
-| `SMTP_USER` | SMTP username | Yes |
-| `SMTP_PASS` | SMTP password | Yes |
-| `APP_URL` | Application base URL | Yes |
-| `QR_CODE_BASE_URL` | QR code base URL | Yes |
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Support
+## 🆘 Support
 
-For support and questions, please contact the development team or create an issue in the repository.
-# HotelManagement
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/Shahanees1998/Aseedak/issues) page
+2. Create a new issue with detailed information
+3. Contact us through the [Contact Page](https://your-domain.com/contact)
+
+## 🎯 Roadmap
+
+### Planned Features
+- [ ] Tournament mode
+- [ ] Custom word categories
+- [ ] Achievement system
+- [ ] Friend system
+- [ ] Mobile app
+- [ ] Voice chat integration
+- [ ] Spectator mode
+- [ ] Replay system
+
+---
+
+**Enjoy playing Aseedak! 🎮**
+
+For more information, visit our [Terms and Conditions](https://your-domain.com/terms) page.
