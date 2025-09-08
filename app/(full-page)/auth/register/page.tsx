@@ -74,7 +74,8 @@ export default function RegisterPage() {
       })
 
       if (response.ok) {
-        router.push('/auth/login?message=Registration successful! Please sign in.')
+        const data = await response.json()
+        router.push(`/auth/verify-email?email=${encodeURIComponent(formData.email)}`)
       } else {
         const data = await response.json()
         setError(data.message || 'Registration failed')

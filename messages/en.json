@@ -1,0 +1,163 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "submit": "Submit",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to Aseedak",
+      "email": "Email Address",
+      "password": "Password",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "verifyEmail": "Verify email?",
+      "signIn": "Sign In",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up",
+      "invalidCredentials": "Invalid email or password",
+      "verifyFirst": "Please verify your email before signing in"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join the ultimate word elimination game",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "username": "Username",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "avatar": "Choose Avatar",
+      "createAccount": "Create Account",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign In",
+      "passwordMismatch": "Passwords do not match",
+      "accountCreated": "Account created successfully! Please check your email for verification code."
+    },
+    "verifyEmail": {
+      "title": "Verify Your Email",
+      "subtitle": "Enter the 6-digit code sent to your email",
+      "email": "Email Address",
+      "otp": "Verification Code",
+      "verify": "Verify Email",
+      "resendOTP": "Resend OTP",
+      "didntReceive": "Didn't receive the code?",
+      "backToLogin": "← Back to Sign In",
+      "verified": "Email verified successfully! Redirecting to login...",
+      "invalidOTP": "Invalid or expired OTP",
+      "newOTPSent": "New OTP sent to your email!"
+    },
+    "forgotPassword": {
+      "title": "Reset Password",
+      "subtitle": "Enter your email to receive reset instructions",
+      "email": "Email Address",
+      "sendReset": "Send Reset Link",
+      "backToLogin": "← Back to Sign In",
+      "resetSent": "Password reset link sent to your email"
+    }
+  },
+  "game": {
+    "createRoom": {
+      "title": "Create Game Room",
+      "roomName": "Room Name",
+      "maxPlayers": "Max Players",
+      "createRoom": "Create Room",
+      "roomCreated": "Room created successfully!"
+    },
+    "joinRoom": {
+      "title": "Join Game Room",
+      "roomCode": "Room Code",
+      "joinRoom": "Join Room",
+      "invalidCode": "Invalid room code"
+    },
+    "gameRoom": {
+      "waiting": "Waiting for players...",
+      "starting": "Game starting...",
+      "inProgress": "Game in progress",
+      "finished": "Game finished",
+      "yourTarget": "Your Target",
+      "yourWords": "Your Target's Words",
+      "claimWord": "Claim Word",
+      "wordClaimed": "Word Claimed",
+      "confirmClaim": "Confirm Word Claim",
+      "rejectClaim": "Reject Claim",
+      "eliminated": "Eliminated",
+      "winner": "Winner",
+      "gameLog": "Game Log"
+    }
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "totalUsers": "Total Users",
+      "activeRooms": "Active Rooms",
+      "totalGames": "Total Games"
+    },
+    "users": {
+      "title": "Manage Users",
+      "addUser": "Add User",
+      "editUser": "Edit User",
+      "suspendUser": "Suspend User",
+      "activateUser": "Activate User",
+      "deleteUser": "Delete User"
+    },
+    "words": {
+      "title": "Manage Words",
+      "addWord": "Add Word",
+      "editWord": "Edit Word",
+      "deleteWord": "Delete Word",
+      "word1": "Word 1",
+      "word2": "Word 2",
+      "word3": "Word 3",
+      "category": "Category",
+      "difficulty": "Difficulty"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout",
+    "admin": "Admin",
+    "users": "Users",
+    "words": "Words",
+    "rooms": "Rooms"
+  },
+  "landing": {
+    "title": "Aseedak",
+    "subtitle": "Word Elimination Game",
+    "description": "Join the ultimate word elimination game! Get your target to say specific words in real life, then claim them in the app to eliminate your targets and be the last player standing!",
+    "features": {
+      "title": "Game Features",
+      "realTime": "Real-time gameplay",
+      "wordBased": "Word-based elimination",
+      "multiplayer": "Multiplayer rooms",
+      "avatars": "Custom avatars"
+    },
+    "howToPlay": {
+      "title": "How to Play",
+      "step1": "Join or create a game room",
+      "step2": "Get assigned words for your target",
+      "step3": "Make your target say those words in real life",
+      "step4": "Claim the word in the app",
+      "step5": "Target confirms or rejects the claim",
+      "step6": "Eliminate targets until you're the last one standing"
+    },
+    "getStarted": "Get Started",
+    "learnMore": "Learn More"
+  }
+}

@@ -98,6 +98,62 @@ body {
   margin-top: 0.5rem;
 }
 
+/* RTL Support for Arabic */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] .flex {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .space-x-4 > * + * {
+  margin-left: 0;
+  margin-right: 1rem;
+}
+
+[dir="rtl"] .space-x-2 > * + * {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+[dir="rtl"] .text-left {
+  text-align: right;
+}
+
+[dir="rtl"] .text-right {
+  text-align: left;
+}
+
+/* Language Switcher Styles */
+.language-switcher .p-dropdown {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.language-switcher .p-dropdown:not(.p-disabled):hover {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.language-switcher .p-dropdown-panel {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.language-dropdown .p-dropdown-item {
+  color: white;
+}
+
+.language-dropdown .p-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .feedback-form {

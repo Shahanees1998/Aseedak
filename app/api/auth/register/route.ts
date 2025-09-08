@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
+import crypto from 'crypto'
+import { sendOTPEmail } from '@/lib/email'
 
 const prisma = new PrismaClient()
 
@@ -41,7 +43,11 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 12)
 
-    // Create user
+    // Generate OTP
+    const otp = crypto.randomInt(100000, 999999).toString()
+    const emailVerifyExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
+
+    // Create user with unverified email
     const user = await prisma.user.create({
       data: {
         firstName: validatedData.firstName,
@@ -50,7 +56,10 @@ export async function POST(request: NextRequest) {
         email: validatedData.email,
         password: hashedPassword,
         avatar: validatedData.avatar,
-        role: 'USER'
+        role: 'USER',
+        emailVerified: false,
+        emailVerifyToken: otp,
+        emailVerifyExpiry: emailVerifyExpiry
       },
       select: {
         id: true,
@@ -60,14 +69,26 @@ export async function POST(request: NextRequest) {
         email: true,
         avatar: true,
         role: true,
+        emailVerified: true,
         createdAt: true
       }
     })
 
+    // Send OTP email
+    try {
+      await sendOTPEmail(validatedData.email, validatedData.firstName, otp)
+    } catch (emailError) {
+      console.error('Email sending error:', emailError)
+      // Still return success to user, but log the error
+    }
+
     return NextResponse.json(
       { 
-        message: 'User created successfully',
-        user 
+        message: 'Account created successfully! Please check your email for verification code.',
+        user: {
+          ...user,
+          emailVerified: false
+        }
       },
       { status: 201 }
     )

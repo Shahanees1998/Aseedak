@@ -34,7 +34,11 @@ export default function LoginPage() {
       })
 
       if (result?.error) {
-        setError('Invalid email or password')
+        if (result.error === 'CredentialsSignin') {
+          setError('Invalid email or password')
+        } else {
+          setError('Please verify your email before signing in')
+        }
       } else {
         router.push('/dashboard')
       }
@@ -109,12 +113,20 @@ export default function LoginPage() {
                   Remember me
                 </label>
               </div>
-              <Link 
-                href="/auth/forgot-password" 
-                className="text-blue-400 hover:text-blue-300 text-sm"
-              >
-                Forgot password?
-              </Link>
+              <div className="flex flex-col space-y-1">
+                <Link 
+                  href="/auth/forgot-password" 
+                  className="text-blue-400 hover:text-blue-300 text-sm"
+                >
+                  Forgot password?
+                </Link>
+                <Link 
+                  href="/auth/verify-email" 
+                  className="text-blue-400 hover:text-blue-300 text-sm"
+                >
+                  Verify email?
+                </Link>
+              </div>
             </div>
 
             <Button

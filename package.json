@@ -31,6 +31,7 @@
     "moment": "^2.29.4",
     "next": "^14.0.4",
     "next-auth": "^4.24.11",
+    "next-intl": "^4.3.6",
     "nodemailer": "^6.9.7",
     "primeflex": "^3.3.1",
     "primeicons": "^6.0.1",

@@ -73,6 +73,60 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   }
 }
 
+export async function sendOTPEmail(email: string, firstName: string, otp: string) {
+  const mailOptions = {
+    from: process.env.SMTP_FROM || 'noreply@aseedak.com',
+    to: email,
+    subject: 'Verify Your Aseedak Account',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Aseedak</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Word Elimination Game</p>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <h2 style="color: #333; margin-top: 0;">Verify Your Email Address</h2>
+          <p style="color: #666; line-height: 1.6;">
+            Hi ${firstName},<br><br>
+            Welcome to Aseedak! To complete your account setup, please verify your email address using the OTP below:
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <div style="background: #667eea; color: white; padding: 20px; border-radius: 10px; font-size: 32px; font-weight: bold; letter-spacing: 5px; display: inline-block;">
+              ${otp}
+            </div>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">
+            This OTP will expire in 10 minutes. If you didn't create an account with Aseedak, please ignore this email.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #666; font-size: 14px;">
+              Enter this code in the verification page to activate your account.
+            </p>
+          </div>
+        </div>
+        
+        <div style="background: #333; padding: 20px; text-align: center;">
+          <p style="color: #999; margin: 0; font-size: 14px;">
+            © 2024 Aseedak. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `
+  }
+
+  try {
+    await transporter.sendMail(mailOptions)
+    console.log('OTP email sent successfully')
+  } catch (error) {
+    console.error('Error sending OTP email:', error)
+    throw error
+  }
+}
+
 export async function sendWelcomeEmail(email: string, firstName: string) {
   const mailOptions = {
     from: process.env.SMTP_FROM || 'noreply@aseedak.com',

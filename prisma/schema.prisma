@@ -55,6 +55,11 @@ model User {
   // Password reset
   resetToken       String?
   resetTokenExpiry DateTime?
+  
+  // Email verification
+  emailVerified    Boolean   @default(false)
+  emailVerifyToken String?
+  emailVerifyExpiry DateTime?
 
   // Game statistics
   gamesPlayed Int @default(0)
