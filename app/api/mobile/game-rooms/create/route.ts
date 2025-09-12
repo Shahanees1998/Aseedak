@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
+import { verifyJWT, extractTokenFromRequest } from '@/lib/jwt'
 
 const prisma = new PrismaClient()
 
@@ -15,23 +15,18 @@ const createRoomSchema = z.object({
   privateRoom: z.boolean().default(false)
 })
 
-function verifyToken(request: NextRequest) {
-  const authHeader = request.headers.get('authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+async function verifyToken(request: NextRequest) {
+  const token = extractTokenFromRequest(request)
+  if (!token) {
     return null
   }
 
-  const token = authHeader.substring(7)
-  try {
-    return jwt.verify(token, process.env.NEXTAUTH_SECRET!) as any
-  } catch (error) {
-    return null
-  }
+  return await verifyJWT(token)
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const user = verifyToken(request)
+    const user = await verifyToken(request)
     if (!user) {
       return NextResponse.json(
         { message: 'Authentication required' },
@@ -115,8 +110,8 @@ export async function POST(request: NextRequest) {
             status: 'ALIVE',
             user: {
               id: user.userId,
-              username: user.username || 'User',
-              avatar: user.avatar || 'IMAGE1'
+              username: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : 'User',
+              avatar: user.profileImage || 'IMAGE1'
             }
           }]
         }

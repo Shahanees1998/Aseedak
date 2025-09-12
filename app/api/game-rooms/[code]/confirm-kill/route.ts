@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
 import { z } from 'zod'
@@ -16,9 +16,9 @@ export async function POST(
   { params }: { params: { code: string } }
 ) {
   try {
-    const session = await getServerSession()
+    const user = await getAuthenticatedUser(request)
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { message: 'Authentication required' },
         { status: 401 }
@@ -86,7 +86,7 @@ export async function POST(
     }
 
     // Verify the target player is confirming
-    if (killRequest.target.userId !== session.user.id) {
+    if (killRequest.target.userId !== user.userId) {
       return NextResponse.json(
         { message: 'Only the target player can confirm the kill request' },
         { status: 403 }
@@ -204,12 +204,12 @@ export async function POST(
             }
           })
 
-          // Update other players' statistics
+          // Update other JOINED players' statistics (exclude INVITED players)
           await prisma.user.updateMany({
             where: {
               id: {
                 in: room.players
-                  .filter(p => p.userId !== winner.userId)
+                  .filter(p => p.userId !== winner.userId && p.joinStatus === 'JOINED')
                   .map(p => p.userId)
               }
             },
@@ -232,7 +232,8 @@ export async function POST(
           })
 
           // Notify all players
-          await pusher.trigger(`room-${params.code}`, 'game-ended', {
+          if (pusher) {
+            await pusher.trigger(`room-${params.code}`, 'game-ended', {
             room: await prisma.gameRoom.findUnique({
               where: { id: room.id },
               include: {
@@ -259,6 +260,7 @@ export async function POST(
             }),
             winner: winner.user
           })
+          }
         }
       } else {
         // Continue game - notify elimination
@@ -287,18 +289,20 @@ export async function POST(
           }
         })
 
-        await pusher.trigger(`room-${params.code}`, 'elimination', {
-          room: updatedRoom,
-          eliminatedPlayer: killRequest.target.user,
-          killerPlayer: killRequest.killer.user,
-          log: await prisma.gameLog.findFirst({
-            where: {
-              roomId: room.id,
-              type: 'elimination'
-            },
-            orderBy: { createdAt: 'desc' }
+        if (pusher) {
+          await pusher.trigger(`room-${params.code}`, 'elimination', {
+            room: updatedRoom,
+            eliminatedPlayer: killRequest.target.user,
+            killerPlayer: killRequest.killer.user,
+            log: await prisma.gameLog.findFirst({
+              where: {
+                roomId: room.id,
+                type: 'elimination'
+              },
+              orderBy: { createdAt: 'desc' }
+            })
           })
-        })
+        }
       }
     } else {
       // Kill request was rejected - create log
@@ -318,11 +322,13 @@ export async function POST(
       })
 
       // Notify killer about rejection
-      await pusher.trigger(`room-${params.code}`, 'kill-rejected', {
-        killRequest,
-        killer: killRequest.killer.user,
-        target: killRequest.target.user
-      })
+      if (pusher) {
+        await pusher.trigger(`room-${params.code}`, 'kill-rejected', {
+          killRequest,
+          killer: killRequest.killer.user,
+          target: killRequest.target.user
+        })
+      }
     }
 
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -13,15 +13,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
 
     const body = await request.json()
     const validatedData = toggleStatusSchema.parse(body)
@@ -61,12 +54,13 @@ export async function PUT(
       )
     }
 
-    console.error('Error toggling user status:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+      console.error('Error toggling user status:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  });
 }

@@ -52,10 +52,11 @@ export async function POST(
       )
     }
 
-    // Check if room has enough players (2-6)
-    if (room.players.length < 2 || room.players.length > 6) {
+    // Check if room has enough joined players (2-6)
+    const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+    if (joinedPlayers.length < 2 || joinedPlayers.length > 6) {
       return NextResponse.json(
-        { message: 'Room must have 2-6 players to start' },
+        { message: 'Room must have 2-6 joined players to start' },
         { status: 400 }
       )
     }
@@ -68,35 +69,99 @@ export async function POST(
       )
     }
 
-    // Start the game
-    await prisma.gameRoom.update({
-      where: { id: room.id },
-      data: {
-        status: 'STARTING',
-        startedAt: new Date()
+    // Get words for the game
+    const words = await prisma.word.findMany({
+      where: {
+        id: { in: room.wordSet }
       }
     })
 
-    // TODO: Implement game logic to assign targets, characters, and words
-    // This would involve:
-    // 1. Randomly assign targets (no loops)
-    // 2. Assign characters from available packs
-    // 3. Assign secret words from selected decks
-    // 4. Update game status to 'IN_PROGRESS'
+    if (words.length < joinedPlayers.length) {
+      return NextResponse.json(
+        { message: 'Not enough words available for this game' },
+        { status: 400 }
+      )
+    }
+
+    // Shuffle only joined players and assign targets
+    const shuffledPlayers = [...joinedPlayers].sort(() => 0.5 - Math.random())
+    
+    // Update players with their own word deck and targets
+    for (let i = 0; i < shuffledPlayers.length; i++) {
+      const player = shuffledPlayers[i]
+      const word = words[i] // Each player gets their own word deck
+      const targetPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length]
+
+      await prisma.gamePlayer.update({
+        where: { id: player.id },
+        data: {
+          word1: word.word1, // Player's own words to speak
+          word2: word.word2, // Player's own words to speak
+          word3: word.word3, // Player's own words to speak
+          targetId: targetPlayer.id, // Who they need to speak to
+          position: i + 1
+        }
+      })
+    }
+
+    // Update room status
+    const updatedRoom = await prisma.gameRoom.update({
+      where: { id: room.id },
+      data: {
+        status: 'IN_PROGRESS',
+        startedAt: new Date(),
+        currentRound: 1
+      },
+      include: {
+        players: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true
+              }
+            },
+            target: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true
+                  }
+                }
+              }
+            }
+          },
+          orderBy: { position: 'asc' }
+        },
+        creator: {
+          select: {
+            id: true,
+            username: true,
+            avatar: true
+          }
+        }
+      }
+    })
+
+    // Create game log
+    await prisma.gameLog.create({
+      data: {
+        roomId: room.id,
+        type: 'game_start',
+        message: 'Game started! Players have been assigned their words and targets.',
+        data: {
+          playerCount: room.players.length,
+          wordCount: words.length
+        }
+      }
+    })
 
     return NextResponse.json({
       message: 'Game started successfully',
-      room: {
-        id: room.id,
-        code: room.code,
-        status: 'STARTING',
-        players: room.players.map(p => ({
-          id: p.id,
-          username: p.user.username,
-          avatar: p.user.avatar,
-          position: p.position
-        }))
-      }
+      room: updatedRoom
     })
 
   } catch (error) {

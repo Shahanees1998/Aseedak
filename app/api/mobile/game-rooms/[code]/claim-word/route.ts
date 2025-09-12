@@ -170,10 +170,12 @@ export async function POST(
     })
 
     // Notify target via Pusher
-    await pusher.trigger(`room-${params.code}`, 'word-claim', {
-      killConfirmation,
-      claimedWord: validatedData.claimedWord
-    })
+    if (pusher) {
+      await pusher.trigger(`room-${params.code}`, 'word-claim', {
+        killConfirmation,
+        claimedWord: validatedData.claimedWord
+      })
+    }
 
     return NextResponse.json({
       message: 'Word claim submitted. Waiting for target confirmation.',

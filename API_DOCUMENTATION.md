@@ -7,7 +7,7 @@ Development: http://localhost:3000/api
 ```
 
 ## Authentication
-Most endpoints require authentication via NextAuth.js session cookies.
+Most endpoints require authentication via JWT tokens.
 
 ## Response Format
 All API responses follow this format:
@@ -23,8 +23,8 @@ All API responses follow this format:
 
 ## Authentication Endpoints
 
-### POST /api/auth/[...nextauth]
-NextAuth.js authentication endpoints.
+### POST /api/auth/login
+JWT authentication endpoint.
 
 **Login:**
 ```bash
@@ -534,7 +534,7 @@ curl -X POST "https://your-domain.com/api/guest-feedback/grand-hotel/submit" \
 # Generate QR code (authenticated)
 curl -X POST "https://your-domain.com/api/qr-codes/generate" \
   -H "Content-Type: application/json" \
-  -H "Cookie: next-auth.session-token=..." \
+  -H "Authorization: Bearer <jwt-token>" \
   -d '{
     "name": "Front Desk QR",
     "description": "QR code for front desk"

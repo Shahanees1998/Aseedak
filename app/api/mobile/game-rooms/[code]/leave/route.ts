@@ -72,6 +72,18 @@ export async function POST(
     // If game is in progress and this was the last player, end the game
     const remainingPlayers = room.players.filter(p => p.id !== player.id)
     if (remainingPlayers.length === 0 && room.status === 'IN_PROGRESS') {
+      // Update statistics for all JOINED players only (no winner in this case)
+      const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+      for (const gamePlayer of joinedPlayers) {
+        await prisma.user.update({
+          where: { id: gamePlayer.userId },
+          data: {
+            gamesPlayed: { increment: 1 },
+            totalKills: { increment: gamePlayer.kills }
+          }
+        })
+      }
+
       await prisma.gameRoom.update({
         where: { id: room.id },
         data: {

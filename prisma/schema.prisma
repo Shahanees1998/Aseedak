@@ -28,6 +28,12 @@ enum PlayerStatus {
   WINNER
 }
 
+enum JoinStatus {
+  INVITED
+  JOINED
+  LEFT
+}
+
 enum AvatarType {
   IMAGE1
   IMAGE2
@@ -69,6 +75,10 @@ model User {
   gamesPlayed Int @default(0)
   gamesWon    Int @default(0)
   totalKills  Int @default(0)
+
+  // FCM Push Notifications
+  fcmTokens String[] @default([]) // Array of FCM device tokens
+  notificationSettings Json? // User notification preferences
 
   // Relations
   gameRooms     GameRoom[]
@@ -211,8 +221,9 @@ model GamePlayer {
   room   GameRoom @relation(fields: [roomId], references: [id])
 
   // Player state
-  status   PlayerStatus @default(ALIVE)
-  position Int // Order in the game
+  status     PlayerStatus @default(ALIVE)
+  joinStatus JoinStatus   @default(INVITED)
+  position   Int // Order in the game
   targetId String?      @db.ObjectId // ID of the player they need to eliminate
   target   GamePlayer?  @relation("PlayerTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   hunters  GamePlayer[] @relation("PlayerTarget")

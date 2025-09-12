@@ -4,6 +4,8 @@ import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import crypto from 'crypto'
 import { sendOTPEmail } from '@/lib/email'
+import { GameNotifications } from '@/lib/fcm'
+import AdminNotifications from '@/lib/adminNotifications'
 
 const prisma = new PrismaClient()
 
@@ -79,6 +81,18 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error('Email sending error:', emailError)
       // Still return success to user, but log the error
+    }
+
+    // Notify all admins about new user registration
+    try {
+      // Send web notifications to admins via Pusher
+      await AdminNotifications.newUserRegistration(
+        validatedData.username,
+        validatedData.email
+      )
+      console.log(`✅ Admin web notifications sent for new user: ${validatedData.username}`)
+    } catch (notificationError) {
+      console.error('Admin notification error (non-critical):', notificationError)
     }
 
     return NextResponse.json(

@@ -39,9 +39,8 @@ Required environment variables in `.env.local`:
 # Database
 DATABASE_URL="mongodb://localhost:27017/hotel-feedback-saas"
 
-# NextAuth
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
+# JWT Authentication
+JWT_SECRET="your-jwt-secret-key-here"
 
 # Stripe (for payments)
 STRIPE_PUBLISHABLE_KEY="pk_test_..."
@@ -62,7 +61,7 @@ QR_CODE_BASE_URL="http://localhost:3000/feedback"
 
 ### ✅ Authentication System
 - Multi-role authentication (Super Admin, Hotel Admin)
-- NextAuth.js with credentials provider
+- JWT with Jose library
 - Session management with JWT
 - Protected routes and middleware
 
@@ -124,7 +123,7 @@ QR_CODE_BASE_URL="http://localhost:3000/feedback"
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/[...nextauth]` - NextAuth endpoints
+- `POST /api/auth/login` - JWT authentication
 - `POST /api/hotels/register` - Hotel registration
 
 ### Guest Feedback
@@ -219,7 +218,7 @@ QR_CODE_BASE_URL="http://localhost:3000/feedback"
 - Input validation with Zod
 - SQL injection prevention with Prisma
 - XSS protection with Next.js
-- CSRF protection with NextAuth
+- CSRF protection with JWT
 - Rate limiting for API endpoints
 - Secure password hashing with bcrypt
 

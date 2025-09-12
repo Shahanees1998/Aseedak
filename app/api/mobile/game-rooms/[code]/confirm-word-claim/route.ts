@@ -145,10 +145,42 @@ export async function POST(
 
       if (alivePlayers.length === 1) {
         // Game over - declare winner
+        const winner = alivePlayers[0]
         await prisma.gamePlayer.update({
-          where: { id: alivePlayers[0].id },
+          where: { id: winner.id },
           data: { status: 'WINNER' }
         })
+
+        // Update winner's user statistics
+        await prisma.user.update({
+          where: { id: winner.userId },
+          data: {
+            gamesPlayed: { increment: 1 },
+            gamesWon: { increment: 1 },
+            totalKills: { increment: winner.kills }
+          }
+        })
+
+        // Update all other JOINED players' statistics (exclude INVITED players)
+        const allJoinedPlayers = await prisma.gamePlayer.findMany({
+          where: { 
+            roomId: killConfirmation.room.id,
+            joinStatus: 'JOINED'
+          },
+          include: { user: true }
+        })
+
+        for (const player of allJoinedPlayers) {
+          if (player.id !== winner.id) {
+            await prisma.user.update({
+              where: { id: player.userId },
+              data: {
+                gamesPlayed: { increment: 1 },
+                totalKills: { increment: player.kills }
+              }
+            })
+          }
+        }
 
         await prisma.gameRoom.update({
           where: { id: killConfirmation.room.id },
@@ -162,23 +194,27 @@ export async function POST(
           data: {
             roomId: killConfirmation.room.id,
             type: 'game_end',
-            message: `Game over! ${alivePlayers[0].user.username} wins!`,
-            playerId: alivePlayers[0].id
+            message: `Game over! ${winner.user.username} wins!`,
+            playerId: winner.id
           }
         })
 
         // Notify all players
-        await pusher.trigger(`room-${params.code}`, 'game-ended', {
-          winner: alivePlayers[0].user,
-          message: 'Game over!'
-        })
+        if (pusher) {
+          await pusher.trigger(`room-${params.code}`, 'game-ended', {
+            winner: alivePlayers[0].user,
+            message: 'Game over!'
+          })
+        }
       } else {
         // Notify elimination
-        await pusher.trigger(`room-${params.code}`, 'elimination', {
-          eliminatedPlayer: killConfirmation.target.user,
-          killer: killConfirmation.killer.user,
+        if (pusher) {
+          await pusher.trigger(`room-${params.code}`, 'elimination', {
+            eliminatedPlayer: killConfirmation.target.user,
+            killer: killConfirmation.killer.user,
           message: `${killConfirmation.target.user.username} was eliminated!`
         })
+        }
       }
     } else {
       // Create rejection log
@@ -193,7 +229,7 @@ export async function POST(
       })
 
       // Notify rejection
-      await pusher.trigger(`room-${params.code}`, 'claim-rejected', {
+      await pusher?.trigger(`room-${params.code}`, 'claim-rejected', {
         killer: killConfirmation.killer.user,
         target: killConfirmation.target.user,
         message: 'Word claim was rejected'

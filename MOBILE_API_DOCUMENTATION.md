@@ -15,8 +15,8 @@ Mobile apps use JWT tokens for authentication. Include the token in the Authoriz
 Authorization: Bearer <jwt_token>
 ```
 
-### Web Authentication (NextAuth)
-Web apps use NextAuth session cookies automatically.
+### Web Authentication (JWT)
+Web apps use JWT tokens for authentication.
 
 ## API Endpoints
 

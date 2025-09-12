@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
 import { z } from 'zod'
@@ -14,18 +14,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const user = authenticatedReq.user!
 
-    const body = await request.json()
-    const validatedData = claimWordSchema.parse(body)
+      const body = await authenticatedReq.json()
+      const validatedData = claimWordSchema.parse(body)
 
     const room = await prisma.gameRoom.findUnique({
       where: { code: params.code },
@@ -58,7 +52,7 @@ export async function POST(
       )
     }
 
-    const player = room.players.find(p => p.userId === session.user.id)
+      const player = room.players.find(p => p.userId === user.userId)
     if (!player) {
       return NextResponse.json(
         { message: 'You are not in this room' },
@@ -156,12 +150,14 @@ export async function POST(
     })
 
     // Notify target player
-    await pusher.trigger(`room-${params.code}`, 'word-claim', {
-      wordClaim,
-      killer: player.user,
-      target: targetPlayer.user,
-      word: validatedData.word
-    })
+    if (pusher) {
+      await pusher.trigger(`room-${params.code}`, 'word-claim', {
+        wordClaim,
+        killer: player.user,
+        target: targetPlayer.user,
+        word: validatedData.word
+      })
+    }
 
     return NextResponse.json(
       { 
@@ -183,8 +179,9 @@ export async function POST(
     return NextResponse.json(
       { message: 'Internal server error' },
       { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  })
 }

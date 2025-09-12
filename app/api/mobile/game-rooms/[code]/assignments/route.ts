@@ -79,7 +79,7 @@ export async function GET(
           username: player.target.user.username,
           avatar: player.target.user.avatar
         } : null,
-        secretWords: {
+        myWords: {
           word1: player.word1,
           word2: player.word2,
           word3: player.word3

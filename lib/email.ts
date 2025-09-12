@@ -181,3 +181,117 @@ export async function sendWelcomeEmail(email: string, firstName: string) {
     throw error
   }
 }
+
+export async function sendGameRoomInvitationEmail(
+  email: string, 
+  firstName: string, 
+  roomName: string, 
+  roomCode: string, 
+  creatorName: string,
+  difficulty: string,
+  maxPlayers: number
+) {
+  const gameUrl = `${process.env.NEXTAUTH_URL}/game/${roomCode}`
+  
+  // Check if SendGrid is properly configured
+  if (!process.env.SENDGRID_API_KEY) {
+    console.error('SENDGRID_API_KEY is not configured')
+    throw new Error('Email service not configured')
+  }
+  
+  if (!process.env.SENDGRID_FROM_EMAIL) {
+    console.error('SENDGRID_FROM_EMAIL is not configured')
+    throw new Error('From email not configured')
+  }
+  
+  const msg = {
+    to: email,
+    from: process.env.SENDGRID_FROM_EMAIL,
+    subject: `🎮 You're invited to join "${roomName}" - Aseedak Game Room`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🎮 Aseedak</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Word Elimination Game</p>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <h2 style="color: #333; margin-top: 0;">You're Invited to a Game Room!</h2>
+          <p style="color: #666; line-height: 1.6;">
+            Hi ${firstName},<br><br>
+            <strong>${creatorName}</strong> has invited you to join their game room "<strong>${roomName}</strong>" on Aseedak!
+          </p>
+          
+          <div style="background: white; border: 2px solid #667eea; border-radius: 10px; padding: 20px; margin: 20px 0;">
+            <h3 style="color: #333; margin-top: 0; text-align: center;">Game Room Details</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0;">
+              <div style="text-align: center;">
+                <strong style="color: #667eea;">Room Name</strong><br>
+                <span style="color: #666;">${roomName}</span>
+              </div>
+              <div style="text-align: center;">
+                <strong style="color: #667eea;">Room Code</strong><br>
+                <span style="color: #333; font-family: monospace; font-size: 18px; font-weight: bold;">${roomCode}</span>
+              </div>
+              <div style="text-align: center;">
+                <strong style="color: #667eea;">Difficulty</strong><br>
+                <span style="color: #666; text-transform: capitalize;">${difficulty}</span>
+              </div>
+              <div style="text-align: center;">
+                <strong style="color: #667eea;">Max Players</strong><br>
+                <span style="color: #666;">${maxPlayers}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${gameUrl}" 
+               style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                      color: white; 
+                      padding: 15px 30px; 
+                      text-decoration: none; 
+                      border-radius: 5px; 
+                      display: inline-block; 
+                      font-weight: bold; 
+                      font-size: 16px;">
+              🎮 Join Game Room Now!
+            </a>
+          </div>
+          
+          <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin: 20px 0;">
+            <p style="color: #1976d2; margin: 0; font-size: 14px;">
+              <strong>💡 Tip:</strong> You can also join by entering the room code "${roomCode}" in the Aseedak app.
+            </p>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">
+            This invitation was sent by ${creatorName}. If you didn't expect this invitation, you can safely ignore this email.
+          </p>
+        </div>
+        
+        <div style="background: #333; padding: 20px; text-align: center;">
+          <p style="color: #999; margin: 0; font-size: 14px;">
+            © 2024 Aseedak. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `
+  }
+
+  try {
+    await sgMail.send(msg)
+    console.log(`✅ Game room invitation email sent successfully to ${email}`)
+  } catch (error: any) {
+    console.error(`❌ Failed to send invitation email to ${email}:`, error)
+    
+    // Log detailed SendGrid error information
+    if (error.response) {
+      console.error('SendGrid Response Status:', error.response.status)
+      console.error('SendGrid Response Headers:', error.response.headers)
+      console.error('SendGrid Response Body:', error.response.body)
+    }
+    
+    // Don't throw the error to prevent room creation from failing
+    console.error(`Email sending failed for ${email}, but room creation will continue`)
+  }
+}

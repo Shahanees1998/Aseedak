@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
 
@@ -9,15 +9,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const user = authenticatedReq.user!
 
     const room = await prisma.gameRoom.findUnique({
       where: { code: params.code },
@@ -43,29 +37,53 @@ export async function POST(
       )
     }
 
-    const player = room.players.find(p => p.userId === session.user.id)
-    if (!player) {
-      return NextResponse.json(
-        { message: 'You are not in this room' },
-        { status: 400 }
-      )
-    }
-
-    // Remove player from room
-    await prisma.gamePlayer.delete({
-      where: { id: player.id }
-    })
-
-    // If this was the creator and there are other players, transfer ownership
-    if (room.createdBy === session.user.id && room.players.length > 1) {
-      const nextPlayer = room.players.find(p => p.userId !== session.user.id)
-      if (nextPlayer) {
-        await prisma.gameRoom.update({
-          where: { id: room.id },
-          data: { createdBy: nextPlayer.userId }
-        })
+      const player = room.players.find(p => p.userId === user.userId)
+      if (!player) {
+        return NextResponse.json(
+          { message: 'You are not in this room' },
+          { status: 400 }
+        )
       }
-    }
+
+      // First, update any players who target this player to have a new target
+      const playersTargetingThisPlayer = await prisma.gamePlayer.findMany({
+        where: { targetId: player.id }
+      })
+
+      if (playersTargetingThisPlayer.length > 0) {
+        // Find remaining players (excluding the one leaving)
+        const remainingPlayers = room.players.filter(p => p.id !== player.id)
+        
+        if (remainingPlayers.length > 0) {
+          // Assign new targets to players who were targeting the leaving player
+          for (const targetingPlayer of playersTargetingThisPlayer) {
+            // Find a new target (not themselves and not the leaving player)
+            const newTarget = remainingPlayers.find(p => p.id !== targetingPlayer.id)
+            if (newTarget) {
+              await prisma.gamePlayer.update({
+                where: { id: targetingPlayer.id },
+                data: { targetId: newTarget.id }
+              })
+            }
+          }
+        }
+      }
+
+      // Now remove player from room
+      await prisma.gamePlayer.delete({
+        where: { id: player.id }
+      })
+
+      // If this was the creator and there are other players, transfer ownership
+      if (room.createdBy === user.userId && room.players.length > 1) {
+        const nextPlayer = room.players.find(p => p.userId !== user.userId)
+        if (nextPlayer) {
+          await prisma.gameRoom.update({
+            where: { id: room.id },
+            data: { createdBy: nextPlayer.userId }
+          })
+        }
+      }
 
     // If no players left, delete the room
     if (room.players.length === 1) {
@@ -99,25 +117,36 @@ export async function POST(
         }
       })
 
-      // Notify other players
-      await pusher.trigger(`room-${params.code}`, 'player-left', {
-        room: updatedRoom,
-        player: player.user
-      })
+      // Notify other players (optional - don't fail if Pusher is down)
+      if (pusher) {
+        try {
+          await pusher.trigger(`room-${params.code}`, 'player-left', {
+            room: updatedRoom,
+            player: player.user
+          })
+          console.log('✅ Pusher notification sent for player left')
+        } catch (pusherError) {
+          console.error('❌ Pusher notification failed (non-critical):', pusherError)
+          // Don't fail the leave operation if Pusher fails
+        }
+      } else {
+        console.warn('⚠️ Pusher not configured - skipping real-time notification')
+      }
     }
 
-    return NextResponse.json(
-      { message: 'Successfully left room' },
-      { status: 200 }
-    )
+      return NextResponse.json(
+        { message: 'Successfully left room' },
+        { status: 200 }
+      )
 
-  } catch (error) {
-    console.error('Error leaving room:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+    } catch (error) {
+      console.error('Error leaving room:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  })
 }

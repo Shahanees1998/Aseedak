@@ -381,6 +381,110 @@
             }
           },
           "response": []
+        },
+        {
+          "name": "Make Guess",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"user_id_here\",\n  \"guess\": \"apple\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/game-rooms/{{room_code}}/guess",
+              "host": ["{{base_url}}"],
+              "path": ["api", "game-rooms", "{{room_code}}", "guess"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Guess",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guessId\": \"guess_id_here\",\n  \"confirmed\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-guess",
+              "host": ["{{base_url}}"],
+              "path": ["api", "game-rooms", "{{room_code}}", "confirm-guess"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request Kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetUserId\": \"user_id_here\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/game-rooms/{{room_code}}/kill-request",
+              "host": ["{{base_url}}"],
+              "path": ["api", "game-rooms", "{{room_code}}", "kill-request"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"killRequestId\": \"kill_request_id_here\",\n  \"confirmed\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-kill",
+              "host": ["{{base_url}}"],
+              "path": ["api", "game-rooms", "{{room_code}}", "confirm-kill"]
+            }
+          },
+          "response": []
         }
       ]
     },

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -18,15 +18,8 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
 
     const body = await request.json()
     const validatedData = wordUpdateSchema.parse(body)
@@ -44,37 +37,31 @@ export async function PUT(
       { status: 200 }
     )
 
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { message: error.errors[0].message },
-        { status: 400 }
-      )
-    }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { message: error.errors[0].message },
+          { status: 400 }
+        )
+      }
 
-    console.error('Error updating word:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+      console.error('Error updating word:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  });
 }
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
 
     await prisma.word.delete({
       where: { id: params.id }
@@ -85,13 +72,14 @@ export async function DELETE(
       { status: 200 }
     )
 
-  } catch (error) {
-    console.error('Error deleting word:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+    } catch (error) {
+      console.error('Error deleting word:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  });
 }

@@ -16,7 +16,7 @@ Aseedak is an exciting multiplayer game where players guess words to eliminate t
 - **Game Statistics**: Track games played, won, and total kills
 
 ### 👤 User Management
-- **User Registration & Authentication**: Secure login with NextAuth
+- **User Registration & Authentication**: Secure login with JWT
 - **Password Reset**: Email-based password recovery
 - **Profile Management**: Customizable avatars and user information
 - **Account Deletion**: Users can delete their accounts
@@ -121,7 +121,7 @@ Aseedak is an exciting multiplayer game where players guess words to eliminate t
 - **Frontend**: Next.js 14, React, TypeScript, PrimeReact
 - **Backend**: Next.js API Routes, Prisma ORM
 - **Database**: MongoDB
-- **Authentication**: NextAuth.js
+- **Authentication**: JWT with Jose
 - **Real-time**: Pusher
 - **Styling**: Tailwind CSS, PrimeReact Components
 
@@ -205,7 +205,7 @@ SMTP_FROM="noreply@your-domain.com"
 
 ### Technical Features
 - ✅ Real-time communication with Pusher
-- ✅ Secure authentication with NextAuth
+- ✅ Secure authentication with JWT
 - ✅ Database management with Prisma
 - ✅ Responsive design with Tailwind CSS
 - ✅ Type-safe development with TypeScript

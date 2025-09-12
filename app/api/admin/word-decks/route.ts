@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -15,94 +15,80 @@ const wordDeckSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    const wordDecks = await prisma.wordDeck.findMany({
-      include: {
-        words: {
-          select: {
-            id: true,
-            word1: true,
-            word2: true,
-            word3: true,
-            category: true,
-            difficulty: true
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const wordDecks = await prisma.wordDeck.findMany({
+        include: {
+          words: {
+            select: {
+              id: true,
+              word1: true,
+              word2: true,
+              word3: true,
+              category: true,
+              difficulty: true
+            }
           }
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    })
+        },
+        orderBy: { createdAt: 'desc' }
+      })
 
-    // Add word count to each deck
-    const decksWithCount = wordDecks.map(deck => ({
-      ...deck,
-      wordCount: deck.words.length
-    }))
+      // Add word count to each deck
+      const decksWithCount = wordDecks.map(deck => ({
+        ...deck,
+        wordCount: deck.words.length
+      }))
 
-    return NextResponse.json({ wordDecks: decksWithCount })
+      return NextResponse.json({ wordDecks: decksWithCount })
 
-  } catch (error) {
-    console.error('Error fetching word decks:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+    } catch (error) {
+      console.error('Error fetching word decks:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  });
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const body = await request.json()
+      const validatedData = wordDeckSchema.parse(body)
+
+      const wordDeck = await prisma.wordDeck.create({
+        data: validatedData,
+        include: {
+          words: true
+        }
+      })
+
       return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
+        { 
+          message: 'Word deck created successfully',
+          wordDeck 
+        },
+        { status: 201 }
       )
-    }
 
-    const body = await request.json()
-    const validatedData = wordDeckSchema.parse(body)
-
-    const wordDeck = await prisma.wordDeck.create({
-      data: validatedData,
-      include: {
-        words: true
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { message: error.errors[0].message },
+          { status: 400 }
+        )
       }
-    })
 
-    return NextResponse.json(
-      { 
-        message: 'Word deck created successfully',
-        wordDeck 
-      },
-      { status: 201 }
-    )
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+      console.error('Error creating word deck:', error)
       return NextResponse.json(
-        { message: error.errors[0].message },
-        { status: 400 }
+        { message: 'Internal server error' },
+        { status: 500 }
       )
+    } finally {
+      await prisma.$disconnect()
     }
-
-    console.error('Error creating word deck:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+  });
 }

@@ -5,8 +5,7 @@ import { Button } from 'primereact/button'
 import { ProgressBar } from 'primereact/progressbar'
 import { Message } from 'primereact/message'
 import { Avatar } from 'primereact/avatar'
-import { useSession } from 'next-auth/react'
-import { useTranslations } from 'next-intl'
+import { useAuth } from '@/hooks/useAuth'
 
 interface ProfileImageUploadProps {
   currentImageUrl?: string
@@ -21,8 +20,7 @@ export default function ProfileImageUpload({
   size = 'xlarge',
   className = ''
 }: ProfileImageUploadProps) {
-  const { data: session, update } = useSession()
-  const t = useTranslations('profile')
+  const { user, refreshUser } = useAuth()
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [message, setMessage] = useState('')
@@ -86,14 +84,8 @@ export default function ProfileImageUpload({
         setMessage('Profile image uploaded successfully!')
         setMessageType('success')
         
-        // Update session with new image
-        await update({
-          ...session,
-          user: {
-            ...session?.user,
-            profileImageUrl: data.imageUrl
-          }
-        })
+        // Refresh user data to get updated profile image
+        await refreshUser()
 
         // Call callback if provided
         if (onImageUpdate) {
@@ -131,14 +123,8 @@ export default function ProfileImageUpload({
         setMessage('Profile image deleted successfully!')
         setMessageType('success')
         
-        // Update session
-        await update({
-          ...session,
-          user: {
-            ...session?.user,
-            profileImageUrl: null
-          }
-        })
+        // Refresh user data to get updated profile image
+        await refreshUser()
 
         // Call callback if provided
         if (onImageUpdate) {

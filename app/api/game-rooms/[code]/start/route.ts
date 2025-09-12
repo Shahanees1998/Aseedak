@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
+import { GameNotifications } from '@/lib/fcm'
 
 const prisma = new PrismaClient()
 
@@ -9,15 +10,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session) {
-      return NextResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const user = authenticatedReq.user!
 
     const room = await prisma.gameRoom.findUnique({
       where: { code: params.code },
@@ -33,12 +28,12 @@ export async function POST(
       )
     }
 
-    if (room.createdBy !== session.user.id) {
-      return NextResponse.json(
-        { message: 'Only the room creator can start the game' },
-        { status: 403 }
-      )
-    }
+      if (room.createdBy !== user.userId) {
+        return NextResponse.json(
+          { message: 'Only the room creator can start the game' },
+          { status: 403 }
+        )
+      }
 
     if (room.status !== 'WAITING') {
       return NextResponse.json(
@@ -47,13 +42,15 @@ export async function POST(
       )
     }
 
-    if (room.players.length < 2) {
+    // Check if there are enough joined players to start
+    const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+    if (joinedPlayers.length < 2) {
       return NextResponse.json(
-        { message: 'Need at least 2 players to start the game' },
+        { message: 'Need at least 2 joined players to start the game' },
         { status: 400 }
       )
     }
-
+    
     // Get words for the game
     const words = await prisma.word.findMany({
       where: {
@@ -61,29 +58,29 @@ export async function POST(
       }
     })
 
-    if (words.length < room.players.length) {
+    if (words.length < joinedPlayers.length) {
       return NextResponse.json(
         { message: 'Not enough words available' },
         { status: 400 }
       )
     }
 
-    // Shuffle players and assign targets
-    const shuffledPlayers = [...room.players].sort(() => 0.5 - Math.random())
+    // Shuffle only joined players and assign targets
+    const shuffledPlayers = [...joinedPlayers].sort(() => 0.5 - Math.random())
     
-    // Update players with words and targets
+    // Update players with their own word deck and targets
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const player = shuffledPlayers[i]
-      const word = words[i]
+      const word = words[i] // Each player gets their own word deck
       const targetPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length]
 
       await prisma.gamePlayer.update({
         where: { id: player.id },
         data: {
-          word1: word.word1,
-          word2: word.word2,
-          word3: word.word3,
-          targetId: targetPlayer.id,
+          word1: word.word1, // Player's own words to speak
+          word2: word.word2, // Player's own words to speak  
+          word3: word.word3, // Player's own words to speak
+          targetId: targetPlayer.id, // Who they need to speak to
           position: i + 1
         }
       })
@@ -105,6 +102,17 @@ export async function POST(
                 id: true,
                 username: true,
                 avatar: true
+              }
+            },
+            target: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true
+                  }
+                }
               }
             }
           },
@@ -134,25 +142,41 @@ export async function POST(
     })
 
     // Notify all players
-    await pusher.trigger(`room-${params.code}`, 'game-started', {
-      room: updatedRoom
-    })
+    if (pusher) {
+      await pusher.trigger(`room-${params.code}`, 'game-started', {
+        room: updatedRoom
+      })
+    }
 
-    return NextResponse.json(
-      { 
-        message: 'Game started successfully',
-        room: updatedRoom 
-      },
-      { status: 200 }
-    )
+    // Send FCM notifications to all joined players
+    for (const player of joinedPlayers) {
+      try {
+        await GameNotifications.gameStarted(
+          player.userId,
+          room.name,
+          room.code
+        )
+      } catch (error) {
+        console.error(`Failed to send game start notification to user ${player.userId}:`, error)
+      }
+    }
 
-  } catch (error) {
-    console.error('Error starting game:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+      return NextResponse.json(
+        { 
+          message: 'Game started successfully',
+          room: updatedRoom 
+        },
+        { status: 200 }
+      )
+
+    } catch (error) {
+      console.error('Error starting game:', error)
+      return NextResponse.json(
+        { message: 'Internal server error' },
+        { status: 500 }
+      )
+    } finally {
+      await prisma.$disconnect()
+    }
+  })
 }

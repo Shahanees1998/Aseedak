@@ -1,13 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/hooks/useAuth'
 import ProfileImageUpload from './ProfileImageUpload'
 import { Card } from 'primereact/card'
 
 export default function ProfileImageExample() {
-  const { data: session } = useSession()
-  const [currentImageUrl, setCurrentImageUrl] = useState(session?.user?.profileImageUrl || '')
+  const { user } = useAuth()
+  const [currentImageUrl, setCurrentImageUrl] = useState(user?.profileImage || '')
 
   const handleImageUpdate = (imageUrl: string) => {
     setCurrentImageUrl(imageUrl)
@@ -26,9 +26,9 @@ export default function ProfileImageExample() {
 
           {/* Current User Info */}
           <div className="text-sm text-gray-600">
-            <p><strong>Username:</strong> {session?.user?.username}</p>
-            <p><strong>Email:</strong> {session?.user?.email}</p>
-            <p><strong>Avatar:</strong> {session?.user?.avatar}</p>
+            <p><strong>Username:</strong> {user?.firstName || 'N/A'}</p>
+            <p><strong>Email:</strong> {user?.email || 'N/A'}</p>
+            <p><strong>Avatar:</strong> {user?.profileImage || 'N/A'}</p>
             {currentImageUrl && (
               <p><strong>Profile Image:</strong> Uploaded ✅</p>
             )}

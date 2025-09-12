@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -15,73 +15,59 @@ const wordSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const words = await prisma.word.findMany({
+        orderBy: { createdAt: 'desc' }
+      })
+
+      return NextResponse.json({ words })
+
+    } catch (error) {
+      console.error('Error fetching words:', error)
       return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
+        { message: 'Internal server error' },
+        { status: 500 }
       )
+    } finally {
+      await prisma.$disconnect()
     }
-
-    const words = await prisma.word.findMany({
-      orderBy: { createdAt: 'desc' }
-    })
-
-    return NextResponse.json({ words })
-
-  } catch (error) {
-    console.error('Error fetching words:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+  });
 }
 
 export async function POST(request: NextRequest) {
-  try {
-    const session = await getServerSession()
-    
-    if (!session || session.user.role !== 'ADMIN') {
+  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+    try {
+      const body = await request.json()
+      const validatedData = wordSchema.parse(body)
+
+      const word = await prisma.word.create({
+        data: validatedData
+      })
+
       return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
+        { 
+          message: 'Word created successfully',
+          word 
+        },
+        { status: 201 }
       )
-    }
 
-    const body = await request.json()
-    const validatedData = wordSchema.parse(body)
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { message: error.errors[0].message },
+          { status: 400 }
+        )
+      }
 
-    const word = await prisma.word.create({
-      data: validatedData
-    })
-
-    return NextResponse.json(
-      { 
-        message: 'Word created successfully',
-        word 
-      },
-      { status: 201 }
-    )
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+      console.error('Error creating word:', error)
       return NextResponse.json(
-        { message: error.errors[0].message },
-        { status: 400 }
+        { message: 'Internal server error' },
+        { status: 500 }
       )
+    } finally {
+      await prisma.$disconnect()
     }
-
-    console.error('Error creating word:', error)
-    return NextResponse.json(
-      { message: 'Internal server error' },
-      { status: 500 }
-    )
-  } finally {
-    await prisma.$disconnect()
-  }
+  });
 }

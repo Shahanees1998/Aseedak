@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
 import { z } from 'zod'
@@ -15,9 +15,9 @@ export async function POST(
   { params }: { params: { code: string } }
 ) {
   try {
-    const session = await getServerSession()
+    const user = await getAuthenticatedUser(request)
     
-    if (!session) {
+    if (!user) {
       return NextResponse.json(
         { message: 'Authentication required' },
         { status: 401 }
@@ -58,7 +58,7 @@ export async function POST(
       )
     }
 
-    const player = room.players.find(p => p.userId === session.user.id)
+    const player = room.players.find(p => p.userId === user.userId)
     if (!player) {
       return NextResponse.json(
         { message: 'You are not in this room' },
@@ -156,11 +156,13 @@ export async function POST(
     })
 
     // Notify target player
-    await pusher.trigger(`room-${params.code}`, 'kill-request', {
-      killRequest,
-      killer: player.user,
-      target: targetPlayer.user
-    })
+    if (pusher) {
+      await pusher.trigger(`room-${params.code}`, 'kill-request', {
+        killRequest,
+        killer: player.user,
+        target: targetPlayer.user
+      })
+    }
 
     return NextResponse.json(
       { 
