@@ -1,0 +1,891 @@
+{
+  "info": {
+    "name": "Aseedak Complete API Collection v2",
+    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category",
+    "version": "2.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "room_code",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"]}
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.token) {",
+                  "        pm.collectionVariables.set('jwt_token', response.token);",
+                  "        pm.collectionVariables.set('user_id', response.user.id);",
+                  "    }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/auth/me", "host": ["{{base_url}}"], "path": ["api", "auth", "me"]}
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/verify-email", "host": ["{{base_url}}"], "path": ["api", "auth", "verify-email"]}
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/resend-otp", "host": ["{{base_url}}"], "path": ["api", "auth", "resend-otp"]}
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"oldpassword\",\n  \"newPassword\": \"newpassword123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/change-password", "host": ["{{base_url}}"], "path": ["api", "auth", "change-password"]}
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/forgot-password", "host": ["{{base_url}}"], "path": ["api", "auth", "forgot-password"]}
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/auth/reset-password", "host": ["{{base_url}}"], "path": ["api", "auth", "reset-password"]}
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/auth/logout", "host": ["{{base_url}}"], "path": ["api", "auth", "logout"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎮 Game Rooms",
+      "item": [
+        {
+          "name": "Create Game Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"My Game Room\",\n  \"maxPlayers\": 8,\n  \"timeLimit\": 300\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/create", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "create"]}
+          }
+        },
+        {
+          "name": "Get Game Room",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}"]}
+          }
+        },
+        {
+          "name": "Join Game Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/join", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "join"]}
+          }
+        },
+        {
+          "name": "Start Game",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/start", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "start"]}
+          }
+        },
+        {
+          "name": "Claim Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"hello\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/claim-word", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "claim-word"]}
+          }
+        },
+        {
+          "name": "Confirm Word Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimId\": \"claim_id\",\n  \"confirmed\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-word-claim", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "confirm-word-claim"]}
+          }
+        },
+        {
+          "name": "Eliminate Target",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetId\": \"target_user_id\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/eliminate", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "eliminate"]}
+          }
+        },
+        {
+          "name": "Confirm Elimination",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eliminationId\": \"elimination_id\",\n  \"confirmed\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-elimination", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "confirm-elimination"]}
+          }
+        },
+        {
+          "name": "Make Guess",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"guess_word\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/guess", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "guess"]}
+          }
+        },
+        {
+          "name": "Confirm Guess",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"guessId\": \"guess_id\",\n  \"confirmed\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-guess", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "confirm-guess"]}
+          }
+        },
+        {
+          "name": "Request Kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targetId\": \"target_user_id\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/kill-request", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "kill-request"]}
+          }
+        },
+        {
+          "name": "Confirm Kill",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"killId\": \"kill_id\",\n  \"confirmed\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/confirm-kill", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "confirm-kill"]}
+          }
+        },
+        {
+          "name": "Reassign Targets & Words",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/reassign", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "reassign"]}
+          }
+        },
+        {
+          "name": "Leave Game Room",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/leave", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "leave"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "👑 Admin APIs",
+      "item": [
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/users", "host": ["{{base_url}}"], "path": ["api", "admin", "users"]}
+          }
+        },
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/users", "host": ["{{base_url}}"], "path": ["api", "admin", "users"]}
+          }
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}"]}
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}"]}
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}"]}
+          }
+        },
+        {
+          "name": "Toggle User Status",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}/toggle-status", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}", "toggle-status"]}
+          }
+        },
+        {
+          "name": "Assign Avatar to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"avatar\": \"IMAGE1\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}/assign-avatar", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}", "assign-avatar"]}
+          }
+        },
+        {
+          "name": "Get User Statistics",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/users/statistics", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "statistics"]}
+          }
+        },
+        {
+          "name": "Get All Game Rooms",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/game-rooms", "host": ["{{base_url}}"], "path": ["api", "admin", "game-rooms"]}
+          }
+        },
+        {
+          "name": "Get All Words",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/words", "host": ["{{base_url}}"], "path": ["api", "admin", "words"]}
+          }
+        },
+        {
+          "name": "Create Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"example\",\n  \"difficulty\": \"EASY\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/words", "host": ["{{base_url}}"], "path": ["api", "admin", "words"]}
+          }
+        },
+        {
+          "name": "Get Word by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/words/{{word_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "words", "{{word_id}}"]}
+          }
+        },
+        {
+          "name": "Update Word",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"updated_word\",\n  \"difficulty\": \"MEDIUM\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/words/{{word_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "words", "{{word_id}}"]}
+          }
+        },
+        {
+          "name": "Delete Word",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/words/{{word_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "words", "{{word_id}}"]}
+          }
+        },
+        {
+          "name": "Get Character Packs",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/character-packs", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs"]}
+          }
+        },
+        {
+          "name": "Get Word Decks",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/word-decks", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks"]}
+          }
+        },
+        {
+          "name": "Test Admin Notifications",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Notification\",\n  \"message\": \"This is a test notification\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/notifications/test", "host": ["{{base_url}}"], "path": ["api", "admin", "notifications", "test"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "📱 Mobile APIs",
+      "item": [
+        {
+          "name": "Mobile Login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Mobile Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/register", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "register"]}
+          }
+        },
+        {
+          "name": "Mobile Create Game Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mobile Game Room\",\n  \"maxPlayers\": 6\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/create", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "create"]}
+          }
+        },
+        {
+          "name": "Mobile Join Game Room",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/join", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "join"]}
+          }
+        },
+        {
+          "name": "Mobile Get Assignments",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/assignments", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "assignments"]}
+          }
+        },
+        {
+          "name": "Mobile Get Game Status",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/status", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "status"]}
+          }
+        },
+        {
+          "name": "Mobile Get Game Results",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/results", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "results"]}
+          }
+        },
+        {
+          "name": "Mobile Claim Word",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"word\": \"hello\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/claim-word", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "claim-word"]}
+          }
+        },
+        {
+          "name": "Mobile Confirm Word Claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimId\": \"claim_id\",\n  \"confirmed\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/confirm-word-claim", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "confirm-word-claim"]}
+          }
+        },
+        {
+          "name": "Mobile Start Game",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/start", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "start"]}
+          }
+        },
+        {
+          "name": "Mobile Leave Room",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/leave", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "leave"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔔 Notifications",
+      "item": [
+        {
+          "name": "Register Device Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceToken\": \"device_token_here\",\n  \"platform\": \"ios\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Get Device Tokens",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Remove Device Token",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceToken\": \"device_token_here\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Get Notification Settings",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/settings", "host": ["{{base_url}}"], "path": ["api", "notifications", "settings"]}
+          }
+        },
+        {
+          "name": "Update Notification Settings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gameNotifications\": true,\n  \"marketingNotifications\": false\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/settings", "host": ["{{base_url}}"], "path": ["api", "notifications", "settings"]}
+          }
+        },
+        {
+          "name": "Test FCM Notification",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Notification\",\n  \"body\": \"This is a test notification\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/test", "host": ["{{base_url}}"], "path": ["api", "notifications", "test"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 Store & Purchases",
+      "item": [
+        {
+          "name": "Get Characters",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/store/characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "store", "characters"]}
+          }
+        },
+        {
+          "name": "Get Word Decks",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/store/word-decks", "host": ["{{base_url}}"], "path": ["api", "mobile", "store", "word-decks"]}
+          }
+        },
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": \"character_pack_1\",\n  \"itemType\": \"CHARACTER_PACK\",\n  \"amount\": 999\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/create-payment-intent", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "create-payment-intent"]}
+          }
+        },
+        {
+          "name": "Confirm Purchase",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"paymentIntentId\": \"pi_payment_intent_id\",\n  \"itemId\": \"character_pack_1\",\n  \"itemType\": \"CHARACTER_PACK\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/confirm", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "confirm"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "📤 Upload & Files",
+      "item": [
+        {
+          "name": "Upload Profile Image",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {"raw": "{{base_url}}/api/upload/profile-image", "host": ["{{base_url}}"], "path": ["api", "upload", "profile-image"]}
+          }
+        },
+        {
+          "name": "Mobile Upload Profile Image",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/upload/profile-image", "host": ["{{base_url}}"], "path": ["api", "mobile", "upload", "profile-image"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Utility & Debug",
+      "item": [
+        {
+          "name": "Pusher Authentication",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"socket_id\": \"socket_id_here\",\n  \"channel_name\": \"private-room-123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/pusher/auth", "host": ["{{base_url}}"], "path": ["api", "pusher", "auth"]}
+          }
+        },
+        {
+          "name": "Test Pusher",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/test-pusher", "host": ["{{base_url}}"], "path": ["api", "test-pusher"]}
+          }
+        },
+        {
+          "name": "Debug Database",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/debug/database", "host": ["{{base_url}}"], "path": ["api", "debug", "database"]}
+          }
+        },
+        {
+          "name": "Debug Room Players",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/debug/room-players?roomCode={{room_code}}", "host": ["{{base_url}}"], "path": ["api", "debug", "room-players"]}
+          }
+        },
+        {
+          "name": "Stripe Webhook",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_123\"\n    }\n  }\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/webhooks/stripe", "host": ["{{base_url}}"], "path": ["api", "webhooks", "stripe"]}
+          }
+        }
+      ]
+    }
+  ]
+}
