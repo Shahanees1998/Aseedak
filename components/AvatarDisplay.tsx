@@ -11,7 +11,7 @@ interface AvatarDisplayProps {
 export default function AvatarDisplay({ avatarType, size = 'normal', className = '' }: AvatarDisplayProps) {
   const getImagePath = (avatar: string) => {
     const imageNumber = avatar.replace('IMAGE', '')
-    return `/images/avatar${imageNumber}.png`
+    return `/images/avatars/${imageNumber}.png`
   }
 
   // If no avatar is assigned, show a default icon
