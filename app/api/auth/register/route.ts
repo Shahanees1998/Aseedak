@@ -14,7 +14,8 @@ const registerSchema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters')
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  phoneNumber: z.string().optional()
 })
 
 export async function POST(request: NextRequest) {
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
         username: validatedData.username,
         email: validatedData.email,
         password: hashedPassword,
+        phoneNumber: validatedData.phoneNumber || null,
         avatar: null,
         role: 'USER',
         emailVerified: false,
@@ -68,6 +70,7 @@ export async function POST(request: NextRequest) {
         lastName: true,
         username: true,
         email: true,
+        phoneNumber: true,
         avatar: true,
         role: true,
         emailVerified: true,

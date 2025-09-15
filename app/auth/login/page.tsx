@@ -32,7 +32,12 @@ export default function LoginPage() {
   }
 
   if (user) {
-    router.push('/dashboard')
+    // Redirect based on user role instead of always going to dashboard
+    if (user.role === 'ADMIN') {
+      router.push('/admin')
+    } else {
+      router.push('/create-room')
+    }
     return null
   }
 
@@ -43,7 +48,7 @@ export default function LoginPage() {
 
     try {
       await login(formData.email, formData.password)
-      // Login successful, redirect to dashboard
+      // Login successful, redirect to dashboard which will handle role-based routing
       router.push('/dashboard')
     } catch (error) {
       console.error('Login error:', error)
@@ -133,16 +138,16 @@ export default function LoginPage() {
             </span>
 
             <div style={{ position: "relative" }} className="w-full mb-4">
-              <InputText
+              <Password
                 id="password"
-                type="password"
-                className="w-full md:w-25rem"
+                className="w-full"
                 placeholder="Password"
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
                 disabled={loading}
                 onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
-                style={{ paddingRight: "2.5rem" }}
+                toggleMask
+                inputClassName="w-full md:w-25rem"
                 required
               />
             </div>

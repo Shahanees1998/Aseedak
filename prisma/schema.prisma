@@ -54,6 +54,7 @@ model User {
   firstName String
   lastName  String
   username  String     @unique
+  phoneNumber String?  // Optional phone number
   role      UserRole   @default(USER)
   avatar    AvatarType?
   isActive  Boolean    @default(true)
@@ -174,8 +175,6 @@ model Word {
   word1      String
   word2      String
   word3      String
-  category   String    // e.g., "animals", "food", "objects"
-  difficulty String    // "easy", "medium", "hard"
   isActive   Boolean   @default(true)
   deckId     String?   @db.ObjectId
   deck       WordDeck? @relation(fields: [deckId], references: [id])

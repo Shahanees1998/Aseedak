@@ -20,21 +20,6 @@ import { useToast } from '@/store/toast.context'
 import Link from 'next/link'
 import Image from 'next/image'
 
-const difficultyOptions = [
-  { label: 'Easy', value: 'easy' },
-  { label: 'Medium', value: 'medium' },
-  { label: 'Hard', value: 'hard' }
-]
-
-const categoryOptions = [
-  { label: 'All Categories', value: 'all' },
-  { label: 'Animals', value: 'animals' },
-  { label: 'Food', value: 'food' },
-  { label: 'Objects', value: 'objects' },
-  { label: 'Places', value: 'places' },
-  { label: 'Actions', value: 'actions' },
-  { label: 'Colors', value: 'colors' }
-]
 
 interface User {
   id: string
@@ -53,8 +38,6 @@ export default function CreateRoomPage() {
   const [formData, setFormData] = useState({
     name: '',
     maxPlayers: 8,
-    difficulty: 'easy',
-    category: 'all',
     timeLimit: 60,
     privateRoom: false
   })
@@ -91,13 +74,21 @@ export default function CreateRoomPage() {
   const fetchUsers = async () => {
     setLoadingUsers(true)
     try {
-      const response = await fetch('/api/admin/users')
-      if (response.ok) {
-        const data = await response.json()
-        setUsers(data.users || [])
-        setFilteredUsers(data.users || [])
+      // Only fetch users if the current user is an admin
+      if (user?.role === 'ADMIN') {
+        const response = await fetch('/api/admin/users')
+        if (response.ok) {
+          const data = await response.json()
+          setUsers(data.users || [])
+          setFilteredUsers(data.users || [])
+        } else {
+          showToast('error', 'Error', 'Failed to fetch users')
+        }
       } else {
-        showToast('error', 'Error', 'Failed to fetch users')
+        // For non-admin users, show empty list or fetch public user list
+        setUsers([])
+        setFilteredUsers([])
+        showToast('info', 'Info', 'User selection is only available for admin users')
       }
     } catch (error) {
       showToast('error', 'Error', 'Failed to fetch users')
@@ -291,26 +282,6 @@ export default function CreateRoomPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-white mb-2">Difficulty</label>
-                  <Dropdown
-                    value={formData.difficulty}
-                    onChange={(e) => handleInputChange('difficulty', e.value)}
-                    options={difficultyOptions}
-                    className="w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-white mb-2">Category</label>
-                  <Dropdown
-                    value={formData.category}
-                    onChange={(e) => handleInputChange('category', e.value)}
-                    options={categoryOptions}
-                    className="w-full"
-                  />
-                </div>
-              </div>
 
               <div className="flex items-center">
                 <Checkbox

@@ -12,8 +12,6 @@ const prisma = new PrismaClient()
 const createRoomSchema = z.object({
   name: z.string().min(1, 'Room name is required'),
   maxPlayers: z.number().min(2).max(8),
-  difficulty: z.enum(['easy', 'medium', 'hard']),
-  category: z.string(),
   timeLimit: z.number().min(30).max(300),
   privateRoom: z.boolean().default(false),
   invitedUsers: z.array(z.string()).optional().default([])
@@ -30,18 +28,11 @@ export async function POST(request: NextRequest) {
       // Generate unique room code
       const roomCode = crypto.randomBytes(4).toString('hex').toUpperCase()
 
-      // Get words based on difficulty and category
-      const wordFilter: any = {
-        difficulty: validatedData.difficulty,
-        isActive: true
-      }
-
-      if (validatedData.category !== 'all') {
-        wordFilter.category = validatedData.category
-      }
-
+      // Get all active words
       const words = await prisma.word.findMany({
-        where: wordFilter,
+        where: {
+          isActive: true
+        },
         take: 50 // Get more words than needed for variety
       })
 
@@ -158,7 +149,6 @@ export async function POST(request: NextRequest) {
                 validatedData.name,
                 roomCode,
                 user.firstName || 'Game Creator',
-                validatedData.difficulty,
                 validatedData.maxPlayers
               )
               console.log(`✅ Invitation email sent to ${player.user.email}`)

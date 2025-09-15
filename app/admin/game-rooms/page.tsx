@@ -137,8 +137,8 @@ export default function GameRoomsPage() {
       <div className="col-12">
         <div className="grid">
           <div className="col-12 md:col-4">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Total Rooms</span>
                   <div className="text-900 font-medium text-xl">{gameRooms.length}</div>
@@ -151,8 +151,8 @@ export default function GameRoomsPage() {
           </div>
 
           <div className="col-12 md:col-4">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Active Games</span>
                   <div className="text-900 font-medium text-xl">{activeRooms.length}</div>
@@ -165,8 +165,8 @@ export default function GameRoomsPage() {
           </div>
 
           <div className="col-12 md:col-4">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Waiting Rooms</span>
                   <div className="text-900 font-medium text-xl">{waitingRooms.length}</div>

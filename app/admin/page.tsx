@@ -24,8 +24,6 @@ interface Word {
   word1: string
   word2: string
   word3: string
-  category: string
-  difficulty: string
   isActive: boolean
   createdAt: string
 }
@@ -104,8 +102,6 @@ export default function AdminDashboard() {
     word1: '',
     word2: '',
     word3: '',
-    category: '',
-    difficulty: 'easy',
     isActive: true
   })
   const [userForm, setUserForm] = useState({
@@ -247,7 +243,7 @@ export default function AdminDashboard() {
         showToast('success', 'Success', 'Word saved successfully!')
         setWordDialogVisible(false)
         setEditingWord(null)
-        setWordForm({ word1: '', word2: '', word3: '', category: '', difficulty: 'easy', isActive: true })
+        setWordForm({ word1: '', word2: '', word3: '', isActive: true })
         fetchData()
       } else {
         const error = await response.json()
@@ -378,8 +374,6 @@ export default function AdminDashboard() {
       word1: word.word1,
       word2: word.word2,
       word3: word.word3,
-      category: word.category,
-      difficulty: word.difficulty,
       isActive: word.isActive
     })
     setWordDialogVisible(true)
@@ -676,8 +670,6 @@ export default function AdminDashboard() {
                   <i className="pi pi-users text-blue-500 text-xl"></i>
                 </div>
               </div>
-              <span className="text-green-500 font-medium">+20% </span>
-              <span className="text-500">since last month</span>
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
@@ -691,8 +683,6 @@ export default function AdminDashboard() {
                   <i className="pi pi-gamepad text-orange-500 text-xl"></i>
                 </div>
               </div>
-              <span className="text-green-500 font-medium">+15% </span>
-              <span className="text-500">since last month</span>
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
@@ -706,8 +696,6 @@ export default function AdminDashboard() {
                   <i className="pi pi-dollar text-cyan-500 text-xl"></i>
                 </div>
               </div>
-              <span className="text-green-500 font-medium">+25% </span>
-              <span className="text-500">since last month</span>
             </div>
           </div>
           <div className="col-12 md:col-6 lg:col-3">
@@ -721,8 +709,6 @@ export default function AdminDashboard() {
                   <i className="pi pi-user text-purple-500 text-xl"></i>
                 </div>
               </div>
-              <span className="text-green-500 font-medium">+12% </span>
-              <span className="text-500">since last month</span>
             </div>
           </div>
         </div>
@@ -785,7 +771,7 @@ export default function AdminDashboard() {
                   icon="pi pi-plus"
                   onClick={() => {
                     setEditingWord(null)
-                    setWordForm({ word1: '', word2: '', word3: '', category: '', difficulty: 'easy', isActive: true })
+                    setWordForm({ word1: '', word2: '', word3: '', isActive: true })
                     setWordDialogVisible(true)
                   }}
                   className="p-button-primary"
@@ -803,8 +789,6 @@ export default function AdminDashboard() {
                 <Column field="word1" header="Word 1" sortable />
                 <Column field="word2" header="Word 2" sortable />
                 <Column field="word3" header="Word 3" sortable />
-                <Column field="category" header="Category" sortable />
-                <Column field="difficulty" header="Difficulty" sortable />
                 <Column 
                   field="isActive" 
                   header="Status" 
@@ -918,37 +902,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
               
-              <div className="col-12">
-                <div className="grid">
-                  <div className="col-12 md:col-6">
-                    <div className="field">
-                      <label htmlFor="category" className="block text-900 font-medium mb-2">Category</label>
-                      <Dropdown
-                        id="category"
-                        value={wordForm.category}
-                        onChange={(e) => setWordForm(prev => ({ ...prev, category: e.value }))}
-                        options={categoryOptions}
-                        placeholder="Select category"
-                        className="w-full"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="col-12 md:col-6">
-                    <div className="field">
-                      <label htmlFor="difficulty" className="block text-900 font-medium mb-2">Difficulty</label>
-                      <Dropdown
-                        id="difficulty"
-                        value={wordForm.difficulty}
-                        onChange={(e) => setWordForm(prev => ({ ...prev, difficulty: e.value }))}
-                        options={difficultyOptions}
-                        className="w-full"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
 
               <div className="col-12">
                 <div className="flex justify-content-end gap-2 mt-3">

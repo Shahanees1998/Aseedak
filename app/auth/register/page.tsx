@@ -19,6 +19,7 @@ export default function RegisterPage() {
     lastName: '',
     username: '',
     email: '',
+    phoneNumber: '',
     password: '',
     confirmPassword: '',
     agreeToTerms: false
@@ -55,6 +56,7 @@ export default function RegisterPage() {
           lastName: formData.lastName,
           username: formData.username,
           email: formData.email,
+          phoneNumber: formData.phoneNumber,
           password: formData.password
         })
       })
@@ -147,6 +149,16 @@ export default function RegisterPage() {
               />
             </div>
 
+            <div>
+              <label className="block text-white mb-2">Phone Number (Optional)</label>
+              <InputText
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                placeholder="Enter your phone number"
+                className="w-full"
+              />
+            </div>
 
             <div>
               <label className="block text-white mb-2">Password</label>

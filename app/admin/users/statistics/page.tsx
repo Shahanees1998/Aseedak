@@ -171,8 +171,8 @@ export default function UserStatistics() {
       <div className="col-12">
         <div className="grid">
           <div className="col-12 md:col-3">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Total Users</span>
                   <div className="text-900 font-medium text-xl">{stats.totalUsers}</div>
@@ -185,8 +185,8 @@ export default function UserStatistics() {
           </div>
 
           <div className="col-12 md:col-3">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Active Users</span>
                   <div className="text-900 font-medium text-xl">{stats.activeUsers}</div>
@@ -199,8 +199,8 @@ export default function UserStatistics() {
           </div>
 
           <div className="col-12 md:col-3">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Total Games</span>
                   <div className="text-900 font-medium text-xl">{stats.totalGames}</div>
@@ -213,8 +213,8 @@ export default function UserStatistics() {
           </div>
 
           <div className="col-12 md:col-3">
-            <Card className="text-center">
-              <div className="flex align-items-center justify-content-center">
+            <Card>
+              <div className="flex justify-content-between align-items-center">
                 <div>
                   <span className="block text-500 font-medium mb-3">Avg Win Rate</span>
                   <div className="text-900 font-medium text-xl">{stats.averageWinRate.toFixed(1)}%</div>

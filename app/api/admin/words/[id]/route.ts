@@ -9,8 +9,6 @@ const wordUpdateSchema = z.object({
   word1: z.string().min(1, 'Word 1 is required').optional(),
   word2: z.string().min(1, 'Word 2 is required').optional(),
   word3: z.string().min(1, 'Word 3 is required').optional(),
-  category: z.string().min(1, 'Category is required').optional(),
-  difficulty: z.enum(['easy', 'medium', 'hard']).optional(),
   isActive: z.boolean().optional()
 })
 

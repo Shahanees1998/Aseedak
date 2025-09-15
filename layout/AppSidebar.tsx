@@ -17,8 +17,8 @@ const AppSidebar = () => {
     return (
         <>
             <div className="sidebar-header">
-                <Link style={{display:'flex', alignItems: 'center' }} href="/admin" className="app-logo flex items-center justify-content-center gap-3">
-                    <img src="/images/image1.png" alt="Aseedak Logo"  style={{height:'100px'}}/>
+                <Link style={{display:'flex', alignItems: 'center' }} href="/admin" className="bg-red flex items-center justify-content-center gap-3">
+                    <img src="/images/logo.svg" alt="Aseedak Logo"  style={{height:'100px', backgroundColor:'white'}}/>
                     <div style={{fontSize:'2rem'}}>|</div>
                     <div style={{ fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic' }}>Admin</div>
                 </Link>

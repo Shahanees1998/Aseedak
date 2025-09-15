@@ -15,7 +15,8 @@ export default function DashboardPage() {
       // If not authenticated, redirect to login
       router.push('/auth/login')
     } else {
-      // Redirect based on user role
+      // Only redirect if user landed on dashboard directly
+      // Don't redirect if they're trying to access other pages
       if (user.role === 'ADMIN') {
         router.push('/admin')
       } else {
