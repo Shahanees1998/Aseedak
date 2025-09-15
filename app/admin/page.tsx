@@ -430,7 +430,7 @@ export default function AdminDashboard() {
   const avatarBodyTemplate = (rowData: User) => {
     return (
       <div className="flex items-center">
-       <Image src={`/images/avatars/${rowData.avatar}.png`} alt={rowData.avatar} width={32} height={32} />
+       <Image src={`/images/${rowData.avatar}.png`} alt={rowData.avatar} width={32} height={32} />
       </div>
     )
   }

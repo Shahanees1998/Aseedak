@@ -164,7 +164,7 @@ export default function CreateRoomPage() {
     return (
       <div className="flex align-items-center">
         <Image 
-          src={`/images/avatars/${rowData.avatar}.png`} 
+          src={`/images/${rowData.avatar}.png`} 
           alt={rowData.avatar} 
           width={32} 
           height={32}
@@ -356,7 +356,7 @@ export default function CreateRoomPage() {
                         {selectedUsers.map(selectedUser => (
                           <div key={selectedUser.id} className="flex align-items-center bg-white/20 p-2 rounded-lg">
                             <Image 
-                              src={`/images/avatars/${selectedUser.avatar}.png`} 
+                              src={`/images/${selectedUser.avatar}.png`} 
                               alt={selectedUser.avatar} 
                               width={24} 
                               height={24}
