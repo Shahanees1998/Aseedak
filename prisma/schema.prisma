@@ -45,6 +45,12 @@ enum AvatarType {
   IMAGE8
   IMAGE9
   IMAGE10
+  IMAGE11
+  IMAGE12
+  IMAGE13
+  IMAGE14
+  IMAGE15
+  IMAGE16
 }
 
 model User {

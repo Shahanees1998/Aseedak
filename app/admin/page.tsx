@@ -165,7 +165,13 @@ export default function AdminDashboard() {
     { label: 'Avatar 7', value: 'IMAGE7' },
     { label: 'Avatar 8', value: 'IMAGE8' },
     { label: 'Avatar 9', value: 'IMAGE9' },
-    { label: 'Avatar 10', value: 'IMAGE10' }
+    { label: 'Avatar 10', value: 'IMAGE10' },
+    { label: 'Avatar 11', value: 'IMAGE11' },
+    { label: 'Avatar 12', value: 'IMAGE12' },
+    { label: 'Avatar 13', value: 'IMAGE13' },
+    { label: 'Avatar 14', value: 'IMAGE14' },
+    { label: 'Avatar 15', value: 'IMAGE15' },
+    { label: 'Avatar 16', value: 'IMAGE16' },
   ]
 
   useEffect(() => {
