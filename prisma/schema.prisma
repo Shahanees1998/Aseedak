@@ -148,8 +148,6 @@ model WordDeck {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   name        String   @unique
   description String
-  category    String
-  difficulty  String
   price       Int      @default(0) // Price in cents
   isActive    Boolean  @default(true)
   words       Word[]

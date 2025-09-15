@@ -8,8 +8,6 @@ const prisma = new PrismaClient()
 const wordDeckSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   description: z.string().min(1, 'Description is required'),
-  category: z.string().min(1, 'Category is required'),
-  difficulty: z.enum(['easy', 'medium', 'hard']),
   price: z.number().min(0, 'Price must be non-negative'),
   isActive: z.boolean().default(true)
 })
@@ -24,9 +22,7 @@ export async function GET(request: NextRequest) {
               id: true,
               word1: true,
               word2: true,
-              word3: true,
-              category: true,
-              difficulty: true
+              word3: true
             }
           }
         },

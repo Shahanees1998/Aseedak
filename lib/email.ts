@@ -188,7 +188,6 @@ export async function sendGameRoomInvitationEmail(
   roomName: string, 
   roomCode: string, 
   creatorName: string,
-  difficulty: string,
   maxPlayers: number
 ) {
   const gameUrl = `${process.env.NEXTAUTH_URL}/game/${roomCode}`
@@ -232,10 +231,6 @@ export async function sendGameRoomInvitationEmail(
               <div style="text-align: center;">
                 <strong style="color: #667eea;">Room Code</strong><br>
                 <span style="color: #333; font-family: monospace; font-size: 18px; font-weight: bold;">${roomCode}</span>
-              </div>
-              <div style="text-align: center;">
-                <strong style="color: #667eea;">Difficulty</strong><br>
-                <span style="color: #666; text-transform: capitalize;">${difficulty}</span>
               </div>
               <div style="text-align: center;">
                 <strong style="color: #667eea;">Max Players</strong><br>

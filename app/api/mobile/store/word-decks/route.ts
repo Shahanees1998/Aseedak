@@ -37,9 +37,7 @@ export async function GET(request: NextRequest) {
             id: true,
             word1: true,
             word2: true,
-            word3: true,
-            category: true,
-            difficulty: true
+            word3: true
           }
         }
       },
