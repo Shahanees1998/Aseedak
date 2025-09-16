@@ -145,7 +145,7 @@ const AppProfileSidebar = () => {
                             </div>
                         </button>
                     </li>
-                    <li>
+                    {/* <li>
                         <button 
                             onClick={handleSettingsClick}
                             className="cursor-pointer flex surface-border mb-3 p-3 align-items-center border-1 surface-border border-round hover:surface-hover transition-colors transition-duration-150 w-full text-left"
@@ -162,7 +162,7 @@ const AppProfileSidebar = () => {
                                 </p>
                             </div>
                         </button>
-                    </li>
+                    </li> */}
                     <li>
                         <button 
                             onClick={handleSignOut}

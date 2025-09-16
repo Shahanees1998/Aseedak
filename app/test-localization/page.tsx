@@ -72,7 +72,7 @@ const TestLocalization: React.FC = () => {
             </Card>
           </div>
 
-          <div className="mt-6 p-4 bg-blue-50 rounded">
+          <div className="mt-6 p-4 rounded" style={{ backgroundColor: '#CB112210' }}>
             <h3 className="text-lg font-semibold mb-2">Instructions:</h3>
             <ol className="list-decimal list-inside space-y-1">
               <li>Use the language switcher in the top-right to change languages</li>

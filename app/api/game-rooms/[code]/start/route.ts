@@ -65,14 +65,28 @@ export async function POST(
       )
     }
 
+    // Get active characters for random assignment
+    const characters = await prisma.character.findMany({
+      where: { isActive: true }
+    })
+
+    if (characters.length === 0) {
+      return NextResponse.json(
+        { message: 'No active characters available for the game' },
+        { status: 400 }
+      )
+    }
+
     // Shuffle only joined players and assign targets
     const shuffledPlayers = [...joinedPlayers].sort(() => 0.5 - Math.random())
+    const shuffledCharacters = [...characters].sort(() => 0.5 - Math.random())
     
-    // Update players with their own word deck and targets
+    // Update players with their own word deck, targets, and random characters
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const player = shuffledPlayers[i]
       const word = words[i] // Each player gets their own word deck
       const targetPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length]
+      const assignedCharacter = shuffledCharacters[i % shuffledCharacters.length] // Cycle through characters
 
       await prisma.gamePlayer.update({
         where: { id: player.id },
@@ -81,7 +95,8 @@ export async function POST(
           word2: word.word2, // Player's own words to speak  
           word3: word.word3, // Player's own words to speak
           targetId: targetPlayer.id, // Who they need to speak to
-          position: i + 1
+          position: i + 1,
+          characterId: assignedCharacter.id // Assign random character
         }
       })
     }
@@ -104,6 +119,13 @@ export async function POST(
                 avatar: true
               }
             },
+            character: {
+              select: {
+                id: true,
+                name: true,
+                imageUrl: true
+              }
+            },
             target: {
               include: {
                 user: {
@@ -111,6 +133,13 @@ export async function POST(
                     id: true,
                     username: true,
                     avatar: true
+                  }
+                },
+                character: {
+                  select: {
+                    id: true,
+                    name: true,
+                    imageUrl: true
                   }
                 }
               }

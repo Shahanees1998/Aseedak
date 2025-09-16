@@ -92,7 +92,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                             className="language-switcher"
                         />
                     </li>
-                    <li className="ml-3">
+                    {/* <li className="ml-3">
                         <Button
                             type="button"
                             icon="pi pi-cog"
@@ -102,7 +102,7 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
                             className="flex-shrink-0"
                             onClick={onConfigButtonClick}
                         ></Button>
-                    </li>
+                    </li> */}
                     <li className="ml-3">
                         <button
                             type="button"

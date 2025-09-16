@@ -674,8 +674,8 @@ export default function AdminDashboard() {
                   <span className="block text-500 font-medium mb-3">{t('admin.totalUsers')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalUsers}</div>
                 </div>
-                <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-                  <i className="pi pi-users text-blue-500 text-xl"></i>
+                <div className="flex align-items-center justify-content-center border-round" style={{ width: '2.5rem', height: '2.5rem', backgroundColor: '#CB112220' }}>
+                  <i className="pi pi-users text-xl" style={{ color: '#CB1122' }}></i>
                 </div>
               </div>
             </div>
@@ -721,46 +721,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <div className="col-12">
-        <div className="card">
-          <h5>{t('admin.quickActions')}</h5>
-          <p className="text-color-secondary">{t('admin.quickActionsSubtitle')}</p>
-          <div className="flex gap-3 mt-4">
-            <Button
-              label={t('game.createRoom.createRoom')}
-              icon="pi pi-plus"
-              onClick={() => window.open('/create-room', '_blank')}
-              className="p-button-primary"
-              tooltip="Create a new game room to play with other users"
-              tooltipOptions={{ position: 'top' }}
-            />
-            <Button
-              label={t('game.joinRoom.joinRoom')}
-              icon="pi pi-sign-in"
-              onClick={() => {
-                const roomCode = prompt('Enter room code to join:')
-                if (roomCode) {
-                  window.open(`/game/${roomCode}`, '_blank')
-                }
-              }}
-              className="p-button-outlined p-button-primary"
-              tooltip="Join an existing game room using room code"
-              tooltipOptions={{ position: 'top' }}
-            />
-            <Button
-              label={t('admin.viewAllGames')}
-              icon="pi pi-list"
-              onClick={() => window.open('/admin/games', '_blank')}
-              className="p-button-outlined p-button-secondary"
-              tooltip="View all active game rooms and their status"
-              tooltipOptions={{ position: 'top' }}
-            />
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="col-12">
         <div className="card">
@@ -836,10 +796,7 @@ export default function AdminDashboard() {
                 emptyMessage={t('admin.noUsers')}
               >
                 <Column field="username" header={t('admin.username')} sortable />
-                <Column field="firstName" header={t('admin.firstName')} sortable />
-                <Column field="lastName" header={t('admin.lastName')} sortable />
                 <Column field="email" header={t('admin.email')} sortable />
-                <Column header={t('admin.avatar')} body={avatarBodyTemplate} />
                 <Column field="gamesPlayed" header={t('admin.gamesPlayed')} sortable />
                 <Column field="gamesWon" header={t('admin.gamesWon')} sortable />
                 <Column field="totalKills" header={t('admin.totalKills')} sortable />
@@ -903,8 +860,8 @@ export default function AdminDashboard() {
               </div>
               
               <div className="col-12">
-                <div className="p-3 border-round bg-blue-50 border-1 border-blue-200 mb-3">
-                  <p className="text-blue-800 text-sm m-0">
+                <div className="p-3 border-round mb-3" style={{ backgroundColor: '#CB112210', border: '1px solid #CB112240' }}>
+                  <p className="text-sm m-0" style={{ color: '#CB1122' }}>
                     <strong>Note:</strong> All three words are mandatory. Each word set will be randomly assigned to players during games.
                   </p>
                 </div>

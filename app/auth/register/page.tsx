@@ -194,7 +194,7 @@ export default function RegisterPage() {
               />
               <label htmlFor="agreeToTerms" className="ml-2 text-white text-sm">
                 I agree to the{' '}
-                <Link href="/terms" className="text-blue-400 hover:text-blue-300">
+                <Link href="/terms" className="hover:opacity-80" style={{ color: '#CB1122' }}>
                   Terms and Conditions
                 </Link>
               </label>
@@ -214,7 +214,8 @@ export default function RegisterPage() {
               Already have an account?{' '}
               <Link 
                 href="/auth/login" 
-                className="text-blue-400 hover:text-blue-300 font-medium"
+                className="font-medium hover:opacity-80"
+                style={{ color: '#CB1122' }}
               >
                 Sign in
               </Link>

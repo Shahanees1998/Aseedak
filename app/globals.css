@@ -29,7 +29,7 @@ body {
 
 /* Custom styles for the SaaS platform */
 .hotel-branding {
-  background: linear-gradient(135deg, var(--primary-color, #3B82F6), var(--secondary-color, #1E40AF));
+  background: linear-gradient(135deg, var(--primary-color, #CB1122), var(--secondary-color, #CB1122));
 }
 
 .feedback-form {
@@ -89,7 +89,22 @@ body {
 .stat-number {
   font-size: 3rem;
   font-weight: bold;
-  color: var(--primary-color, #3B82F6);
+  color: var(--primary-color, #CB1122);
+}
+
+
+.layout-sidebar .layout-menu .layout-root-menuitem > .layout-menuitem-root-text {
+color: #CB1122 !important;
+}
+
+/* .p-button {
+  background-color: #CB1122 !important;
+  background: #CB1122 !important;
+  border-color: #CB1122 !important;
+} */
+
+.p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+  border-color: #CB1122 !important;
 }
 
 .stat-label {

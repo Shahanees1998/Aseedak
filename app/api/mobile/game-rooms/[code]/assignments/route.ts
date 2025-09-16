@@ -33,6 +33,14 @@ export async function GET(
                 avatar: true
               }
             },
+            character: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                imageUrl: true
+              }
+            },
             target: {
               include: {
                 user: {
@@ -84,11 +92,12 @@ export async function GET(
           word2: player.word2,
           word3: player.word3
         },
-        character: {
-          // TODO: Add character assignment when implemented
-          name: 'Default Character',
-          description: 'A mysterious character'
-        },
+        character: player.character ? {
+          id: player.character.id,
+          name: player.character.name,
+          description: player.character.description,
+          imageUrl: player.character.imageUrl
+        } : null,
         gameStatus: room.status,
         currentRound: room.currentRound
       }

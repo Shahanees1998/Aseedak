@@ -2,8 +2,8 @@ import { v2 as cloudinary } from 'cloudinary'
 
 // Configure Cloudinary
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
@@ -80,6 +80,83 @@ export async function deleteProfileImage(publicId: string) {
     }
   } catch (error) {
     console.error('Cloudinary delete error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Delete failed'
+    }
+  }
+}
+
+// Helper function to upload character image
+export async function uploadCharacterImage(
+  file: File | Buffer,
+  options: {
+    folder?: string
+    transformation?: any
+  } = {}
+) {
+  try {
+    const uploadOptions = {
+      folder: options.folder || 'aseedak/characters',
+      public_id: `character_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      overwrite: false,
+      resource_type: 'image' as const,
+      transformation: [
+        {
+          width: 200,
+          height: 200,
+          crop: 'fill',
+          gravity: 'auto',
+          quality: 'auto',
+          fetch_format: 'auto'
+        },
+        ...(options.transformation || [])
+      ]
+    }
+
+    // Convert file to buffer if it's a File object
+    let fileBuffer: Buffer
+    if (file instanceof File) {
+      const arrayBuffer = await file.arrayBuffer()
+      fileBuffer = Buffer.from(arrayBuffer)
+    } else {
+      fileBuffer = file
+    }
+
+    // Upload as a stream
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.upload_stream(uploadOptions, (error, result) => {
+        if (error) reject(error)
+        else resolve(result)
+      }).end(fileBuffer)
+    }) as any
+    
+    return {
+      success: true,
+      url: result.secure_url,
+      publicId: result.public_id,
+      width: result.width,
+      height: result.height
+    }
+  } catch (error) {
+    console.error('Cloudinary character upload error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Upload failed'
+    }
+  }
+}
+
+// Helper function to delete character image
+export async function deleteCharacterImage(publicId: string) {
+  try {
+    const result = await cloudinary.uploader.destroy(publicId)
+    return {
+      success: result.result === 'ok',
+      result: result.result
+    }
+  } catch (error) {
+    console.error('Cloudinary character delete error:', error)
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Delete failed'

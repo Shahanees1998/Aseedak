@@ -31,6 +31,16 @@ const AppMenu = () => {
                     icon: "pi pi-fw pi-users",
                     to: "/admin/game-rooms",
                 },
+                {
+                    label: t('navigation.wordsBank'),
+                    icon: "pi pi-fw pi-book",
+                    to: "/admin/store",
+                },
+                {
+                    label: t('navigation.charactersManagement'),
+                    icon: "pi pi-fw pi-image",
+                    to: "/admin/characters",
+                },
             ],
         },
         {

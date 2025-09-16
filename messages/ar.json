@@ -14,7 +14,9 @@
     "close": "إغلاق",
     "submit": "إرسال",
     "yes": "نعم",
-    "no": "لا"
+    "no": "لا",
+    "create": "إنشاء",
+    "update": "تحديث"
   },
   "auth": {
     "login": {
@@ -142,7 +144,9 @@
     "allGames": "جميع الألعاب",
     "gameRooms": "غرف الألعاب",
     "allUsers": "جميع المستخدمين",
-    "userStatistics": "إحصائيات المستخدمين"
+    "userStatistics": "إحصائيات المستخدمين",
+    "wordsBank": "بنك الكلمات",
+    "charactersManagement": "إدارة الشخصيات"
   },
   "landing": {
     "title": "أسيدك",
@@ -238,7 +242,27 @@
     "noUsersFound": "لم يتم العثور على مستخدمين",
     "active": "نشط",
     "inactive": "غير نشط",
-    "winRate": "معدل الفوز"
+    "winRate": "معدل الفوز",
+    "wordsBankManagement": "إدارة بنك الكلمات",
+    "wordsBankDescription": "إدارة بنوك الكلمات للعبة",
+    "wordBanks": "بنوك الكلمات",
+    "addNewBank": "إضافة بنك جديد",
+    "noWordBanks": "لم يتم العثور على بنوك كلمات",
+    "name": "الاسم",
+    "description": "الوصف",
+    "price": "السعر",
+    "words": "الكلمات",
+    "editBank": "تعديل البنك",
+    "deleteBank": "حذف البنك",
+    "editWordBank": "تعديل بنك الكلمات",
+    "addWordBank": "إضافة بنك كلمات",
+    "priceCents": "السعر (بالسنتات)",
+    "wordBankUpdated": "تم تحديث بنك الكلمات بنجاح!",
+    "wordBankCreated": "تم إنشاء بنك الكلمات بنجاح!",
+    "wordBankDeleted": "تم حذف بنك الكلمات بنجاح!",
+    "errorSavingWordBank": "خطأ في حفظ بنك الكلمات",
+    "errorDeletingWordBank": "خطأ في حذف بنك الكلمات",
+    "confirmDeleteWordBank": "هل أنت متأكد من أنك تريد حذف بنك الكلمات هذا؟"
   },
   "layout": {
     "themes": "السمات",

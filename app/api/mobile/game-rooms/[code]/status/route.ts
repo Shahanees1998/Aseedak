@@ -43,6 +43,14 @@ export async function GET(
                 avatar: true
               }
             },
+            character: {
+              select: {
+                id: true,
+                name: true,
+                description: true,
+                imageUrl: true
+              }
+            },
             target: {
               include: {
                 user: {
@@ -107,6 +115,7 @@ export async function GET(
           kills: p.kills,
           eliminatedAt: p.eliminatedAt,
           user: p.user,
+          character: p.character,
           // Only show target info to the player themselves
           target: p.id === currentPlayer.id ? p.target : null
         }))
@@ -119,6 +128,7 @@ export async function GET(
         word1: currentPlayer.word1,
         word2: currentPlayer.word2,
         word3: currentPlayer.word3,
+        character: currentPlayer.character,
         target: currentPlayer.target ? {
           id: currentPlayer.target.id,
           user: currentPlayer.target.user

@@ -14,7 +14,9 @@
     "close": "Close",
     "submit": "Submit",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "create": "Create",
+    "update": "Update"
   },
   "auth": {
     "login": {
@@ -142,7 +144,9 @@
     "allGames": "All Games",
     "gameRooms": "Game Rooms",
     "allUsers": "All Users",
-    "userStatistics": "User Statistics"
+    "userStatistics": "User Statistics",
+    "wordsBank": "Words Bank",
+    "charactersManagement": "Characters Management"
   },
   "landing": {
     "title": "Aseedak",
@@ -238,7 +242,27 @@
     "noUsersFound": "No users found",
     "active": "Active",
     "inactive": "Inactive",
-    "winRate": "Win Rate"
+    "winRate": "Win Rate",
+    "wordsBankManagement": "Words Bank Management",
+    "wordsBankDescription": "Manage word banks for the game",
+    "wordBanks": "Word Banks",
+    "addNewBank": "Add New Bank",
+    "noWordBanks": "No word banks found",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "words": "Words",
+    "editBank": "Edit Bank",
+    "deleteBank": "Delete Bank",
+    "editWordBank": "Edit Word Bank",
+    "addWordBank": "Add Word Bank",
+    "priceCents": "Price (cents)",
+    "wordBankUpdated": "Word bank updated successfully!",
+    "wordBankCreated": "Word bank created successfully!",
+    "wordBankDeleted": "Word bank deleted successfully!",
+    "errorSavingWordBank": "Error saving word bank",
+    "errorDeletingWordBank": "Error deleting word bank",
+    "confirmDeleteWordBank": "Are you sure you want to delete this word bank?"
   },
   "layout": {
     "themes": "Themes",

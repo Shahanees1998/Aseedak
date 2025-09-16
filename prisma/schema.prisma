@@ -118,10 +118,14 @@ model Character {
   name        String   @unique
   description String
   imageUrl    String
-  packId      String   @db.ObjectId
-  pack        CharacterPack @relation(fields: [packId], references: [id])
+  isActive    Boolean  @default(true)
+  packId      String?  @db.ObjectId
+  pack        CharacterPack? @relation(fields: [packId], references: [id])
   isUnlocked  Boolean  @default(false)
   price       Int      @default(0) // Price in cents
+
+  // Relations
+  gamePlayers GamePlayer[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -230,6 +234,10 @@ model GamePlayer {
   targetId String?      @db.ObjectId // ID of the player they need to eliminate
   target   GamePlayer?  @relation("PlayerTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   hunters  GamePlayer[] @relation("PlayerTarget")
+
+  // Assigned character (avatar for this game)
+  characterId String?    @db.ObjectId
+  character   Character? @relation(fields: [characterId], references: [id])
 
   // Assigned words
   word1 String?

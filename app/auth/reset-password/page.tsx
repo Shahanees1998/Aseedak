@@ -163,7 +163,8 @@ export default function ResetPasswordPage() {
           <div className="text-center mt-6">
             <Link 
               href="/auth/login" 
-              className="text-blue-400 hover:text-blue-300 font-medium"
+              className="font-medium hover:opacity-80"
+              style={{ color: '#CB1122' }}
             >
               ← Back to Sign In
             </Link>

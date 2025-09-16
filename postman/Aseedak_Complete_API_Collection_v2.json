@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Aseedak Complete API Collection v2",
-    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category",
-    "version": "2.0.0",
+    "name": "Aseedak Complete API Collection v2.1",
+    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, and enhanced store functionality",
+    "version": "2.1.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -33,6 +33,21 @@
     },
     {
       "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "character_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "character_pack_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "word_id",
       "value": "",
       "type": "string"
     }
@@ -525,9 +540,124 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Test Notification\",\n  \"message\": \"This is a test notification\"\n}"
+              "raw": "{\n  \"type\": \"new_user\"\n}"
             },
             "url": {"raw": "{{base_url}}/api/admin/notifications/test", "host": ["{{base_url}}"], "path": ["api", "admin", "notifications", "test"]}
+          }
+        },
+        {
+          "name": "Get All Characters",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/characters", "host": ["{{base_url}}"], "path": ["api", "admin", "characters"]}
+          }
+        },
+        {
+          "name": "Create Character",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Character\",\n  \"description\": \"A test character for the game\",\n  \"imageUrl\": \"https://example.com/character.jpg\",\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/characters", "host": ["{{base_url}}"], "path": ["api", "admin", "characters"]}
+          }
+        },
+        {
+          "name": "Get Character by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/characters/{{character_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "{{character_id}}"]}
+          }
+        },
+        {
+          "name": "Update Character",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Character\",\n  \"description\": \"Updated description\",\n  \"imageUrl\": \"https://example.com/updated-character.jpg\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/characters/{{character_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "{{character_id}}"]}
+          }
+        },
+        {
+          "name": "Delete Character",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/characters/{{character_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "{{character_id}}"]}
+          }
+        },
+        {
+          "name": "Toggle Character Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/characters/{{character_id}}/toggle-status", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "{{character_id}}", "toggle-status"]}
+          }
+        },
+        {
+          "name": "Create Character Pack",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Pack\",\n  \"description\": \"A premium character pack\",\n  \"imageUrl\": \"https://example.com/pack.jpg\",\n  \"price\": 999,\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/character-packs", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs"]}
+          }
+        },
+        {
+          "name": "Get Character Pack by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
+          }
+        },
+        {
+          "name": "Update Character Pack",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Pack\",\n  \"description\": \"Updated pack description\",\n  \"price\": 1299,\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
+          }
+        },
+        {
+          "name": "Delete Character Pack",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
           }
         }
       ]
@@ -754,6 +884,14 @@
           }
         },
         {
+          "name": "Get Character Packs",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/store/character-packs", "host": ["{{base_url}}"], "path": ["api", "mobile", "store", "character-packs"]}
+          }
+        },
+        {
           "name": "Get Word Decks",
           "request": {
             "method": "GET",
@@ -762,7 +900,7 @@
           }
         },
         {
-          "name": "Create Payment Intent",
+          "name": "Create Payment Intent - Character Pack",
           "request": {
             "method": "POST",
             "header": [
@@ -771,7 +909,37 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"itemId\": \"character_pack_1\",\n  \"itemType\": \"CHARACTER_PACK\",\n  \"amount\": 999\n}"
+              "raw": "{\n  \"itemId\": \"{{character_pack_id}}\",\n  \"itemType\": \"CHARACTER_PACK\",\n  \"amount\": 999\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/create-payment-intent", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "create-payment-intent"]}
+          }
+        },
+        {
+          "name": "Create Payment Intent - Character",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": \"{{character_id}}\",\n  \"itemType\": \"CHARACTER\",\n  \"amount\": 299\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/create-payment-intent", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "create-payment-intent"]}
+          }
+        },
+        {
+          "name": "Create Payment Intent - Word Deck",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": \"word_deck_1\",\n  \"itemType\": \"WORD_DECK\",\n  \"amount\": 199\n}"
             },
             "url": {"raw": "{{base_url}}/api/mobile/purchases/create-payment-intent", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "create-payment-intent"]}
           }
@@ -786,7 +954,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"paymentIntentId\": \"pi_payment_intent_id\",\n  \"itemId\": \"character_pack_1\",\n  \"itemType\": \"CHARACTER_PACK\"\n}"
+              "raw": "{\n  \"paymentIntentId\": \"pi_payment_intent_id\",\n  \"itemId\": \"{{character_pack_id}}\",\n  \"itemType\": \"CHARACTER_PACK\"\n}"
             },
             "url": {"raw": "{{base_url}}/api/mobile/purchases/confirm", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "confirm"]}
           }
@@ -830,6 +998,24 @@
               ]
             },
             "url": {"raw": "{{base_url}}/api/mobile/upload/profile-image", "host": ["{{base_url}}"], "path": ["api", "mobile", "upload", "profile-image"]}
+          }
+        },
+        {
+          "name": "Upload Character Image",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {"raw": "{{base_url}}/api/upload/character-image", "host": ["{{base_url}}"], "path": ["api", "upload", "character-image"]}
           }
         }
       ]

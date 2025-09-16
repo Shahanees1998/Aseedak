@@ -10,6 +10,7 @@ import { Message } from 'primereact/message'
 import { Checkbox } from 'primereact/checkbox'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -103,7 +104,7 @@ export default function LoginPage() {
         <div className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
           <div className="mb-4">
             <div style={{ display: 'flex', alignItems: 'center' }} className="app-logo flex items-center justify-content-center gap-3">
-              <div style={{ fontSize: '2rem', fontWeight: 'bold' }}>🎮</div>
+              <Image src="/images/logo.png" alt="Aseedak" width={100} height={100} />
               <div style={{ fontSize: '2rem' }}>|</div>
               <div style={{ fontSize: '1.5rem', fontWeight: 'bold', fontStyle: 'italic' }}>Aseedak</div>
             </div>

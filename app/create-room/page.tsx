@@ -335,7 +335,7 @@ export default function CreateRoomPage() {
                     
                     {/* Room Creator */}
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <div className="flex align-items-center bg-blue-500/30 p-2 rounded-lg border border-blue-400">
+                      <div className="flex align-items-center p-2 rounded-lg border" style={{ backgroundColor: '#CB112230', borderColor: '#CB1122' }}>
                         <Image 
                           src={`/images/${user?.profileImage || 'IMAGE1'}.png`} 
                           alt={user?.profileImage || 'IMAGE1'} 

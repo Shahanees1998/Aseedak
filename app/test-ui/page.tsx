@@ -41,8 +41,8 @@ export default function TestUIPage() {
                     <span className="block text-500 font-medium mb-3">Test Stat</span>
                     <div className="text-900 font-medium text-xl">123</div>
                   </div>
-                  <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
-                    <i className="pi pi-users text-blue-500 text-xl"></i>
+                  <div className="flex align-items-center justify-content-center border-round" style={{ width: '2.5rem', height: '2.5rem', backgroundColor: '#CB112220' }}>
+                    <i className="pi pi-users text-xl" style={{ color: '#CB1122' }}></i>
                   </div>
                 </div>
                 <span className="text-green-500 font-medium">+20% </span>
