@@ -6,6 +6,7 @@ import { InputText } from 'primereact/inputtext'
 import { Card } from 'primereact/card'
 import { Message } from 'primereact/message'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -42,67 +43,70 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
-        <div className="p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Forgot Password</h1>
-            <p className="text-gray-300">Enter your email to receive a reset link</p>
+    <>
+      <div className="min-h-screen bg-black flex justify-content-center align-items-center" style={{backgroundColor:'black'}}>
+        <div className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
+          <div className="mb-4">
+            <div style={{ display: 'flex', alignItems: 'center' }} className="w-full bg-white flex items-center justify-content-center gap-3">
+              <Image className='bg-white' src="/images/logo.png" alt="Aseedak" width={100} height={100} />
+            </div>
+            <div className="text-900 text-3xl font-bold mb-2 mt-4">
+              Forgot Password
+            </div>
+            <span className="text-600 font-medium text-lg">
+              Enter your email to receive a reset link
+            </span>
           </div>
 
-          {/* Success Message */}
-          {message && (
-            <Message 
-              severity="success" 
-              text={message} 
-              className="mb-4"
-            />
-          )}
+          <div className="flex flex-column">
+            {/* Success Message */}
+            {message && (
+              <div className="p-success mb-3 p-3 border-round" style={{ background: 'var(--green-50)', border: '1px solid var(--green-200)' }}>
+                {message}
+              </div>
+            )}
 
-          {/* Error Message */}
-          {error && (
-            <Message 
-              severity="error" 
-              text={error} 
-              className="mb-4"
-            />
-          )}
+            {/* Error Message */}
+            {error && (
+              <div className="p-error mb-3 p-3 border-round" style={{ background: 'var(--red-50)', border: '1px solid var(--red-200)' }}>
+                {error}
+              </div>
+            )}
 
-          {/* Reset Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-white mb-2">Email</label>
-              <InputText
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full"
-                required
+            {/* Reset Form */}
+            <form onSubmit={handleSubmit}>
+              <span className="p-input-icon-left w-full mb-4">
+                <InputText
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email"
+                  className="w-full md:w-25rem text-lg"
+                  required
+                />
+              </span>
+
+              <Button
+                type="submit"
+                label={loading ? "Sending..." : "Send Reset Link"}
+                className="w-full text-lg"
+                loading={loading}
+                disabled={loading}
               />
-            </div>
-
-            <Button
-              type="submit"
-              label="Send Reset Link"
-              loading={loading}
-              className="w-full p-button-primary"
-            />
-          </form>
+            </form>
+          </div>
 
           {/* Back to Login */}
           <div className="text-center mt-6">
             <Link 
               href="/auth/login" 
-              className="font-medium hover:opacity-80"
-              style={{ color: '#CB1122' }}
+              className="text-primary hover:text-primary-600 font-medium cursor-pointer text-lg"
             >
               ← Back to Sign In
             </Link>
           </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </>
   )
 }

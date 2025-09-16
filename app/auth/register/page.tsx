@@ -10,6 +10,7 @@ import { Message } from 'primereact/message'
 import { Dropdown } from 'primereact/dropdown'
 import { Checkbox } from 'primereact/checkbox'
 import Link from 'next/link'
+import Image from 'next/image'
 
 
 export default function RegisterPage() {
@@ -21,8 +22,7 @@ export default function RegisterPage() {
     email: '',
     phoneNumber: '',
     password: '',
-    confirmPassword: '',
-    agreeToTerms: false
+    confirmPassword: ''
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -39,11 +39,6 @@ export default function RegisterPage() {
       return
     }
 
-    if (!formData.agreeToTerms) {
-      setError('Please agree to the terms and conditions')
-      setLoading(false)
-      return
-    }
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -83,146 +78,134 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-white/10 backdrop-blur-sm border-white/20">
-        <div className="p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Join Aseedak</h1>
-            <p className="text-gray-300">Create your account and start playing</p>
+    <>
+      <div className="min-h-screen bg-black flex justify-content-center align-items-center" style={{backgroundColor:'black'}}>
+        <div className="border-1 surface-border surface-card border-round py-7 px-4 md:px-7 z-1">
+          <div className="mb-4">
+            <div style={{ display: 'flex', alignItems: 'center' }} className="w-full bg-white flex items-center justify-content-center gap-3">
+              <Image className='bg-white' src="/images/logo.png" alt="Aseedak" width={100} height={100} />
+            </div>
+            <div className="text-900 text-3xl font-bold mb-2 mt-4">
+              Join Aseedak
+            </div>
+            <span className="text-600 font-medium text-lg">
+              Create your account and start playing
+            </span>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <Message 
-              severity="error" 
-              text={error} 
-              className="mb-4"
-            />
-          )}
+          <div className="flex flex-column">
+            {/* Error Message */}
+            {error && (
+              <div className="p-error mb-3 p-3 border-round" style={{ background: 'var(--red-50)', border: '1px solid var(--red-200)' }}>
+                {error}
+              </div>
+            )}
 
-          {/* Registration Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white mb-2">First Name</label>
+            {/* Registration Form */}
+            <form onSubmit={handleSubmit}>
+              <div className="flex gap-3 mb-4">
+                <span className="p-input-icon-left flex-1">
+                  <InputText
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
+                    placeholder="First Name"
+                    className="w-full text-lg"
+                    required
+                  />
+                </span>
+                <span className="p-input-icon-left flex-1">
+                  <InputText
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    placeholder="Last Name"
+                    className="w-full text-lg"
+                    required
+                  />
+                </span>
+              </div>
+
+              <div className="flex gap-3 mb-4">
+                <span className="p-input-icon-left flex-1">
+                  <InputText
+                    value={formData.username}
+                    onChange={(e) => handleInputChange('username', e.target.value)}
+                    placeholder="Username"
+                    className="w-full text-lg"
+                    required
+                  />
+                </span>
+                <span className="p-input-icon-left flex-1">
+                  <InputText
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    placeholder="Phone Number (Optional)"
+                    className="w-full text-lg"
+                  />
+                </span>
+              </div>
+
+              <span className="p-input-icon-left w-full mb-4">
                 <InputText
-                  value={formData.firstName}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                  placeholder="First name"
-                  className="w-full"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                  placeholder="Email"
+                  className="w-full text-lg"
                   required
                 />
+              </span>
+
+              <div className="flex gap-3 mb-4">
+                <div style={{ position: "relative" }} className="flex-1">
+                  <Password
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="Password"
+                    className="w-full"
+                    inputClassName="w-full text-lg"
+                    toggleMask
+                    required
+                  />
+                </div>
+                <div style={{ position: "relative" }} className="flex-1">
+                  <Password
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="Confirm Password"
+                    className="w-full"
+                    inputClassName="w-full text-lg"
+                    toggleMask
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-white mb-2">Last Name</label>
-                <InputText
-                  value={formData.lastName}
-                  onChange={(e) => handleInputChange('lastName', e.target.value)}
-                  placeholder="Last name"
-                  className="w-full"
-                  required
-                />
-              </div>
-            </div>
 
-            <div>
-              <label className="block text-white mb-2">Username</label>
-              <InputText
-                value={formData.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
-                placeholder="Choose a username"
-                className="w-full"
-                required
+
+              <Button
+                type="submit"
+                label={loading ? "Creating Account..." : "Create Account"}
+                className="w-full text-lg"
+                loading={loading}
+                disabled={loading}
               />
-            </div>
-
-            <div>
-              <label className="block text-white mb-2">Email</label>
-              <InputText
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
-                placeholder="Enter your email"
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-white mb-2">Phone Number (Optional)</label>
-              <InputText
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                placeholder="Enter your phone number"
-                className="w-full"
-              />
-            </div>
-
-            <div>
-              <label className="block text-white mb-2">Password</label>
-              <Password
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                placeholder="Create a password"
-                className="w-full"
-                inputClassName="w-full"
-                toggleMask
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-white mb-2">Confirm Password</label>
-              <Password
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                placeholder="Confirm your password"
-                className="w-full"
-                inputClassName="w-full"
-                toggleMask
-                required
-              />
-            </div>
-
-            <div className="flex items-center">
-              <Checkbox
-                inputId="agreeToTerms"
-                checked={formData.agreeToTerms}
-                onChange={(e) => handleInputChange('agreeToTerms', e.checked)}
-              />
-              <label htmlFor="agreeToTerms" className="ml-2 text-white text-sm">
-                I agree to the{' '}
-                <Link href="/terms" className="hover:opacity-80" style={{ color: '#CB1122' }}>
-                  Terms and Conditions
-                </Link>
-              </label>
-            </div>
-
-            <Button
-              type="submit"
-              label="Create Account"
-              loading={loading}
-              className="w-full p-button-primary"
-            />
-          </form>
+            </form>
+          </div>
 
           {/* Sign In Link */}
           <div className="text-center mt-6">
-            <p className="text-gray-300">
+            <p className="text-600 text-lg">
               Already have an account?{' '}
               <Link 
                 href="/auth/login" 
-                className="font-medium hover:opacity-80"
-                style={{ color: '#CB1122' }}
+                className="text-primary hover:text-primary-600 font-medium cursor-pointer text-lg"
               >
                 Sign in
               </Link>
             </p>
           </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </>
   )
 }
