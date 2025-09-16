@@ -21,11 +21,6 @@ export async function PUT(
         { status: 501 }
       )
 
-      return NextResponse.json({
-        message: `Character ${isActive ? 'activated' : 'deactivated'} successfully`,
-        character
-      })
-
     } catch (error) {
       console.error('Error toggling character status:', error)
       return NextResponse.json(
