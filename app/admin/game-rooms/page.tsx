@@ -118,6 +118,17 @@ export default function GameRoomsPage() {
     return '-'
   }
 
+  const createdAtTemplate = (rowData: GameRoom) => {
+    const date = new Date(rowData.createdAt)
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
   if (authLoading || loading) {
     return (
       <div className="flex justify-content-center align-items-center" style={{ height: '50vh' }}>
@@ -200,11 +211,9 @@ export default function GameRoomsPage() {
             <Column field="name" header={t('admin.roomName')} sortable />
             <Column field="status" header={t('admin.status')} body={statusTemplate} sortable style={{ width: '120px' }} />
             <Column field="players" header={t('admin.players')} body={playersTemplate} style={{ width: '100px' }} />
-            <Column field="currentRound" header={t('admin.round')} sortable style={{ width: '80px' }} />
-            <Column field="timeLimit" header={t('admin.timeLimit')} sortable style={{ width: '100px' }} />
             <Column field="creator" header={t('admin.creator')} body={creatorTemplate} />
             <Column field="duration" header={t('admin.duration')} body={durationTemplate} style={{ width: '120px' }} />
-            <Column field="createdAt" header={t('admin.created')} sortable style={{ width: '150px' }} />
+            <Column field="createdAt" header={t('admin.created')} body={createdAtTemplate} sortable style={{ width: '150px' }} />
           </DataTable>
         </Card>
       </div>
