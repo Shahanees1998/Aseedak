@@ -9,6 +9,7 @@ import { LayoutContext } from "./context/layoutcontext";
 import { useAuth } from "@/hooks/useAuth";
 import { Toast } from "primereact/toast";
 import { Avatar } from "primereact/avatar";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { onMenuToggle, showProfileSidebar, showConfigSidebar } =
@@ -84,6 +85,13 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
 
             <div className="topbar-end">
                 <ul className="topbar-menu">
+                    <li className="ml-3">
+                        <LanguageSwitcher 
+                            variant="dropdown" 
+                            showFlags={true}
+                            className="language-switcher"
+                        />
+                    </li>
                     <li className="ml-3">
                         <Button
                             type="button"

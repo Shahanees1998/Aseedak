@@ -17,6 +17,7 @@ import { Avatar } from 'primereact/avatar'
 import { MultiSelect } from 'primereact/multiselect'
 import { TabView, TabPanel } from 'primereact/tabview'
 import { useToast } from '@/store/toast.context'
+import { useTranslation } from '@/hooks/useTranslation'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -35,6 +36,7 @@ export default function CreateRoomPage() {
   const { user, loading: authLoading } = useRequireAuth()
   const router = useRouter()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   const [formData, setFormData] = useState({
     name: '',
     maxPlayers: 8,
@@ -249,7 +251,7 @@ export default function CreateRoomPage() {
               <TabPanel header="Room Settings">
                 <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="block text-white mb-2">Room Name</label>
+                <label className="block text-white mb-2">{t('game.createRoom.roomName')}</label>
                 <InputText
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
@@ -261,7 +263,7 @@ export default function CreateRoomPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white mb-2">Max Players</label>
+                  <label className="block text-white mb-2">{t('game.createRoom.maxPlayers')}</label>
                   <InputNumber
                     value={formData.maxPlayers}
                     onValueChange={(e) => handleInputChange('maxPlayers', e.value)}
@@ -297,13 +299,13 @@ export default function CreateRoomPage() {
                   <div className="flex space-x-4">
                     <Link href="/" className="flex-1">
                       <Button
-                        label="Cancel"
+                        label={t('common.cancel')}
                         className="w-full p-button-outlined p-button-secondary"
                       />
                     </Link>
                     <Button
                       type="submit"
-                      label="Create Room"
+                      label={t('game.createRoom.createRoom')}
                       loading={loading}
                       className="flex-1 p-button-primary"
                     />

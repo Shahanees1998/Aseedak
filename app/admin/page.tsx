@@ -18,6 +18,7 @@ import { Chart } from 'primereact/chart'
 import AvatarDisplay from '@/components/AvatarDisplay'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/store/toast.context'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface Word {
   id: string
@@ -76,6 +77,7 @@ interface WordDeck {
 
 export default function AdminDashboard() {
   const { user } = useAuth()
+  const { t } = useTranslation()
   const [words, setWords] = useState<Word[]>([])
   const [users, setUsers] = useState<User[]>([])
   const [characterPacks, setCharacterPacks] = useState<CharacterPack[]>([])
@@ -669,7 +671,7 @@ export default function AdminDashboard() {
             <div className="card mb-0">
               <div className="flex justify-content-between mb-3">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Total Users</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.totalUsers')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalUsers}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -682,7 +684,7 @@ export default function AdminDashboard() {
             <div className="card mb-0">
               <div className="flex justify-content-between mb-3">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Total Games</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.totalGames')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalGames}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -695,7 +697,7 @@ export default function AdminDashboard() {
             <div className="card mb-0">
               <div className="flex justify-content-between mb-3">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Revenue</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.revenue')}</span>
                   <div className="text-900 font-medium text-xl">${(stats.totalRevenue / 100).toFixed(2)}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-cyan-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -708,7 +710,7 @@ export default function AdminDashboard() {
             <div className="card mb-0">
               <div className="flex justify-content-between mb-3">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Active Users</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.activeUsers')}</span>
                   <div className="text-900 font-medium text-xl">{stats.activeUsers}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -723,11 +725,11 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="col-12">
         <div className="card">
-          <h5>Quick Actions</h5>
-          <p className="text-color-secondary">Create game rooms and play games</p>
+          <h5>{t('admin.quickActions')}</h5>
+          <p className="text-color-secondary">{t('admin.quickActionsSubtitle')}</p>
           <div className="flex gap-3 mt-4">
             <Button
-              label="Create Game Room"
+              label={t('game.createRoom.createRoom')}
               icon="pi pi-plus"
               onClick={() => window.open('/create-room', '_blank')}
               className="p-button-primary"
@@ -735,7 +737,7 @@ export default function AdminDashboard() {
               tooltipOptions={{ position: 'top' }}
             />
             <Button
-              label="Join Game Room"
+              label={t('game.joinRoom.joinRoom')}
               icon="pi pi-sign-in"
               onClick={() => {
                 const roomCode = prompt('Enter room code to join:')
@@ -748,7 +750,7 @@ export default function AdminDashboard() {
               tooltipOptions={{ position: 'top' }}
             />
             <Button
-              label="View All Games"
+              label={t('admin.viewAllGames')}
               icon="pi pi-list"
               onClick={() => window.open('/admin/games', '_blank')}
               className="p-button-outlined p-button-secondary"
@@ -762,18 +764,18 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div className="col-12">
         <div className="card">
-          <h5>Admin Dashboard</h5>
-          <p className="text-color-secondary">Manage words, users, character packs, and word decks</p>
+          <h5>{t('admin.title')}</h5>
+          <p className="text-color-secondary">{t('admin.subtitle')}</p>
 
 
           {/* Tabs */}
           <TabView>
             {/* Words Tab */}
-            <TabPanel header="Words Management">
+            <TabPanel header={t('admin.wordsTab')}>
               <div className="flex justify-content-between align-items-center mb-4">
-                <h6 className="m-0">Word Sets</h6>
+                <h6 className="m-0">{t('admin.wordsTitle')}</h6>
                 <Button
-                  label="Add New Word Set"
+                  label={t('admin.addWord')}
                   icon="pi pi-plus"
                   onClick={() => {
                     setEditingWord(null)
@@ -790,31 +792,31 @@ export default function AdminDashboard() {
                 rows={10}
                 rowsPerPageOptions={[5, 10, 25]}
                 className="p-datatable-sm"
-                emptyMessage="No words found"
+                emptyMessage={t('admin.noWords')}
               >
-                <Column field="word1" header="Word 1" sortable />
-                <Column field="word2" header="Word 2" sortable />
-                <Column field="word3" header="Word 3" sortable />
+                <Column field="word1" header={t('admin.word1')} sortable />
+                <Column field="word2" header={t('admin.word2')} sortable />
+                <Column field="word3" header={t('admin.word3')} sortable />
                 <Column 
                   field="isActive" 
-                  header="Status" 
+                  header={t('admin.status')} 
                   body={(rowData) => (
                     <Badge 
-                      value={rowData.isActive ? 'Active' : 'Inactive'} 
+                      value={rowData.isActive ? t('admin.active') : t('admin.inactive')} 
                       severity={rowData.isActive ? 'success' : 'secondary'} 
                     />
                   )}
                 />
-                <Column header="Actions" body={wordActionsBodyTemplate} />
+                <Column header={t('admin.actions')} body={wordActionsBodyTemplate} />
               </DataTable>
             </TabPanel>
 
             {/* Users Tab */}
-            <TabPanel header="Users Management">
+            <TabPanel header={t('admin.usersTab')}>
               <div className="flex justify-content-between align-items-center mb-4">
-                <h6 className="m-0">Users</h6>
+                <h6 className="m-0">{t('admin.usersTitle')}</h6>
                 <Button
-                  label="Add New User"
+                  label={t('admin.addUser')}
                   icon="pi pi-plus"
                   onClick={() => {
                     setEditingUser(null)
@@ -831,25 +833,25 @@ export default function AdminDashboard() {
                 rows={10}
                 rowsPerPageOptions={[5, 10, 25]}
                 className="p-datatable-sm"
-                emptyMessage="No users found"
+                emptyMessage={t('admin.noUsers')}
               >
-                <Column field="username" header="Username" sortable />
-                <Column field="firstName" header="First Name" sortable />
-                <Column field="lastName" header="Last Name" sortable />
-                <Column field="email" header="Email" sortable />
-                <Column header="Avatar" body={avatarBodyTemplate} />
-                <Column field="gamesPlayed" header="Games Played" sortable />
-                <Column field="gamesWon" header="Games Won" sortable />
-                <Column field="totalKills" header="Total Kills" sortable />
-                <Column header="Status" body={statusBodyTemplate} />
-                <Column header="Actions" body={actionsBodyTemplate} />
+                <Column field="username" header={t('admin.username')} sortable />
+                <Column field="firstName" header={t('admin.firstName')} sortable />
+                <Column field="lastName" header={t('admin.lastName')} sortable />
+                <Column field="email" header={t('admin.email')} sortable />
+                <Column header={t('admin.avatar')} body={avatarBodyTemplate} />
+                <Column field="gamesPlayed" header={t('admin.gamesPlayed')} sortable />
+                <Column field="gamesWon" header={t('admin.gamesWon')} sortable />
+                <Column field="totalKills" header={t('admin.totalKills')} sortable />
+                <Column header={t('admin.status')} body={statusBodyTemplate} />
+                <Column header={t('admin.actions')} body={actionsBodyTemplate} />
               </DataTable>
             </TabPanel>
           </TabView>
 
         {/* Word Dialog */}
         <Dialog
-          header={editingWord ? "Edit Word Set" : "Add New Word Set"}
+          header={editingWord ? t('admin.editWord') : t('admin.addWord')}
           visible={wordDialogVisible}
           style={{ width: '50vw' }}
           onHide={() => setWordDialogVisible(false)}
@@ -860,7 +862,7 @@ export default function AdminDashboard() {
                 <div className="grid">
                   <div className="col-12 md:col-4">
                     <div className="field">
-                      <label htmlFor="word1" className="block text-900 font-medium mb-2">Word 1 *</label>
+                      <label htmlFor="word1" className="block text-900 font-medium mb-2">{t('admin.word1')} *</label>
                       <InputText
                         id="word1"
                         value={wordForm.word1}
@@ -873,7 +875,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="col-12 md:col-4">
                     <div className="field">
-                      <label htmlFor="word2" className="block text-900 font-medium mb-2">Word 2 *</label>
+                      <label htmlFor="word2" className="block text-900 font-medium mb-2">{t('admin.word2')} *</label>
                       <InputText
                         id="word2"
                         value={wordForm.word2}
@@ -886,7 +888,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="col-12 md:col-4">
                     <div className="field">
-                      <label htmlFor="word3" className="block text-900 font-medium mb-2">Word 3 *</label>
+                      <label htmlFor="word3" className="block text-900 font-medium mb-2">{t('admin.word3')} *</label>
                       <InputText
                         id="word3"
                         value={wordForm.word3}
@@ -912,14 +914,14 @@ export default function AdminDashboard() {
               <div className="col-12">
                 <div className="flex justify-content-end gap-2 mt-3">
                   <Button
-                    label="Cancel"
+                    label={t('common.cancel')}
                     onClick={() => setWordDialogVisible(false)}
                     className="p-button-secondary"
                     type="button"
                     disabled={submitting}
                   />
                   <Button
-                    label="Save"
+                    label={t('common.save')}
                     type="submit"
                     className="p-button-primary"
                     loading={submitting}
@@ -933,7 +935,7 @@ export default function AdminDashboard() {
 
         {/* User Dialog */}
         <Dialog
-          header={editingUser ? "Edit User" : "Add New User"}
+          header={editingUser ? t('admin.editUser') : t('admin.addUser')}
           visible={userDialogVisible}
           style={{ width: '50vw' }}
           onHide={() => setUserDialogVisible(false)}
@@ -944,7 +946,7 @@ export default function AdminDashboard() {
                 <div className="grid">
                   <div className="col-12 md:col-6">
                     <div className="field">
-                      <label htmlFor="firstName" className="block text-900 font-medium mb-2">First Name *</label>
+                      <label htmlFor="firstName" className="block text-900 font-medium mb-2">{t('admin.firstName')} *</label>
                       <InputText
                         id="firstName"
                         value={userForm.firstName}
@@ -957,7 +959,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="col-12 md:col-6">
                     <div className="field">
-                      <label htmlFor="lastName" className="block text-900 font-medium mb-2">Last Name *</label>
+                      <label htmlFor="lastName" className="block text-900 font-medium mb-2">{t('admin.lastName')} *</label>
                       <InputText
                         id="lastName"
                         value={userForm.lastName}
@@ -975,7 +977,7 @@ export default function AdminDashboard() {
                 <div className="grid">
                   <div className="col-12 md:col-6">
                     <div className="field">
-                      <label htmlFor="username" className="block text-900 font-medium mb-2">Username *</label>
+                      <label htmlFor="username" className="block text-900 font-medium mb-2">{t('admin.username')} *</label>
                       <InputText
                         id="username"
                         value={userForm.username}
@@ -988,7 +990,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="col-12 md:col-6">
                     <div className="field">
-                      <label htmlFor="email" className="block text-900 font-medium mb-2">Email *</label>
+                      <label htmlFor="email" className="block text-900 font-medium mb-2">{t('admin.email')} *</label>
                       <InputText
                         id="email"
                         type="email"
@@ -1005,7 +1007,7 @@ export default function AdminDashboard() {
               
               <div className="col-12">
                 <div className="field">
-                  <label htmlFor="avatar" className="block text-900 font-medium mb-2">Avatar *</label>
+                  <label htmlFor="avatar" className="block text-900 font-medium mb-2">{t('admin.avatar')} *</label>
                   <Dropdown
                     id="avatar"
                     value={userForm.avatar}
@@ -1020,14 +1022,14 @@ export default function AdminDashboard() {
               <div className="col-12">
                 <div className="flex justify-content-end gap-2 mt-3">
                   <Button
-                    label="Cancel"
+                    label={t('common.cancel')}
                     onClick={() => setUserDialogVisible(false)}
                     className="p-button-secondary"
                     type="button"
                     disabled={submitting}
                   />
                   <Button
-                    label="Save"
+                    label={t('common.save')}
                     type="submit"
                     className="p-button-primary"
                     loading={submitting}

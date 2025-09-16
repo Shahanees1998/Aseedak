@@ -2,6 +2,7 @@
 import { LayoutProvider } from "../layout/context/layoutcontext";
 import { Providers } from "./providers";
 import ClientOnly from "@/components/ClientOnly";
+import RTLWrapper from "@/components/RTLWrapper";
 
 import "primeflex/primeflex.css";
 import "primeicons/primeicons.css";
@@ -17,7 +18,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html suppressHydrationWarning>
             <head>
                 <title>Aseedak - Word Elimination Game</title>
                 <meta name="description" content="Multiplayer word-based elimination game where players guess words to eliminate targets" />
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
                 <Providers>
                     <PrimeReactProvider>
                         <ClientOnly>
-                            <LayoutProvider>{children}</LayoutProvider>
+                            <RTLWrapper>
+                                <LayoutProvider>{children}</LayoutProvider>
+                            </RTLWrapper>
                         </ClientOnly>
                     </PrimeReactProvider>
                 </Providers>

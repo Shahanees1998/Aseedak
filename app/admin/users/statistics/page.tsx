@@ -10,6 +10,7 @@ import { Chart } from 'primereact/chart'
 import { Badge } from 'primereact/badge'
 import AvatarDisplay from '@/components/AvatarDisplay'
 import { useToast } from '@/store/toast.context'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface UserStats {
   id: string
@@ -40,6 +41,7 @@ export default function UserStatistics() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   
   const [stats, setStats] = useState<Statistics>({
     totalUsers: 0,
@@ -101,7 +103,7 @@ export default function UserStatistics() {
       labels: winRateRanges.map(range => range.range),
       datasets: [
         {
-          label: 'Number of Players',
+          label: t('admin.numberOfPlayers'),
           data: winRateRanges.map(range => range.count),
           backgroundColor: [
             '#FF6384',
@@ -140,7 +142,7 @@ export default function UserStatistics() {
   const statusTemplate = (rowData: UserStats) => {
     return (
       <Badge 
-        value={rowData.isActive ? 'Active' : 'Inactive'} 
+        value={rowData.isActive ? t('admin.active') : t('admin.inactive')} 
         severity={rowData.isActive ? 'success' : 'danger'} 
       />
     )
@@ -162,8 +164,8 @@ export default function UserStatistics() {
     <div className="grid">
       <div className="col-12">
         <div className="card">
-          <h5>User Statistics Dashboard</h5>
-          <p className="text-color-secondary">Comprehensive analytics and user performance metrics</p>
+          <h5>{t('admin.userStatisticsDashboard')}</h5>
+          <p className="text-color-secondary">{t('admin.userStatisticsSubtitle')}</p>
         </div>
       </div>
 
@@ -174,7 +176,7 @@ export default function UserStatistics() {
             <Card>
               <div className="flex justify-content-between align-items-center">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Total Users</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.totalUsers')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalUsers}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-blue-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -188,7 +190,7 @@ export default function UserStatistics() {
             <Card>
               <div className="flex justify-content-between align-items-center">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Active Users</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.activeUsers')}</span>
                   <div className="text-900 font-medium text-xl">{stats.activeUsers}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-green-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -202,7 +204,7 @@ export default function UserStatistics() {
             <Card>
               <div className="flex justify-content-between align-items-center">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Total Games</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.totalGames')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalGames}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -216,7 +218,7 @@ export default function UserStatistics() {
             <Card>
               <div className="flex justify-content-between align-items-center">
                 <div>
-                  <span className="block text-500 font-medium mb-3">Avg Win Rate</span>
+                  <span className="block text-500 font-medium mb-3">{t('admin.avgWinRate')}</span>
                   <div className="text-900 font-medium text-xl">{stats.averageWinRate.toFixed(1)}%</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-purple-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -231,7 +233,7 @@ export default function UserStatistics() {
       {/* Charts */}
       <div className="col-12 lg:col-6">
         <Card>
-          <h5>Win Rate Distribution</h5>
+          <h5>{t('admin.winRateDistribution')}</h5>
           <div style={{ height: '300px' }}>
             <Chart type="doughnut" data={chartData} options={chartOptions} />
           </div>
@@ -240,17 +242,17 @@ export default function UserStatistics() {
 
       <div className="col-12 lg:col-6">
         <Card>
-          <h5>Top Performers</h5>
+          <h5>{t('admin.topPerformers')}</h5>
           <DataTable 
             value={stats.topPlayers.slice(0, 5)} 
             className="p-datatable-sm"
-            emptyMessage="No data available"
+            emptyMessage={t('admin.noDataAvailable')}
           >
-            <Column field="avatar" header="Avatar" body={avatarTemplate} style={{ width: '60px' }} />
-            <Column field="username" header="Username" />
-            <Column field="gamesWon" header="Wins" />
-            <Column field="totalKills" header="Kills" />
-            <Column field="winRate" header="Win Rate" body={winRateTemplate} />
+            <Column field="avatar" header={t('admin.avatar')} body={avatarTemplate} style={{ width: '60px' }} />
+            <Column field="username" header={t('admin.username')} />
+            <Column field="gamesWon" header={t('admin.gamesWon')} />
+            <Column field="totalKills" header={t('admin.totalKills')} />
+            <Column field="winRate" header={t('admin.winRate')} body={winRateTemplate} />
           </DataTable>
         </Card>
       </div>
@@ -258,25 +260,25 @@ export default function UserStatistics() {
       {/* Detailed User Stats Table */}
       <div className="col-12">
         <Card>
-          <h5>All Users Statistics</h5>
+          <h5>{t('admin.allUsersStatistics')}</h5>
           <DataTable 
             value={stats.topPlayers} 
             paginator 
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
             className="p-datatable-sm"
-            emptyMessage="No users found"
+            emptyMessage={t('admin.noUsersFound')}
           >
-            <Column field="avatar" header="Avatar" body={avatarTemplate} style={{ width: '60px' }} />
-            <Column field="username" header="Username" sortable />
-            <Column field="firstName" header="First Name" sortable />
-            <Column field="lastName" header="Last Name" sortable />
-            <Column field="email" header="Email" sortable />
-            <Column field="gamesPlayed" header="Games Played" sortable />
-            <Column field="gamesWon" header="Games Won" sortable />
-            <Column field="totalKills" header="Total Kills" sortable />
-            <Column field="winRate" header="Win Rate" body={winRateTemplate} sortable />
-            <Column field="isActive" header="Status" body={statusTemplate} sortable />
+            <Column field="avatar" header={t('admin.avatar')} body={avatarTemplate} style={{ width: '60px' }} />
+            <Column field="username" header={t('admin.username')} sortable />
+            <Column field="firstName" header={t('admin.firstName')} sortable />
+            <Column field="lastName" header={t('admin.lastName')} sortable />
+            <Column field="email" header={t('admin.email')} sortable />
+            <Column field="gamesPlayed" header={t('admin.gamesPlayed')} sortable />
+            <Column field="gamesWon" header={t('admin.gamesWon')} sortable />
+            <Column field="totalKills" header={t('admin.totalKills')} sortable />
+            <Column field="winRate" header={t('admin.winRate')} body={winRateTemplate} sortable />
+            <Column field="isActive" header={t('admin.status')} body={statusTemplate} sortable />
           </DataTable>
         </Card>
       </div>

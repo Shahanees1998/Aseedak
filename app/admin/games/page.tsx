@@ -9,6 +9,7 @@ import { Column } from 'primereact/column'
 import { Badge } from 'primereact/badge'
 import { Button } from 'primereact/button'
 import { useToast } from '@/store/toast.context'
+import { useTranslation } from '@/hooks/useTranslation'
 
 interface GameRoom {
   id: string
@@ -34,6 +35,7 @@ export default function GamesPage() {
   const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const { showToast } = useToast()
+  const { t } = useTranslation()
   
   const [gameRooms, setGameRooms] = useState<GameRoom[]>([])
   const [loading, setLoading] = useState(true)
@@ -69,19 +71,19 @@ export default function GamesPage() {
     switch (rowData.status) {
       case 'WAITING':
         severity = 'info'
-        label = 'Waiting'
+        label = t('game.gameRoom.waiting')
         break
       case 'STARTING':
         severity = 'warning'
-        label = 'Starting'
+        label = t('game.gameRoom.starting')
         break
       case 'IN_PROGRESS':
         severity = 'success'
-        label = 'In Progress'
+        label = t('game.gameRoom.inProgress')
         break
       case 'FINISHED':
         severity = 'info'
-        label = 'Finished'
+        label = t('game.gameRoom.finished')
         break
     }
 
@@ -118,7 +120,7 @@ export default function GamesPage() {
           icon="pi pi-eye"
           size="small"
           severity="info"
-          tooltip="View Details"
+          tooltip={t('admin.viewDetails')}
           tooltipOptions={{ position: 'top' }}
         />
         {rowData.status === 'WAITING' && (
@@ -126,7 +128,7 @@ export default function GamesPage() {
             icon="pi pi-play"
             size="small"
             severity="success"
-            tooltip="Start Game"
+            tooltip={t('admin.startGame')}
             tooltipOptions={{ position: 'top' }}
           />
         )}
@@ -135,7 +137,7 @@ export default function GamesPage() {
             icon="pi pi-stop"
             size="small"
             severity="danger"
-            tooltip="End Game"
+            tooltip={t('admin.endGame')}
             tooltipOptions={{ position: 'top' }}
           />
         )}
@@ -155,8 +157,8 @@ export default function GamesPage() {
     <div className="grid">
       <div className="col-12">
         <div className="card">
-          <h5>Game Rooms Management</h5>
-          <p className="text-color-secondary">Monitor and manage all active game rooms</p>
+          <h5>{t('admin.gameRoomsManagement')}</h5>
+          <p className="text-color-secondary">{t('admin.gameRoomsManagementSubtitle')}</p>
         </div>
       </div>
 
@@ -168,20 +170,20 @@ export default function GamesPage() {
             rows={10}
             rowsPerPageOptions={[5, 10, 25, 50]}
             className="p-datatable-sm"
-            emptyMessage="No game rooms found"
+            emptyMessage={t('admin.noGameRooms')}
             sortField="createdAt"
             sortOrder={-1}
           >
-            <Column field="code" header="Room Code" sortable style={{ width: '120px' }} />
-            <Column field="name" header="Room Name" sortable />
-            <Column field="status" header="Status" body={statusTemplate} sortable style={{ width: '120px' }} />
-            <Column field="players" header="Players" body={playersTemplate} style={{ width: '100px' }} />
-            <Column field="currentRound" header="Round" sortable style={{ width: '80px' }} />
-            <Column field="timeLimit" header="Time Limit" sortable style={{ width: '100px' }} />
-            <Column field="creator" header="Creator" body={creatorTemplate} />
-            <Column field="duration" header="Duration" body={durationTemplate} style={{ width: '120px' }} />
-            <Column field="createdAt" header="Created" sortable style={{ width: '150px' }} />
-            <Column header="Actions" body={actionTemplate} style={{ width: '120px' }} />
+            <Column field="code" header={t('admin.roomCode')} sortable style={{ width: '120px' }} />
+            <Column field="name" header={t('admin.roomName')} sortable />
+            <Column field="status" header={t('admin.status')} body={statusTemplate} sortable style={{ width: '120px' }} />
+            <Column field="players" header={t('admin.players')} body={playersTemplate} style={{ width: '100px' }} />
+            <Column field="currentRound" header={t('admin.round')} sortable style={{ width: '80px' }} />
+            <Column field="timeLimit" header={t('admin.timeLimit')} sortable style={{ width: '100px' }} />
+            <Column field="creator" header={t('admin.creator')} body={creatorTemplate} />
+            <Column field="duration" header={t('admin.duration')} body={durationTemplate} style={{ width: '120px' }} />
+            <Column field="createdAt" header={t('admin.created')} sortable style={{ width: '150px' }} />
+            <Column header={t('admin.actions')} body={actionTemplate} style={{ width: '120px' }} />
           </DataTable>
         </Card>
       </div>

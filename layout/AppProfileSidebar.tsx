@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { Avatar } from "primereact/avatar";
 import { Skeleton } from "primereact/skeleton";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Notification {
     id: string;
@@ -32,6 +33,7 @@ const AppProfileSidebar = () => {
     const { layoutState, setLayoutState } = useContext(LayoutContext);
     const { user, logout } = useAuth();
     const router = useRouter();
+    const { t } = useTranslation();
     
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [messages, setMessages] = useState<Message[]>([]);
@@ -119,9 +121,9 @@ const AppProfileSidebar = () => {
             className="layout-profile-sidebar w-full sm:w-25rem"
         >
             <div className="flex flex-column mx-auto md:mx-0">
-                <span className="mb-2 font-semibold">Welcome</span>
+                <span className="mb-2 font-semibold">{t('profile.welcome')}</span>
                 <span className="text-color-secondary font-medium mb-5">
-                    {user ? `${user.firstName} ${user.lastName}` : 'Admin User'}
+                    {user ? `${user.firstName} ${user.lastName}` : t('profile.adminUser')}
                 </span>
 
                 <ul className="list-none m-0 p-0">
@@ -135,10 +137,10 @@ const AppProfileSidebar = () => {
                             </span>
                             <div className="ml-3">
                                 <span className="mb-2 font-semibold">
-                                    Profile
+                                    {t('profile.profile')}
                                 </span>
                                 <p className="text-color-secondary m-0">
-                                    Manage your account settings
+                                    {t('profile.manageAccountSettings')}
                                 </p>
                             </div>
                         </button>
@@ -153,10 +155,10 @@ const AppProfileSidebar = () => {
                             </span>
                             <div className="ml-3">
                                 <span className="mb-2 font-semibold">
-                                    Settings
+                                    {t('profile.settings')}
                                 </span>
                                 <p className="text-color-secondary m-0">
-                                    Configure system preferences
+                                    {t('profile.configureSystemPreferences')}
                                 </p>
                             </div>
                         </button>
@@ -171,10 +173,10 @@ const AppProfileSidebar = () => {
                             </span>
                             <div className="ml-3">
                                 <span className="mb-2 font-semibold">
-                                    Sign Out
+                                    {t('profile.signOut')}
                                 </span>
                                 <p className="text-color-secondary m-0">
-                                    Logout from your account
+                                    {t('profile.logoutFromAccount')}
                                 </p>
                             </div>
                         </button>
@@ -183,12 +185,12 @@ const AppProfileSidebar = () => {
             </div>
 
             <div className="flex flex-column mt-5 mx-auto md:mx-0">
-                <span className="mb-2 font-semibold">Recent Notifications</span>
+                <span className="mb-2 font-semibold">{t('profile.recentNotifications')}</span>
                 <span className="text-color-secondary font-medium mb-5">
                     {loading ? (
                         <Skeleton width="60%" height="1rem" />
                     ) : (
-                        `You have ${notifications.length} unread notifications`
+                        t('profile.unreadNotifications', { count: notifications.length })
                     )}
                 </span>
 
@@ -230,72 +232,7 @@ const AppProfileSidebar = () => {
                 ) : (
                     <div className="text-center p-3 text-color-secondary">
                         <i className="pi pi-bell text-2xl mb-2"></i>
-                        <p className="m-0">No new notifications</p>
-                    </div>
-                )}
-            </div>
-
-            <div className="flex flex-column mt-5 mx-auto md:mx-0">
-                <span className="mb-2 font-semibold">Recent Messages</span>
-                <span className="text-color-secondary font-medium mb-5">
-                    {loading ? (
-                        <Skeleton width="50%" height="1rem" />
-                    ) : (
-                        "Latest chat activity"
-                    )}
-                </span>
-
-                {loading ? (
-                    <div className="space-y-3">
-                        {[1, 2, 3].map((i) => (
-                            <div key={i} className="flex align-items-center p-3 border-1 surface-border border-round">
-                                <Skeleton shape="circle" size="2rem" className="mr-3" />
-                                <div className="flex-1">
-                                    <Skeleton width="70%" height="1rem" className="mb-2" />
-                                    <Skeleton width="50%" height="0.8rem" />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                ) : messages.length > 0 ? (
-                    <ul className="list-none m-0 p-0">
-                        {messages.slice(0, 3).map((message) => (
-                            <li key={message.id}>
-                                <button 
-                                    onClick={handleMessageClick}
-                                    className="cursor-pointer flex surface-border mb-3 p-3 align-items-center border-1 surface-border border-round hover:surface-hover transition-colors transition-duration-150 w-full text-left"
-                                >
-                                    <span>
-                                        {message.sender.profileImage ? (
-                                            <img
-                                                src={message.sender.profileImage}
-                                                alt="Avatar"
-                                                className="w-2rem h-2rem border-circle"
-                                            />
-                                        ) : (
-                                            <Avatar 
-                                                label={`${message.sender.firstName[0]}${message.sender.lastName[0]}`}
-                                                size="normal"
-                                                className="bg-primary"
-                                            />
-                                        )}
-                                    </span>
-                                    <div className="ml-3 flex-1">
-                                        <span className="mb-2 font-semibold block text-left">
-                                            {`${message.sender.firstName} ${message.sender.lastName}`}
-                                        </span>
-                                        <p className="text-color-secondary m-0 text-left">
-                                            {formatRelativeTime(message.createdAt)}
-                                        </p>
-                                    </div>
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <div className="text-center p-3 text-color-secondary">
-                        <i className="pi pi-comments text-2xl mb-2"></i>
-                        <p className="m-0">No recent messages</p>
+                        <p className="m-0">{t('profile.noNewNotifications')}</p>
                     </div>
                 )}
             </div>

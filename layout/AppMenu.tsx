@@ -1,46 +1,49 @@
 import type { MenuModel } from "@/types/index";
 import AppSubMenu from "./AppSubMenu";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const AppMenu = () => {
+    const { t } = useTranslation();
+    
     const model: MenuModel[] = [
         {
-            label: "Dashboard",
+            label: t('navigation.dashboard'),
             icon: "pi pi-home",
             items: [
                 {
-                    label: "Dashboard Overview",
+                    label: t('navigation.dashboardOverview'),
                     icon: "pi pi-fw pi-home",
                     to: "/admin",
                 },
             ],
         },
         {
-            label: "Game Management",
+            label: t('navigation.gameManagement'),
             icon: "pi pi-gamepad",
             items: [
                 {
-                    label: "All Games",
+                    label: t('navigation.allGames'),
                     icon: "pi pi-fw pi-list",
                     to: "/admin/games",
                 },
                 {
-                    label: "Game Rooms",
+                    label: t('navigation.gameRooms'),
                     icon: "pi pi-fw pi-users",
                     to: "/admin/game-rooms",
                 },
             ],
         },
         {
-            label: "User Management",
+            label: t('navigation.userManagement'),
             icon: "pi pi-users",
             items: [
                 {
-                    label: "All Users",
+                    label: t('navigation.allUsers'),
                     icon: "pi pi-fw pi-users",
                     to: "/admin/users",
                 },
                 {
-                    label: "User Statistics",
+                    label: t('navigation.userStatistics'),
                     icon: "pi pi-fw pi-chart-bar",
                     to: "/admin/users/statistics",
                 },
