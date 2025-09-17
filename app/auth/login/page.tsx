@@ -139,20 +139,6 @@ export default function LoginPage() {
               disabled={loading}
             />
           </div>
-
-
-          {/* Sign Up Link */}
-          <div className="text-center mt-6">
-            <p className="text-600 text-lg">
-              Don't have an account?{' '}
-              <Link 
-                href="/auth/register" 
-                className="text-primary hover:text-primary-600 font-medium cursor-pointer text-lg"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </>

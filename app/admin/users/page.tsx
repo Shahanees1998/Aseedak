@@ -49,22 +49,22 @@ export default function UsersPage() {
   })
 
   const avatarOptions = [
-    { label: 'Avatar 1', value: 'IMAGE1' },
-    { label: 'Avatar 2', value: 'IMAGE2' },
-    { label: 'Avatar 3', value: 'IMAGE3' },
-    { label: 'Avatar 4', value: 'IMAGE4' },
-    { label: 'Avatar 5', value: 'IMAGE5' },
-    { label: 'Avatar 6', value: 'IMAGE6' },
-    { label: 'Avatar 7', value: 'IMAGE7' },
-    { label: 'Avatar 8', value: 'IMAGE8' },
-    { label: 'Avatar 9', value: 'IMAGE9' },
-    { label: 'Avatar 10', value: 'IMAGE10' },
-    { label: 'Avatar 11', value: 'IMAGE11' },
-    { label: 'Avatar 12', value: 'IMAGE12' },
-    { label: 'Avatar 13', value: 'IMAGE13' },
-    { label: 'Avatar 14', value: 'IMAGE14' },
-    { label: 'Avatar 15', value: 'IMAGE15' },
-    { label: 'Avatar 16', value: 'IMAGE16' },
+    { label: t('admin.users.avatarOptions.avatar1'), value: 'IMAGE1' },
+    { label: t('admin.users.avatarOptions.avatar2'), value: 'IMAGE2' },
+    { label: t('admin.users.avatarOptions.avatar3'), value: 'IMAGE3' },
+    { label: t('admin.users.avatarOptions.avatar4'), value: 'IMAGE4' },
+    { label: t('admin.users.avatarOptions.avatar5'), value: 'IMAGE5' },
+    { label: t('admin.users.avatarOptions.avatar6'), value: 'IMAGE6' },
+    { label: t('admin.users.avatarOptions.avatar7'), value: 'IMAGE7' },
+    { label: t('admin.users.avatarOptions.avatar8'), value: 'IMAGE8' },
+    { label: t('admin.users.avatarOptions.avatar9'), value: 'IMAGE9' },
+    { label: t('admin.users.avatarOptions.avatar10'), value: 'IMAGE10' },
+    { label: t('admin.users.avatarOptions.avatar11'), value: 'IMAGE11' },
+    { label: t('admin.users.avatarOptions.avatar12'), value: 'IMAGE12' },
+    { label: t('admin.users.avatarOptions.avatar13'), value: 'IMAGE13' },
+    { label: t('admin.users.avatarOptions.avatar14'), value: 'IMAGE14' },
+    { label: t('admin.users.avatarOptions.avatar15'), value: 'IMAGE15' },
+    { label: t('admin.users.avatarOptions.avatar16'), value: 'IMAGE16' },
   ]
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function UsersPage() {
       }
     } catch (error) {
       console.error('Error fetching users:', error)
-      showToast('error', 'Error', 'Failed to fetch users')
+      showToast('error', t('common.error'), t('admin.users.errorFetching'))
     } finally {
       setLoading(false)
     }
@@ -107,17 +107,17 @@ export default function UsersPage() {
       })
 
       if (response.ok) {
-        showToast('success', 'Success', editingUser ? 'User updated successfully!' : 'User created successfully!')
+        showToast('success', t('common.success'), editingUser ? t('admin.users.userUpdated') : t('admin.users.userCreated'))
         setUserDialogVisible(false)
         setEditingUser(null)
         setUserForm({ firstName: '', lastName: '', username: '', email: '', avatar: 'IMAGE1', isActive: true })
         fetchUsers()
       } else {
         const error = await response.json()
-        showToast('error', 'Error', error.message || 'Error saving user')
+        showToast('error', t('common.error'), error.message || t('admin.users.errorSaving'))
       }
     } catch (error) {
-      showToast('error', 'Error', 'Error saving user')
+      showToast('error', t('common.error'), t('admin.users.errorSaving'))
     }
   }
 
@@ -143,21 +143,21 @@ export default function UsersPage() {
       })
 
       if (response.ok) {
-        showToast('success', 'Success', `User ${!isActive ? 'activated' : 'suspended'} successfully!`)
+        showToast('success', t('common.success'), !isActive ? t('admin.users.userActivated') : t('admin.users.userSuspended'))
         fetchUsers()
       } else {
         const error = await response.json()
-        showToast('error', 'Error', error.message || 'Error updating user status')
+        showToast('error', t('common.error'), error.message || t('admin.users.errorUpdatingStatus'))
       }
     } catch (error) {
-      showToast('error', 'Error', 'Error updating user status')
+      showToast('error', t('common.error'), t('admin.users.errorUpdatingStatus'))
     }
   }
 
   const statusBodyTemplate = (rowData: User) => {
     return (
       <Badge 
-        value={rowData.isActive ? 'Active' : 'Suspended'} 
+        value={rowData.isActive ? t('admin.users.active') : t('admin.users.suspended')} 
         severity={rowData.isActive ? 'success' : 'danger'} 
       />
     )
@@ -207,17 +207,17 @@ export default function UsersPage() {
     <div className="grid">
       <div className="col-12">
         <div className="card">
-          <h5>User Management</h5>
-          <p className="text-color-secondary">Manage all users in the system</p>
+          <h5>{t('admin.users.title')}</h5>
+          <p className="text-color-secondary">{t('admin.users.subtitle')}</p>
         </div>
       </div>
 
       <div className="col-12">
         <Card>
           <div className="flex justify-content-between align-items-center mb-4">
-            <h6 className="m-0">All Users</h6>
+            <h6 className="m-0">{t('admin.users.usersList')}</h6>
             <Button
-              label="Add New User"
+              label={t('admin.users.addNewUser')}
               icon="pi pi-plus"
               onClick={() => {
                 setEditingUser(null)
@@ -234,105 +234,128 @@ export default function UsersPage() {
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
             className="p-datatable-sm"
-            emptyMessage="No users found"
+            emptyMessage={t('admin.users.noUsers')}
             sortField="createdAt"
             sortOrder={-1}
           >
-            <Column field="username" header="Username" sortable />
-            <Column field="email" header="Email" sortable />
-            <Column field="gamesPlayed" header="Games Played" sortable />
-            <Column field="gamesWon" header="Games Won" sortable />
-            <Column field="totalKills" header="Total Kills" sortable />
-            <Column header="Status" body={statusBodyTemplate} />
-            <Column header="Actions" body={actionsBodyTemplate} />
+            <Column field="username" header={t('admin.users.username')} sortable />
+            <Column field="email" header={t('admin.users.email')} sortable />
+            <Column field="gamesPlayed" header={t('admin.users.gamesPlayed')} sortable />
+            <Column field="gamesWon" header={t('admin.users.gamesWon')} sortable />
+            <Column field="totalKills" header={t('admin.users.totalKills')} sortable />
+            <Column header={t('admin.users.status')} body={statusBodyTemplate} />
+            <Column header={t('admin.users.actions')} body={actionsBodyTemplate} />
           </DataTable>
         </Card>
       </div>
 
       {/* User Dialog */}
         <Dialog
-          header={editingUser ? "Edit User" : "Add New User"}
+          header={editingUser ? t('admin.users.editUser') : t('admin.users.addNewUser')}
           visible={userDialogVisible}
           style={{ width: '50vw' }}
           onHide={() => setUserDialogVisible(false)}
         >
-          <form onSubmit={handleUserSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white mb-2">First Name</label>
-                <InputText
-                  value={userForm.firstName}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, firstName: e.target.value }))}
-                  placeholder="First Name"
-                  required
-                />
+          <form onSubmit={handleUserSubmit}>
+            <div className="grid">
+              <div className="col-12 md:col-6">
+                <div className="field">
+                  <label htmlFor="firstName" className="block text-900 font-medium mb-2">{t('admin.users.firstName')} *</label>
+                  <InputText
+                    id="firstName"
+                    value={userForm.firstName}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, firstName: e.target.value }))}
+                    placeholder={t('admin.users.firstNamePlaceholder')}
+                    className="w-full"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-white mb-2">Last Name</label>
-                <InputText
-                  value={userForm.lastName}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, lastName: e.target.value }))}
-                  placeholder="Last Name"
-                  required
-                />
+              <div className="col-12 md:col-6">
+                <div className="field">
+                  <label htmlFor="lastName" className="block text-900 font-medium mb-2">{t('admin.users.lastName')} *</label>
+                  <InputText
+                    id="lastName"
+                    value={userForm.lastName}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, lastName: e.target.value }))}
+                    placeholder={t('admin.users.lastNamePlaceholder')}
+                    className="w-full"
+                    required
+                  />
+                </div>
               </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-white mb-2">Username</label>
-                <InputText
-                  value={userForm.username}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
-                  placeholder="Username"
-                  required
-                />
+              
+              <div className="col-12 md:col-6">
+                <div className="field">
+                  <label htmlFor="username" className="block text-900 font-medium mb-2">{t('admin.users.username')} *</label>
+                  <InputText
+                    id="username"
+                    value={userForm.username}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, username: e.target.value }))}
+                    placeholder={t('admin.users.usernamePlaceholder')}
+                    className="w-full"
+                    required
+                  />
+                </div>
               </div>
-              <div>
-                <label className="block text-white mb-2">Email</label>
-                <InputText
-                  value={userForm.email}
-                  onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
-                  placeholder="Email"
-                  type="email"
-                  required
-                />
+              <div className="col-12 md:col-6">
+                <div className="field">
+                  <label htmlFor="email" className="block text-900 font-medium mb-2">{t('admin.users.email')} *</label>
+                  <InputText
+                    id="email"
+                    value={userForm.email}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, email: e.target.value }))}
+                    placeholder={t('admin.users.emailPlaceholder')}
+                    type="email"
+                    className="w-full"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-white mb-2">Avatar</label>
-              <Dropdown
-                value={userForm.avatar}
-                onChange={(e) => setUserForm(prev => ({ ...prev, avatar: e.value }))}
-                options={avatarOptions}
-                placeholder="Select Avatar"
-                required
-              />
-            </div>
+              <div className="col-12">
+                <div className="field">
+                  <label htmlFor="avatar" className="block text-900 font-medium mb-2">{t('admin.users.avatar')} *</label>
+                  <Dropdown
+                    id="avatar"
+                    value={userForm.avatar}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, avatar: e.value }))}
+                    options={avatarOptions}
+                    placeholder={t('admin.users.selectAvatar')}
+                    className="w-full"
+                    required
+                  />
+                </div>
+              </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isActive"
-                checked={userForm.isActive}
-                onChange={(e) => setUserForm(prev => ({ ...prev, isActive: e.target.checked }))}
-                className="mr-2"
-              />
-              <label htmlFor="isActive" className="text-white">Active</label>
-            </div>
+              <div className="col-12">
+                <div className="field-checkbox">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    checked={userForm.isActive}
+                    onChange={(e) => setUserForm(prev => ({ ...prev, isActive: e.target.checked }))}
+                    className="mr-2"
+                  />
+                  <label htmlFor="isActive" className="text-900">{t('admin.users.active')}</label>
+                </div>
+              </div>
 
-            <div className="flex justify-end space-x-2">
-              <Button
-                label="Cancel"
-                onClick={() => setUserDialogVisible(false)}
-                className="p-button-secondary"
-              />
-              <Button
-                label={editingUser ? "Update" : "Create"}
-                type="submit"
-                className="p-button-primary"
-              />
+              <div className="col-12">
+                <div className="flex justify-content-end gap-2 mt-3">
+                  <Button
+                    label={t('common.cancel')}
+                    onClick={() => setUserDialogVisible(false)}
+                    className="p-button-secondary"
+                    type="button"
+                  />
+                  <Button
+                    label={editingUser ? t('common.update') : t('common.create')}
+                    type="submit"
+                    className="p-button-primary"
+                  />
+                </div>
+              </div>
             </div>
           </form>
         </Dialog>

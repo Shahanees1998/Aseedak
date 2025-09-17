@@ -62,7 +62,7 @@ export default function CharactersManagement() {
       }
     } catch (error) {
       console.error('Error fetching characters:', error)
-      showToast('error', 'Error', 'Failed to fetch characters')
+      showToast('error', t('common.error'), t('admin.characters.errorFetching'))
     } finally {
       setLoading(false)
     }
@@ -87,14 +87,14 @@ export default function CharactersManagement() {
       if (response.ok) {
         const data = await response.json()
         setCharacterForm(prev => ({ ...prev, imageUrl: data.imageUrl }))
-        showToast('success', 'Success', 'Image uploaded successfully!')
+        showToast('success', t('common.success'), t('admin.characters.imageUploadedSuccess'))
       } else {
         const error = await response.json()
-        showToast('error', 'Error', error.message || 'Failed to upload image')
+        showToast('error', t('common.error'), error.message || t('admin.characters.errorUploading'))
       }
     } catch (error) {
       console.error('Error uploading image:', error)
-      showToast('error', 'Error', 'Failed to upload image')
+      showToast('error', t('common.error'), t('admin.characters.errorUploading'))
     } finally {
       setUploadingImage(false)
     }
@@ -114,17 +114,17 @@ export default function CharactersManagement() {
       })
 
       if (response.ok) {
-        showToast('success', 'Success', editingCharacter ? 'Character updated successfully!' : 'Character created successfully!')
+        showToast('success', t('common.success'), editingCharacter ? t('admin.characters.characterUpdated') : t('admin.characters.characterCreated'))
         setCharacterDialogVisible(false)
         setEditingCharacter(null)
         setCharacterForm({ name: '', description: '', imageUrl: '', isActive: true })
         fetchCharacters()
       } else {
         const error = await response.json()
-        showToast('error', 'Error', error.message || 'Error saving character')
+        showToast('error', t('common.error'), error.message || t('admin.characters.errorSaving'))
       }
     } catch (error) {
-      showToast('error', 'Error', 'Error saving character')
+      showToast('error', t('common.error'), t('admin.characters.errorSaving'))
     }
   }
 
@@ -140,21 +140,21 @@ export default function CharactersManagement() {
   }
 
   const deleteCharacter = async (id: string) => {
-    if (confirm('Are you sure you want to delete this character?')) {
+    if (confirm(t('admin.characters.confirmDelete'))) {
       try {
         const response = await fetch(`/api/admin/characters/${id}`, {
           method: 'DELETE'
         })
 
         if (response.ok) {
-          showToast('success', 'Success', 'Character deleted successfully!')
+          showToast('success', t('common.success'), t('admin.characters.characterDeleted'))
           fetchCharacters()
         } else {
           const data = await response.json()
-          showToast('error', 'Error', data.message || 'Error deleting character')
+          showToast('error', t('common.error'), data.message || t('admin.characters.errorDeleting'))
         }
       } catch (error) {
-        showToast('error', 'Error', 'Error deleting character')
+        showToast('error', t('common.error'), t('admin.characters.errorDeleting'))
       }
     }
   }
@@ -168,14 +168,14 @@ export default function CharactersManagement() {
       })
 
       if (response.ok) {
-        showToast('success', 'Success', `Character ${!isActive ? 'activated' : 'deactivated'} successfully!`)
+        showToast('success', t('common.success'), !isActive ? t('admin.characters.characterActivated') : t('admin.characters.characterDeactivated'))
         fetchCharacters()
       } else {
         const error = await response.json()
-        showToast('error', 'Error', error.message || 'Error updating character status')
+        showToast('error', t('common.error'), error.message || t('admin.characters.errorUpdatingStatus'))
       }
     } catch (error) {
-      showToast('error', 'Error', 'Error updating character status')
+      showToast('error', t('common.error'), t('admin.characters.errorUpdatingStatus'))
     }
   }
 
@@ -203,7 +203,7 @@ export default function CharactersManagement() {
   const statusBodyTemplate = (rowData: Character) => {
     return (
       <Badge 
-        value={rowData.isActive ? 'Active' : 'Inactive'} 
+        value={rowData.isActive ? t('admin.characters.active') : t('admin.characters.inactive')} 
         severity={rowData.isActive ? 'success' : 'secondary'} 
       />
     )
@@ -216,7 +216,7 @@ export default function CharactersManagement() {
           icon="pi pi-pencil"
           size="small"
           severity="info"
-          tooltip="Edit Character"
+          tooltip={t('admin.characters.editTooltip')}
           tooltipOptions={{ position: 'top' }}
           onClick={() => editCharacter(rowData)}
         />
@@ -224,7 +224,7 @@ export default function CharactersManagement() {
           icon={rowData.isActive ? "pi pi-ban" : "pi pi-check"}
           size="small"
           severity={rowData.isActive ? "danger" : "success"}
-          tooltip={rowData.isActive ? "Deactivate" : "Activate"}
+          tooltip={rowData.isActive ? t('admin.characters.deactivateTooltip') : t('admin.characters.activateTooltip')}
           tooltipOptions={{ position: 'top' }}
           onClick={() => toggleCharacterStatus(rowData.id, rowData.isActive)}
         />
@@ -232,7 +232,7 @@ export default function CharactersManagement() {
           icon="pi pi-trash"
           size="small"
           severity="danger"
-          tooltip="Delete Character"
+          tooltip={t('admin.characters.deleteTooltip')}
           tooltipOptions={{ position: 'top' }}
           onClick={() => deleteCharacter(rowData.id)}
         />
@@ -245,7 +245,7 @@ export default function CharactersManagement() {
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
           <i className="pi pi-spin pi-spinner text-4xl text-primary"></i>
-          <p className="mt-3 text-color-secondary">Loading...</p>
+          <p className="mt-3 text-color-secondary">{t('common.loading')}</p>
         </div>
       </div>
     )
@@ -255,17 +255,17 @@ export default function CharactersManagement() {
     <div className="grid">
       <div className="col-12">
         <div className="card">
-          <h5>Characters Management</h5>
-          <p className="text-color-secondary">Manage character avatars for the game</p>
+          <h5>{t('admin.characters.title')}</h5>
+          <p className="text-color-secondary">{t('admin.characters.subtitle')}</p>
         </div>
       </div>
 
       <div className="col-12">
         <Card>
           <div className="flex justify-content-between align-items-center mb-4">
-            <h6 className="m-0">Characters</h6>
+            <h6 className="m-0">{t('admin.characters.charactersList')}</h6>
             <Button
-              label="Add New Character"
+              label={t('admin.characters.addNewCharacter')}
               icon="pi pi-plus"
               onClick={() => {
                 setEditingCharacter(null)
@@ -282,23 +282,23 @@ export default function CharactersManagement() {
             rows={10}
             rowsPerPageOptions={[5, 10, 25]}
             className="p-datatable-sm"
-            emptyMessage="No characters found"
+            emptyMessage={t('admin.characters.noCharacters')}
             sortField="createdAt"
             sortOrder={-1}
           >
-            <Column header="Image" body={imageBodyTemplate} style={{ width: '80px' }} />
-            <Column field="name" header="Name" sortable />
-            <Column field="description" header="Description" />
-            <Column header="Status" body={statusBodyTemplate} style={{ width: '100px' }} />
-            <Column field="createdAt" header="Created" sortable style={{ width: '150px' }} />
-            <Column header="Actions" body={actionsBodyTemplate} style={{ width: '120px' }} />
+            <Column header={t('admin.characters.image')} body={imageBodyTemplate} style={{ width: '80px' }} />
+            <Column field="name" header={t('admin.characters.name')} sortable />
+            <Column field="description" header={t('admin.characters.description')} />
+            <Column header={t('admin.characters.status')} body={statusBodyTemplate} style={{ width: '100px' }} />
+            <Column field="createdAt" header={t('admin.characters.created')} sortable style={{ width: '150px' }} />
+            <Column header={t('admin.characters.actions')} body={actionsBodyTemplate} style={{ width: '120px' }} />
           </DataTable>
         </Card>
       </div>
 
       {/* Character Dialog */}
         <Dialog
-          header={editingCharacter ? "Edit Character" : "Add New Character"}
+          header={editingCharacter ? t('admin.characters.editCharacter') : t('admin.characters.addNewCharacter')}
           visible={characterDialogVisible}
           style={{ width: '50vw' }}
           onHide={() => setCharacterDialogVisible(false)}
@@ -307,12 +307,12 @@ export default function CharactersManagement() {
             <div className="grid">
               <div className="col-12">
                 <div className="field">
-                  <label htmlFor="characterName" className="block text-900 font-medium mb-2">Character Name *</label>
+                  <label htmlFor="characterName" className="block text-900 font-medium mb-2">{t('admin.characters.characterName')} *</label>
                   <InputText
                     id="characterName"
                     value={characterForm.name}
                     onChange={(e) => setCharacterForm(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="Enter character name"
+                    placeholder={t('admin.characters.characterNamePlaceholder')}
                     required
                     className="w-full"
                   />
@@ -321,12 +321,12 @@ export default function CharactersManagement() {
               
               <div className="col-12">
                 <div className="field">
-                  <label htmlFor="characterDescription" className="block text-900 font-medium mb-2">Description</label>
+                  <label htmlFor="characterDescription" className="block text-900 font-medium mb-2">{t('admin.characters.description')}</label>
                   <InputTextarea
                     id="characterDescription"
                     value={characterForm.description}
                     onChange={(e) => setCharacterForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Enter character description"
+                    placeholder={t('admin.characters.descriptionPlaceholder')}
                     rows={3}
                     className="w-full"
                   />
@@ -335,7 +335,7 @@ export default function CharactersManagement() {
 
               <div className="col-12">
                 <div className="field">
-                  <label className="block text-900 font-medium mb-2">Character Image *</label>
+                  <label className="block text-900 font-medium mb-2">{t('admin.characters.characterImage')} *</label>
                   
                   {/* Image Preview */}
                   {characterForm.imageUrl && (
@@ -350,8 +350,8 @@ export default function CharactersManagement() {
                           preview
                         />
                         <div>
-                          <p className="text-sm font-medium mb-1">Image uploaded successfully!</p>
-                          <p className="text-xs text-color-secondary">Click image to preview</p>
+                          <p className="text-sm font-medium mb-1">{t('admin.characters.imageUploaded')}</p>
+                          <p className="text-xs text-color-secondary">{t('admin.characters.clickToPreview')}</p>
                         </div>
                       </div>
                     </div>
@@ -362,7 +362,7 @@ export default function CharactersManagement() {
                     <div className="mb-3 p-3 border-round" style={{ backgroundColor: '#e3f2fd' }}>
                       <div className="flex align-items-center gap-2">
                         <i className="pi pi-spin pi-spinner text-primary"></i>
-                        <span className="text-sm">Uploading image...</span>
+                        <span className="text-sm">{t('admin.characters.uploadingImage')}</span>
                       </div>
                     </div>
                   )}
@@ -375,7 +375,7 @@ export default function CharactersManagement() {
                     maxFileSize={5000000}
                     customUpload={true}
                     uploadHandler={handleImageUpload}
-                    chooseLabel="Choose Image"
+                    chooseLabel={t('admin.characters.chooseImage')}
                     disabled={uploadingImage}
                     className="w-full"
                     auto={true}
@@ -386,13 +386,13 @@ export default function CharactersManagement() {
               <div className="col-12">
                 <div className="flex justify-content-end gap-2 mt-3">
                   <Button
-                    label="Cancel"
+                    label={t('common.cancel')}
                     onClick={() => setCharacterDialogVisible(false)}
                     className="p-button-secondary"
                     type="button"
                   />
                   <Button
-                    label={editingCharacter ? "Update" : "Create"}
+                    label={editingCharacter ? t('common.update') : t('common.create')}
                     type="submit"
                     className="p-button-primary"
                     disabled={!characterForm.name || !characterForm.imageUrl}
