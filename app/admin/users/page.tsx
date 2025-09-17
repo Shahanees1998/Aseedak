@@ -216,16 +216,6 @@ export default function UsersPage() {
         <Card>
           <div className="flex justify-content-between align-items-center mb-4">
             <h6 className="m-0">{t('admin.users.usersList')}</h6>
-            <Button
-              label={t('admin.users.addNewUser')}
-              icon="pi pi-plus"
-              onClick={() => {
-                setEditingUser(null)
-                setUserForm({ firstName: '', lastName: '', username: '', email: '', avatar: 'IMAGE1', isActive: true })
-                setUserDialogVisible(true)
-              }}
-              className="p-button-primary"
-            />
           </div>
 
           <DataTable
