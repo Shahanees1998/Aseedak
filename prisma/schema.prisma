@@ -54,16 +54,16 @@ enum AvatarType {
 }
 
 model User {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  email     String     @unique
-  password  String
-  firstName String
-  lastName  String
-  username  String     @unique
-  phoneNumber String?  // Optional phone number
-  role      UserRole   @default(USER)
-  avatar    AvatarType?
-  isActive  Boolean    @default(true)
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  email       String      @unique
+  password    String
+  firstName   String
+  lastName    String
+  username    String      @unique
+  phoneNumber String? // Optional phone number
+  role        UserRole    @default(USER)
+  avatar      AvatarType?
+  isActive    Boolean     @default(true)
 
   // Profile image (Cloudinary)
   profileImageUrl      String?
@@ -72,10 +72,10 @@ model User {
   // Password reset
   resetToken       String?
   resetTokenExpiry DateTime?
-  
+
   // Email verification
-  emailVerified    Boolean   @default(false)
-  emailVerifyToken String?
+  emailVerified     Boolean   @default(false)
+  emailVerifyToken  String?
   emailVerifyExpiry DateTime?
 
   // Game statistics
@@ -84,7 +84,7 @@ model User {
   totalKills  Int @default(0)
 
   // FCM Push Notifications
-  fcmTokens String[] @default([]) // Array of FCM device tokens
+  fcmTokens            String[] @default([]) // Array of FCM device tokens
   notificationSettings Json? // User notification preferences
 
   // Relations
@@ -114,15 +114,15 @@ model Avatar {
 }
 
 model Character {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id          String         @id @default(auto()) @map("_id") @db.ObjectId
+  name        String         @unique
   description String
   imageUrl    String
-  isActive    Boolean  @default(true)
-  packId      String?  @db.ObjectId
+  isActive    Boolean        @default(true)
+  packId      String?        @db.ObjectId
   pack        CharacterPack? @relation(fields: [packId], references: [id])
-  isUnlocked  Boolean  @default(false)
-  price       Int      @default(0) // Price in cents
+  isUnlocked  Boolean        @default(false)
+  price       Int            @default(0) // Price in cents
 
   // Relations
   gamePlayers GamePlayer[]
@@ -134,12 +134,12 @@ model Character {
 }
 
 model CharacterPack {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String      @unique
   description String
   imageUrl    String
-  price       Int      @default(0) // Price in cents
-  isActive    Boolean  @default(true)
+  price       Int         @default(0) // Price in cents
+  isActive    Boolean     @default(true)
   characters  Character[]
 
   createdAt DateTime @default(now())
@@ -149,11 +149,11 @@ model CharacterPack {
 }
 
 model WordDeck {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String   @unique
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
   description String
-  price       Int      @default(0) // Price in cents
-  isActive    Boolean  @default(true)
+  price       Int     @default(0) // Price in cents
+  isActive    Boolean @default(true)
   words       Word[]
 
   createdAt DateTime @default(now())
@@ -163,14 +163,14 @@ model WordDeck {
 }
 
 model UserPurchase {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
-  user        User     @relation(fields: [userId], references: [id])
-  type        String   // "character", "character_pack", "word_deck"
-  itemId      String   @db.ObjectId
+  id                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String  @db.ObjectId
+  user                  User    @relation(fields: [userId], references: [id])
+  type                  String // "character", "character_pack", "word_deck"
+  itemId                String  @db.ObjectId
   stripePaymentIntentId String?
-  amount      Int      // Amount paid in cents
-  status      String   @default("completed") // "pending", "completed", "failed", "refunded"
+  amount                Int // Amount paid in cents
+  status                String  @default("completed") // "pending", "completed", "failed", "refunded"
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -179,13 +179,13 @@ model UserPurchase {
 }
 
 model Word {
-  id         String    @id @default(auto()) @map("_id") @db.ObjectId
-  word1      String
-  word2      String
-  word3      String
-  isActive   Boolean   @default(true)
-  deckId     String?   @db.ObjectId
-  deck       WordDeck? @relation(fields: [deckId], references: [id])
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  word1    String
+  word2    String
+  word3    String
+  isActive Boolean   @default(true)
+  deckId   String?   @db.ObjectId
+  deck     WordDeck? @relation(fields: [deckId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -231,9 +231,9 @@ model GamePlayer {
   status     PlayerStatus @default(ALIVE)
   joinStatus JoinStatus   @default(INVITED)
   position   Int // Order in the game
-  targetId String?      @db.ObjectId // ID of the player they need to eliminate
-  target   GamePlayer?  @relation("PlayerTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  hunters  GamePlayer[] @relation("PlayerTarget")
+  targetId   String?      @db.ObjectId // ID of the player they need to eliminate
+  target     GamePlayer?  @relation("PlayerTarget", fields: [targetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  hunters    GamePlayer[] @relation("PlayerTarget")
 
   // Assigned character (avatar for this game)
   characterId String?    @db.ObjectId

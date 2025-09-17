@@ -9,9 +9,7 @@ import { DataTable } from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { InputText } from 'primereact/inputtext'
 import { Dialog } from 'primereact/dialog'
-import { Dropdown } from 'primereact/dropdown'
 import { Badge } from 'primereact/badge'
-import AvatarDisplay from '@/components/AvatarDisplay'
 import { useToast } from '@/store/toast.context'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -21,7 +19,6 @@ interface User {
   lastName: string
   username: string
   email: string
-  avatar: string
   role: string
   isActive: boolean
   gamesPlayed: number
@@ -44,28 +41,9 @@ export default function UsersPage() {
     lastName: '',
     username: '',
     email: '',
-    avatar: 'IMAGE1',
     isActive: true
   })
 
-  const avatarOptions = [
-    { label: t('admin.users.avatarOptions.avatar1'), value: 'IMAGE1' },
-    { label: t('admin.users.avatarOptions.avatar2'), value: 'IMAGE2' },
-    { label: t('admin.users.avatarOptions.avatar3'), value: 'IMAGE3' },
-    { label: t('admin.users.avatarOptions.avatar4'), value: 'IMAGE4' },
-    { label: t('admin.users.avatarOptions.avatar5'), value: 'IMAGE5' },
-    { label: t('admin.users.avatarOptions.avatar6'), value: 'IMAGE6' },
-    { label: t('admin.users.avatarOptions.avatar7'), value: 'IMAGE7' },
-    { label: t('admin.users.avatarOptions.avatar8'), value: 'IMAGE8' },
-    { label: t('admin.users.avatarOptions.avatar9'), value: 'IMAGE9' },
-    { label: t('admin.users.avatarOptions.avatar10'), value: 'IMAGE10' },
-    { label: t('admin.users.avatarOptions.avatar11'), value: 'IMAGE11' },
-    { label: t('admin.users.avatarOptions.avatar12'), value: 'IMAGE12' },
-    { label: t('admin.users.avatarOptions.avatar13'), value: 'IMAGE13' },
-    { label: t('admin.users.avatarOptions.avatar14'), value: 'IMAGE14' },
-    { label: t('admin.users.avatarOptions.avatar15'), value: 'IMAGE15' },
-    { label: t('admin.users.avatarOptions.avatar16'), value: 'IMAGE16' },
-  ]
 
   useEffect(() => {
     if (authLoading) return
@@ -110,7 +88,7 @@ export default function UsersPage() {
         showToast('success', t('common.success'), editingUser ? t('admin.users.userUpdated') : t('admin.users.userCreated'))
         setUserDialogVisible(false)
         setEditingUser(null)
-        setUserForm({ firstName: '', lastName: '', username: '', email: '', avatar: 'IMAGE1', isActive: true })
+        setUserForm({ firstName: '', lastName: '', username: '', email: '', isActive: true })
         fetchUsers()
       } else {
         const error = await response.json()
@@ -128,7 +106,6 @@ export default function UsersPage() {
       lastName: user.lastName,
       username: user.username,
       email: user.email,
-      avatar: user.avatar,
       isActive: user.isActive
     })
     setUserDialogVisible(true)
@@ -163,18 +140,6 @@ export default function UsersPage() {
     )
   }
 
-  const avatarBodyTemplate = (rowData: User) => {
-    return (
-      <div className="flex items-center">
-        <AvatarDisplay 
-          avatarType={rowData.avatar || 'IMAGE1'}
-          size="normal" 
-          className="mr-2"
-        />
-        <span className="capitalize">{(rowData.avatar || 'IMAGE1').toLowerCase()}</span>
-      </div>
-    )
-  }
 
   const actionsBodyTemplate = (rowData: User) => {
     return (
@@ -303,20 +268,6 @@ export default function UsersPage() {
                 </div>
               </div>
 
-              <div className="col-12">
-                <div className="field">
-                  <label htmlFor="avatar" className="block text-900 font-medium mb-2">{t('admin.users.avatar')} *</label>
-                  <Dropdown
-                    id="avatar"
-                    value={userForm.avatar}
-                    onChange={(e) => setUserForm(prev => ({ ...prev, avatar: e.value }))}
-                    options={avatarOptions}
-                    placeholder={t('admin.users.selectAvatar')}
-                    className="w-full"
-                    required
-                  />
-                </div>
-              </div>
 
               <div className="col-12">
                 <div className="field-checkbox">

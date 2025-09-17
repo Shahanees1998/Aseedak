@@ -50,6 +50,7 @@ export interface NotificationOptions {
   tokens?: string[]
   roomId?: string
   gameId?: string
+  storeInDatabase?: boolean // Whether to store notification in database
 }
 
 /**
@@ -126,6 +127,30 @@ export async function sendPushNotification(
 
     // Send the notification
     const response = await admin.messaging().sendEachForMulticast(message)
+    
+    // Store notification in database if requested and user ID is provided
+    if (options.storeInDatabase !== false && options.userId && response.successCount > 0) {
+      try {
+        await prisma.notification.create({
+          data: {
+            userId: options.userId,
+            title: payload.title,
+            message: payload.body,
+            type: payload.data?.type || 'general',
+            data: {
+              ...payload.data,
+              timestamp: new Date().toISOString(),
+              ...(options.roomId && { roomId: options.roomId }),
+              ...(options.gameId && { gameId: options.gameId })
+            }
+          }
+        })
+        console.log(`✅ Notification stored in database for user ${options.userId}`)
+      } catch (dbError) {
+        console.error('❌ Failed to store notification in database:', dbError)
+        // Don't fail the FCM send if database storage fails
+      }
+    }
     
     // Handle failed tokens
     const failedTokens: string[] = []
@@ -220,7 +245,7 @@ export const GameNotifications = {
           roomCode
         }
       },
-      { userId: targetUserId }
+      { userId: targetUserId, roomId: roomCode, storeInDatabase: true }
     )
   },
 
@@ -239,7 +264,7 @@ export const GameNotifications = {
           roomCode
         }
       },
-      { userId }
+      { userId, roomId: roomCode, storeInDatabase: true }
     )
   },
 
@@ -257,7 +282,7 @@ export const GameNotifications = {
           roomCode
         }
       },
-      { userId }
+      { userId, roomId: roomCode, storeInDatabase: true }
     )
   },
 
@@ -275,7 +300,7 @@ export const GameNotifications = {
           roomCode
         }
       },
-      { userId }
+      { userId, roomId: roomCode, storeInDatabase: true }
     )
   },
 
@@ -292,7 +317,7 @@ export const GameNotifications = {
           avatarName
         }
       },
-      { userId }
+      { userId, storeInDatabase: true }
     )
   },
 
@@ -311,7 +336,7 @@ export const GameNotifications = {
           roomCode
         }
       },
-      { userId }
+      { userId, roomId: roomCode, storeInDatabase: true }
     )
   },
 
@@ -331,7 +356,7 @@ export const GameNotifications = {
             newUserEmail
           }
         },
-        { userId: adminId, userRole: 'ADMIN' }
+        { userId: adminId, userRole: 'ADMIN', storeInDatabase: true }
       )
       results.push({ adminId, ...result })
     }
@@ -355,7 +380,7 @@ export const GameNotifications = {
             creatorUsername
           }
         },
-        { userId: adminId, userRole: 'ADMIN' }
+        { userId: adminId, userRole: 'ADMIN', roomId: roomCode, storeInDatabase: true }
       )
       results.push({ adminId, ...result })
     }

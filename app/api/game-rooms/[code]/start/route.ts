@@ -80,13 +80,29 @@ export async function POST(
     // Shuffle only joined players and assign targets
     const shuffledPlayers = [...joinedPlayers].sort(() => 0.5 - Math.random())
     const shuffledCharacters = [...characters].sort(() => 0.5 - Math.random())
+    const shuffledWords = [...words].sort(() => 0.5 - Math.random())
     
-    // Update players with their own word deck, targets, and random characters
+    // Check if we have enough unique characters and words
+    if (shuffledCharacters.length < joinedPlayers.length) {
+      return NextResponse.json(
+        { message: `Not enough unique characters available. Need ${joinedPlayers.length} characters, but only ${shuffledCharacters.length} are active.` },
+        { status: 400 }
+      )
+    }
+
+    if (shuffledWords.length < joinedPlayers.length) {
+      return NextResponse.json(
+        { message: `Not enough unique words available. Need ${joinedPlayers.length} word sets, but only ${shuffledWords.length} are available.` },
+        { status: 400 }
+      )
+    }
+    
+    // Update players with their own unique word deck, targets, and unique random characters
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const player = shuffledPlayers[i]
-      const word = words[i] // Each player gets their own word deck
+      const word = shuffledWords[i] // Each player gets their own unique word deck
       const targetPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length]
-      const assignedCharacter = shuffledCharacters[i % shuffledCharacters.length] // Cycle through characters
+      const assignedCharacter = shuffledCharacters[i] // Each player gets a unique character
 
       await prisma.gamePlayer.update({
         where: { id: player.id },
@@ -96,7 +112,7 @@ export async function POST(
           word3: word.word3, // Player's own words to speak
           targetId: targetPlayer.id, // Who they need to speak to
           position: i + 1,
-          characterId: assignedCharacter.id // Assign random character
+          characterId: assignedCharacter.id // Assign unique random character
         }
       })
     }

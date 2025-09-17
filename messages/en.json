@@ -313,7 +313,6 @@
       "lastName": "Last Name",
       "username": "Username",
       "email": "Email",
-      "avatar": "Avatar",
       "active": "Active",
       "suspended": "Suspended",
       "status": "Status",
@@ -322,7 +321,6 @@
       "gamesWon": "Games Won",
       "totalKills": "Total Kills",
       "noUsers": "No users found",
-      "selectAvatar": "Select Avatar",
       "firstNamePlaceholder": "First Name",
       "lastNamePlaceholder": "Last Name",
       "usernamePlaceholder": "Username",
@@ -333,25 +331,7 @@
       "userSuspended": "User suspended successfully!",
       "errorFetching": "Failed to fetch users",
       "errorSaving": "Error saving user",
-      "errorUpdatingStatus": "Error updating user status",
-      "avatarOptions": {
-        "avatar1": "Avatar 1",
-        "avatar2": "Avatar 2",
-        "avatar3": "Avatar 3",
-        "avatar4": "Avatar 4",
-        "avatar5": "Avatar 5",
-        "avatar6": "Avatar 6",
-        "avatar7": "Avatar 7",
-        "avatar8": "Avatar 8",
-        "avatar9": "Avatar 9",
-        "avatar10": "Avatar 10",
-        "avatar11": "Avatar 11",
-        "avatar12": "Avatar 12",
-        "avatar13": "Avatar 13",
-        "avatar14": "Avatar 14",
-        "avatar15": "Avatar 15",
-        "avatar16": "Avatar 16"
-      }
+      "errorUpdatingStatus": "Error updating user status"
     }
   },
   "layout": {

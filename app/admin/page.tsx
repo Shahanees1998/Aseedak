@@ -100,6 +100,7 @@ export default function AdminDashboard() {
   const [editingPack, setEditingPack] = useState<CharacterPack | null>(null)
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null)
   const [editingDeck, setEditingDeck] = useState<WordDeck | null>(null)
+  const [isGameVisible, setIsGameVisible] = useState(false)
   const [wordForm, setWordForm] = useState({
     word1: '',
     word2: '',
@@ -684,7 +685,7 @@ export default function AdminDashboard() {
             <div className="card mb-0">
               <div className="flex justify-content-between mb-3">
                 <div>
-                  <span className="block text-500 font-medium mb-3">{t('admin.totalGames')}</span>
+                  <span className="block text-500 font-medium mb-3" onClick={() => setIsGameVisible(true)}>{t('admin.totalGames')}</span>
                   <div className="text-900 font-medium text-xl">{stats.totalGames}</div>
                 </div>
                 <div className="flex align-items-center justify-content-center bg-orange-100 border-round" style={{ width: '2.5rem', height: '2.5rem' }}>
@@ -721,6 +722,46 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+       {/* Quick Actions */}
+     {isGameVisible && <div className="col-12">
+        <div className="card">
+          <h5>{t('admin.quickActions')}</h5>
+          <p className="text-color-secondary">{t('admin.quickActionsSubtitle')}</p>
+          <div className="flex gap-3 mt-4">
+            <Button
+              label={t('game.createRoom.createRoom')}
+              icon="pi pi-plus"
+              onClick={() => window.open('/create-room', '_blank')}
+              className="p-button-primary"
+              tooltip="Create a new game room to play with other users"
+              tooltipOptions={{ position: 'top' }}
+            />
+            <Button
+              label={t('game.joinRoom.joinRoom')}
+              icon="pi pi-sign-in"
+              onClick={() => {
+                const roomCode = prompt('Enter room code to join:')
+                if (roomCode) {
+                  window.open(`/game/${roomCode}`, '_blank')
+                }
+              }}
+              className="p-button-outlined p-button-primary"
+              tooltip="Join an existing game room using room code"
+              tooltipOptions={{ position: 'top' }}
+            />
+            <Button
+              label={t('admin.viewAllGames')}
+              icon="pi pi-list"
+              onClick={() => window.open('/admin/games', '_blank')}
+              className="p-button-outlined p-button-secondary"
+              tooltip="View all active game rooms and their status"
+              tooltipOptions={{ position: 'top' }}
+            />
+          </div>
+        </div>
+      </div>}
+
       {/* Main Content */}
       <div className="col-12">
         <div className="card">

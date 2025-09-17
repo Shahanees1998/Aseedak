@@ -134,15 +134,16 @@ export async function POST(request: NextRequest) {
           }
         })
 
-        // Send invitation emails to invited players (excluding the creator)
+        // Send invitation emails and FCM notifications to invited players (excluding the creator)
         const invitedPlayers = updatedRoom?.players.filter(player => player.userId !== user.userId) || []
         
         if (invitedPlayers.length > 0) {
-          console.log(`Sending invitation emails to ${invitedPlayers.length} players...`)
+          console.log(`Sending invitation emails and FCM notifications to ${invitedPlayers.length} players...`)
           
-          // Send emails in parallel (don't wait for all to complete)
-          const emailPromises = invitedPlayers.map(async (player) => {
+          // Send emails and FCM notifications in parallel (don't wait for all to complete)
+          const notificationPromises = invitedPlayers.map(async (player) => {
             try {
+              // Send email invitation
               await sendGameRoomInvitationEmail(
                 player.user.email,
                 player.user.firstName || player.user.username,
@@ -152,17 +153,26 @@ export async function POST(request: NextRequest) {
                 validatedData.maxPlayers
               )
               console.log(`✅ Invitation email sent to ${player.user.email}`)
+              
+              // Send FCM notification
+              await GameNotifications.gameInvitation(
+                player.userId,
+                user.firstName || user.username,
+                validatedData.name,
+                roomCode
+              )
+              console.log(`✅ FCM invitation notification sent to ${player.user.username}`)
             } catch (error) {
-              console.error(`❌ Failed to send invitation email to ${player.user.email}:`, error)
-              // Don't throw error - continue with other emails
+              console.error(`❌ Failed to send invitation to ${player.user.email}:`, error)
+              // Don't throw error - continue with other invitations
             }
           })
           
-          // Don't await - let emails send in background
-          Promise.allSettled(emailPromises).then((results) => {
+          // Don't await - let notifications send in background
+          Promise.allSettled(notificationPromises).then((results) => {
             const successful = results.filter(r => r.status === 'fulfilled').length
             const failed = results.filter(r => r.status === 'rejected').length
-            console.log(`📧 Email sending completed: ${successful} successful, ${failed} failed`)
+            console.log(`📧📱 Invitation sending completed: ${successful} successful, ${failed} failed`)
           })
         }
 

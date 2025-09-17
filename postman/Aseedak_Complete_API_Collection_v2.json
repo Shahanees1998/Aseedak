@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Aseedak Complete API Collection v2.1",
-    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, and enhanced store functionality",
-    "version": "2.1.0",
+    "name": "Aseedak Complete API Collection v2.2",
+    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, word decks, and enhanced store functionality with fixed schemas",
+    "version": "2.2.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -48,6 +48,16 @@
     },
     {
       "key": "word_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "word_deck_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "character_pack_id",
       "value": "",
       "type": "string"
     }
@@ -385,7 +395,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"ADMIN\"\n}"
+              "raw": "{\n  \"firstName\": \"Admin\",\n  \"lastName\": \"User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"password123\"\n}"
             },
             "url": {"raw": "{{base_url}}/api/admin/users", "host": ["{{base_url}}"], "path": ["api", "admin", "users"]}
           }
@@ -430,21 +440,6 @@
           }
         },
         {
-          "name": "Assign Avatar to User",
-          "request": {
-            "method": "POST",
-            "header": [
-              {"key": "Content-Type", "value": "application/json"},
-              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"avatar\": \"IMAGE1\"\n}"
-            },
-            "url": {"raw": "{{base_url}}/api/admin/users/{{user_id}}/assign-avatar", "host": ["{{base_url}}"], "path": ["api", "admin", "users", "{{user_id}}", "assign-avatar"]}
-          }
-        },
-        {
           "name": "Get User Statistics",
           "request": {
             "method": "GET",
@@ -478,7 +473,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"word\": \"example\",\n  \"difficulty\": \"EASY\"\n}"
+              "raw": "{\n  \"word1\": \"hello\",\n  \"word2\": \"world\",\n  \"word3\": \"test\",\n  \"isActive\": true\n}"
             },
             "url": {"raw": "{{base_url}}/api/admin/words", "host": ["{{base_url}}"], "path": ["api", "admin", "words"]}
           }
@@ -501,7 +496,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"word\": \"updated_word\",\n  \"difficulty\": \"MEDIUM\"\n}"
+              "raw": "{\n  \"word1\": \"updated1\",\n  \"word2\": \"updated2\",\n  \"word3\": \"updated3\",\n  \"isActive\": true\n}"
             },
             "url": {"raw": "{{base_url}}/api/admin/words/{{word_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "words", "{{word_id}}"]}
           }
@@ -528,6 +523,52 @@
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
             "url": {"raw": "{{base_url}}/api/admin/word-decks", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks"]}
+          }
+        },
+        {
+          "name": "Create Word Deck",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Word Deck\",\n  \"description\": \"A premium collection of challenging words\",\n  \"price\": 1999,\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/word-decks", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks"]}
+          }
+        },
+        {
+          "name": "Get Word Deck by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/word-decks/{{word_deck_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks", "{{word_deck_id}}"]}
+          }
+        },
+        {
+          "name": "Update Word Deck",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Word Deck\",\n  \"description\": \"Updated description for the word deck\",\n  \"price\": 2499,\n  \"isActive\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/word-decks/{{word_deck_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks", "{{word_deck_id}}"]}
+          }
+        },
+        {
+          "name": "Delete Word Deck",
+          "request": {
+            "method": "DELETE",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/word-decks/{{word_deck_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "word-decks", "{{word_deck_id}}"]}
           }
         },
         {
@@ -657,6 +698,29 @@
           "request": {
             "method": "DELETE",
             "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
+          }
+        },
+        {
+          "name": "Get Character Pack by ID",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
+          }
+        },
+        {
+          "name": "Update Character Pack",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Pack\",\n  \"description\": \"Updated pack description\",\n  \"imageUrl\": \"https://example.com/updated-pack.jpg\",\n  \"price\": 1299,\n  \"isActive\": true\n}"
+            },
             "url": {"raw": "{{base_url}}/api/admin/character-packs/{{character_pack_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "character-packs", "{{character_pack_id}}"]}
           }
         }

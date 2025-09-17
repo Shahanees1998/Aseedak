@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
+import { pusher } from '@/lib/pusher'
+import { GameNotifications } from '@/lib/fcm'
 
 const prisma = new PrismaClient()
 
@@ -98,13 +100,29 @@ export async function POST(
     // Shuffle only joined players and assign targets
     const shuffledPlayers = [...joinedPlayers].sort(() => 0.5 - Math.random())
     const shuffledCharacters = [...characters].sort(() => 0.5 - Math.random())
+    const shuffledWords = [...words].sort(() => 0.5 - Math.random())
     
-    // Update players with their own word deck, targets, and random characters
+    // Check if we have enough unique characters and words
+    if (shuffledCharacters.length < joinedPlayers.length) {
+      return NextResponse.json(
+        { message: `Not enough unique characters available. Need ${joinedPlayers.length} characters, but only ${shuffledCharacters.length} are active.` },
+        { status: 400 }
+      )
+    }
+
+    if (shuffledWords.length < joinedPlayers.length) {
+      return NextResponse.json(
+        { message: `Not enough unique words available. Need ${joinedPlayers.length} word sets, but only ${shuffledWords.length} are available.` },
+        { status: 400 }
+      )
+    }
+    
+    // Update players with their own unique word deck, targets, and unique random characters
     for (let i = 0; i < shuffledPlayers.length; i++) {
       const player = shuffledPlayers[i]
-      const word = words[i] // Each player gets their own word deck
+      const word = shuffledWords[i] // Each player gets their own unique word deck
       const targetPlayer = shuffledPlayers[(i + 1) % shuffledPlayers.length]
-      const assignedCharacter = shuffledCharacters[i % shuffledCharacters.length] // Cycle through characters
+      const assignedCharacter = shuffledCharacters[i] // Each player gets a unique character
 
       await prisma.gamePlayer.update({
         where: { id: player.id },
@@ -114,7 +132,7 @@ export async function POST(
           word3: word.word3, // Player's own words to speak
           targetId: targetPlayer.id, // Who they need to speak to
           position: i + 1,
-          characterId: assignedCharacter.id // Assign random character
+          characterId: assignedCharacter.id // Assign unique random character
         }
       })
     }
@@ -187,6 +205,41 @@ export async function POST(
         }
       }
     })
+
+    // Notify all players via Pusher
+    if (pusher) {
+      try {
+        await pusher.trigger(`room-${params.code}`, 'game-started', {
+          room: updatedRoom
+        })
+        console.log('✅ Pusher notification sent for mobile game started')
+      } catch (pusherError) {
+        console.error('❌ Pusher notification failed (non-critical):', pusherError)
+        // Don't fail the start operation if Pusher fails
+      }
+    } else {
+      console.warn('⚠️ Pusher not configured - skipping real-time notification')
+    }
+
+    // Send FCM notifications to all joined players
+    try {
+      const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+      for (const player of joinedPlayers) {
+        try {
+          await GameNotifications.gameStarted(
+            player.userId,
+            room.name,
+            params.code
+          )
+        } catch (error) {
+          console.error(`Failed to send game start notification to user ${player.userId}:`, error)
+        }
+      }
+      console.log('✅ FCM notifications sent for mobile game started')
+    } catch (fcmError) {
+      console.error('❌ FCM notification failed (non-critical):', fcmError)
+      // Don't fail the start operation if FCM fails
+    }
 
     return NextResponse.json({
       message: 'Game started successfully',
