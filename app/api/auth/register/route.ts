@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate unique username: firstname_lastname_userscount
-    const baseUsername = `${validatedData.firstName.toLowerCase()}_${validatedData.lastName.toLowerCase()}`
+    const baseUsername = validatedData.lastName 
+      ? `${validatedData.firstName.toLowerCase()}_${validatedData.lastName.toLowerCase().replace(/\s+/g, '_')}`
+      : validatedData.firstName.toLowerCase()
     let username = baseUsername
     let userCount = 1
     
