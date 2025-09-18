@@ -9,10 +9,9 @@ import { sendOTPEmail } from '@/lib/email'
 const prisma = new PrismaClient()
 
 const registerSchema = z.object({
-  firstName: z.string().min(1, 'First name is required'),
-  lastName: z.string().min(1, 'Last name is required'),
-  username: z.string().min(3, 'Username must be at least 3 characters'),
+  fullName: z.string().min(1, 'Full name is required'),
   email: z.string().email('Invalid email address'),
+  phoneNumber: z.string().min(1, 'Phone number is required'),
   password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
@@ -22,20 +21,31 @@ export async function POST(request: NextRequest) {
     const validatedData = registerSchema.parse(body)
     
     // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: validatedData.email },
-          { username: validatedData.username }
-        ]
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { email: validatedData.email }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User with this email or username already exists' },
+        { message: 'User with this email already exists' },
         { status: 400 }
       )
+    }
+
+    // Split full name into first and last name for database storage
+    const nameParts = validatedData.fullName.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || ''
+    
+    // Generate unique username: firstname_lastname_userscount
+    const baseUsername = `${firstName.toLowerCase()}_${lastName.toLowerCase()}`
+    let username = baseUsername
+    let userCount = 1
+    
+    // Check if username exists and increment counter
+    while (await prisma.user.findUnique({ where: { username } })) {
+      username = `${baseUsername}_${userCount}`
+      userCount++
     }
 
     // Hash password
@@ -48,10 +58,11 @@ export async function POST(request: NextRequest) {
     // Create user with unverified email
     const user = await prisma.user.create({
       data: {
-        firstName: validatedData.firstName,
-        lastName: validatedData.lastName,
-        username: validatedData.username,
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
         email: validatedData.email,
+        phoneNumber: validatedData.phoneNumber,
         password: hashedPassword,
         avatar: null,
         role: 'USER',
@@ -74,7 +85,7 @@ export async function POST(request: NextRequest) {
 
     // Send OTP email
     try {
-      await sendOTPEmail(validatedData.email, validatedData.firstName, otp)
+      await sendOTPEmail(validatedData.email, firstName, otp)
     } catch (emailError) {
       console.error('Email sending error:', emailError)
       // Still return success to user, but log the error

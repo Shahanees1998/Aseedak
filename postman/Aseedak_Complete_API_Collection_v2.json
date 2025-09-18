@@ -67,35 +67,7 @@
       "name": "🔐 Authentication",
       "item": [
         {
-          "name": "Register User",
-          "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
-            },
-            "url": {"raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"]}
-          }
-        },
-        {
-          "name": "Login User",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const response = pm.response.json();",
-                  "    if (response.token) {",
-                  "        pm.collectionVariables.set('jwt_token', response.token);",
-                  "        pm.collectionVariables.set('user_id', response.user.id);",
-                  "    }",
-                  "}"
-                ]
-              }
-            }
-          ],
+          "name": "Mobile Login",
           "request": {
             "method": "POST",
             "header": [{"key": "Content-Type", "value": "application/json"}],
@@ -103,7 +75,19 @@
               "mode": "raw",
               "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
             },
-            "url": {"raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"]}
+            "url": {"raw": "{{base_url}}/api/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "login"]}
+          }
+        },
+        {
+          "name": "Mobile Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"username\": \"johnny\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/register", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "register"]}
           }
         },
         {
@@ -200,7 +184,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"My Game Room\",\n  \"maxPlayers\": 8,\n  \"timeLimit\": 300\n}"
+              "raw": "{\n  \"name\": \"My Game Room\",\n  \"maxPlayers\": 8,\n  \"timeLimit\": 300,\n  \"invitedUsers\": [\"user_id_1\", \"user_id_2\"]\n}"
             },
             "url": {"raw": "{{base_url}}/api/game-rooms/create", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "create"]}
           }
@@ -730,27 +714,19 @@
       "name": "📱 Mobile APIs",
       "item": [
         {
-          "name": "Mobile Login",
+          "name": "Mobile Get Notification Settings",
           "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
-            },
-            "url": {"raw": "{{base_url}}/api/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "login"]}
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/settings", "host": ["{{base_url}}"], "path": ["api", "notifications", "settings"]}
           }
         },
         {
-          "name": "Mobile Register",
+          "name": "Mobile Get Device Tokens",
           "request": {
-            "method": "POST",
-            "header": [{"key": "Content-Type", "value": "application/json"}],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
-            },
-            "url": {"raw": "{{base_url}}/api/mobile/auth/register", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "register"]}
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
           }
         },
         {

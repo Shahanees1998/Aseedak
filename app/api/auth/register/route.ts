@@ -12,7 +12,6 @@ const prisma = new PrismaClient()
 const registerSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  username: z.string().min(3, 'Username must be at least 3 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   phoneNumber: z.string().optional()
@@ -26,20 +25,26 @@ export async function POST(request: NextRequest) {
     const validatedData = registerSchema.parse(body)
     
     // Check if user already exists
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [
-          { email: validatedData.email },
-          { username: validatedData.username }
-        ]
-      }
+    const existingUser = await prisma.user.findUnique({
+      where: { email: validatedData.email }
     })
 
     if (existingUser) {
       return NextResponse.json(
-        { message: 'User with this email or username already exists' },
+        { message: 'User with this email already exists' },
         { status: 400 }
       )
+    }
+
+    // Generate unique username: firstname_lastname_userscount
+    const baseUsername = `${validatedData.firstName.toLowerCase()}_${validatedData.lastName.toLowerCase()}`
+    let username = baseUsername
+    let userCount = 1
+    
+    // Check if username exists and increment counter
+    while (await prisma.user.findUnique({ where: { username } })) {
+      username = `${baseUsername}_${userCount}`
+      userCount++
     }
 
     // Hash password
@@ -90,10 +95,10 @@ export async function POST(request: NextRequest) {
     try {
       // Send web notifications to admins via Pusher
       await AdminNotifications.newUserRegistration(
-        validatedData.username,
+        username,
         validatedData.email
       )
-      console.log(`✅ Admin web notifications sent for new user: ${validatedData.username}`)
+      console.log(`✅ Admin web notifications sent for new user: ${username}`)
     } catch (notificationError) {
       console.error('Admin notification error (non-critical):', notificationError)
     }
