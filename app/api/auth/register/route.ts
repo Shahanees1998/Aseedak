@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       data: {
         firstName: validatedData.firstName,
         lastName: validatedData.lastName,
-        username: validatedData.username,
+        username: username,
         email: validatedData.email,
         password: hashedPassword,
         phoneNumber: validatedData.phoneNumber || null,
