@@ -6,6 +6,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "save": "Save",
+    "saving": "Saving...",
     "delete": "Delete",
     "edit": "Edit",
     "back": "Back",
@@ -381,7 +382,14 @@
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
     "updateProfile": "Update Profile",
-    "profileUpdated": "Profile updated successfully"
+    "profileUpdated": "Profile updated successfully",
+    "profileSettings": "Profile Settings",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "username": "Username",
+    "email": "Email",
+    "phoneNumber": "Phone Number",
+    "avatar": "Avatar"
   },
   "store": {
     "title": "Store",

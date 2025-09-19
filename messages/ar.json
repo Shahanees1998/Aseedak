@@ -6,6 +6,7 @@
     "cancel": "إلغاء",
     "confirm": "تأكيد",
     "save": "حفظ",
+    "saving": "جاري الحفظ...",
     "delete": "حذف",
     "edit": "تعديل",
     "back": "رجوع",
@@ -381,7 +382,14 @@
     "newPassword": "كلمة المرور الجديدة",
     "confirmNewPassword": "تأكيد كلمة المرور الجديدة",
     "updateProfile": "تحديث الملف الشخصي",
-    "profileUpdated": "تم تحديث الملف الشخصي بنجاح"
+    "profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+    "profileSettings": "إعدادات الملف الشخصي",
+    "firstName": "الاسم الأول",
+    "lastName": "الاسم الأخير",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phoneNumber": "رقم الهاتف",
+    "avatar": "الصورة الشخصية"
   },
   "store": {
     "title": "المتجر",

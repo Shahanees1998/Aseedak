@@ -5,10 +5,19 @@ interface User {
   email: string;
   firstName: string;
   lastName: string;
+  username?: string;
+  phoneNumber?: string;
+  avatar?: string;
+  profileImageUrl?: string;
   role: string;
   status: string;
   membershipNumber?: string;
   profileImage?: string;
+  emailVerified?: boolean;
+  gamesPlayed?: number;
+  gamesWon?: number;
+  totalKills?: number;
+  createdAt?: string;
 }
 
 interface AuthContextType {
@@ -17,6 +26,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUser: (userData: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -87,12 +97,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await checkAuth();
   };
 
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      setUser({ ...user, ...userData });
+    }
+  };
+
   const value: AuthContextType = {
     user,
     loading,
     login,
     logout,
     refreshUser,
+    updateUser,
   };
 
   return React.createElement(AuthContext.Provider, { value }, children);
