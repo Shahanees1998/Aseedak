@@ -289,7 +289,7 @@ export default function AdminProfilePage() {
                       id="phoneNumber"
                       mask="+999 999 999 999"
                       value={formData.phoneNumber}
-                      onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                      onChange={(e) => handleInputChange("phoneNumber", e.target.value || "")}
                       className="w-full"
                       placeholder="Enter phone number"
                     />
