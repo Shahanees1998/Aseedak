@@ -21,6 +21,13 @@ export async function POST(request: NextRequest) {
       where: { email }
     })
 
+    // Always perform password verification to prevent timing attacks
+    // Use a dummy hash if user doesn't exist
+    const dummyHash = '$2a$10$dummy.hash.to.prevent.timing.attacks'
+    const hashToCompare = user?.password || dummyHash
+    const isPasswordValid = await bcrypt.compare(password, hashToCompare)
+
+    // If user doesn't exist, return generic error
     if (!user) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
@@ -28,20 +35,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user is active and email is verified
-    if (!user.isActive || !user.emailVerified) {
-      return NextResponse.json(
-        { error: 'Account is not active or email not verified' },
-        { status: 401 }
-      )
-    }
-
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    // If password is invalid, return generic error
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: 'Invalid email or password' },
         { status: 401 }
+      )
+    }
+
+    // Now check account status with specific error messages
+    if (!user.emailVerified) {
+      return NextResponse.json(
+        { 
+          error: 'Email not verified',
+          message: 'Please verify your email address before logging in',
+          code: 'EMAIL_NOT_VERIFIED'
+        },
+        { status: 403 }
+      )
+    }
+
+    if (!user.isActive) {
+      return NextResponse.json(
+        { 
+          error: 'Account is inactive',
+          message: 'Your account has been deactivated. Please contact support.',
+          code: 'ACCOUNT_INACTIVE'
+        },
+        { status: 403 }
       )
     }
 
