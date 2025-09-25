@@ -193,32 +193,23 @@ export async function POST(
 
           message = `Game ended! ${winner?.user.username || 'No one'} won!`
         } else {
-          // Assign new target to killer (only from joined players)
-          const remainingJoinedPlayers = room.players.filter(p => 
-            p.id !== elimination.targetId && 
-            p.status === 'ALIVE' && 
-            p.joinStatus === 'JOINED'
-          )
-          const shuffledPlayers = remainingJoinedPlayers.sort(() => 0.5 - Math.random())
-          
-          // Find a new target for the killer (not themselves)
-          const newTarget = shuffledPlayers.find(p => p.id !== elimination.killerId) || shuffledPlayers[0]
-          
-          if (newTarget) {
+          // Transfer eliminated player's target to killer (target inheritance)
+          if (elimination.target.targetId) {
             await prisma.gamePlayer.update({
               where: { id: elimination.killerId },
-              data: { targetId: newTarget.id }
+              data: { targetId: elimination.target.targetId }
             })
 
             // Send FCM notification to killer about new target
             try {
               const killer = room.players.find(p => p.id === elimination.killerId)
-              if (killer) {
-                const newWords = [killer.word1, killer.word2, killer.word3].filter((word): word is string => word !== null)
+              const newTargetPlayer = room.players.find(p => p.id === elimination.target.targetId)
+              if (killer && newTargetPlayer) {
+                const killerWords = [killer.word1, killer.word2, killer.word3].filter((word): word is string => word !== null)
                 await GameNotifications.newTargetAssigned(
                   killer.userId,
-                  newTarget.user.username,
-                  newWords,
+                  newTargetPlayer.user.username,
+                  killerWords,
                   room.code
                 )
               }
