@@ -34,7 +34,18 @@ export async function POST(request: NextRequest) {
     const otp = crypto.randomInt(100000, 999999).toString()
     const emailVerifyExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
-    // Update user with new OTP
+    // Send new OTP email first
+    let emailSent = false
+    try {
+      await sendOTPEmail(user.email, user.firstName, otp)
+      emailSent = true
+    } catch (emailError) {
+      console.error('Email sending error:', emailError)
+      // Don't break the flow, just log the error and continue
+      emailSent = false
+    }
+
+    // Update user with new OTP regardless of email status
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -43,21 +54,22 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Send new OTP email
-    try {
-      await sendOTPEmail(user.email, user.firstName, otp)
-    } catch (emailError) {
-      console.error('Email sending error:', emailError)
+    // Return appropriate response based on email sending status
+    if (emailSent) {
       return NextResponse.json(
-        { message: 'Failed to send OTP email' },
-        { status: 500 }
+        { message: 'New OTP sent to your email' },
+        { status: 200 }
+      )
+    } else {
+      return NextResponse.json(
+        { 
+          message: 'OTP generated but email delivery failed',
+          warning: 'Please try again or contact support if the issue persists',
+          code: 'EMAIL_DELIVERY_FAILED'
+        },
+        { status: 200 }
       )
     }
-
-    return NextResponse.json(
-      { message: 'New OTP sent to your email' },
-      { status: 200 }
-    )
 
   } catch (error) {
     if (error instanceof z.ZodError) {
