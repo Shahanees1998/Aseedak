@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate new OTP
-    const otp = crypto.randomInt(100000, 999999).toString()
+    // Generate new OTP (4 digits)
+    const otp = crypto.randomInt(1000, 9999).toString()
     const emailVerifyExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
     // Send new OTP email first

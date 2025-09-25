@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 const verifyEmailSchema = z.object({
   email: z.string().email('Invalid email address'),
-  otp: z.string().length(6, 'OTP must be 6 digits')
+  otp: z.string().length(4, 'OTP must be 4 digits')
 })
 
 export async function POST(request: NextRequest) {

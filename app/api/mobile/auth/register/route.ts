@@ -53,8 +53,8 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 12)
 
-    // Generate OTP
-    const otp = crypto.randomInt(100000, 999999).toString()
+    // Generate OTP (4 digits)
+    const otp = crypto.randomInt(1000, 9999).toString()
     const emailVerifyExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 minutes
 
     // Create user with unverified email
