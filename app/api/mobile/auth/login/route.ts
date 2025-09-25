@@ -59,17 +59,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Now check account status with specific error messages
-    if (!user.emailVerified) {
-      return NextResponse.json(
-        { 
-          message: 'Email not verified',
-          error: 'Please verify your email address before logging in',
-          code: 'EMAIL_NOT_VERIFIED'
-        },
-        { status: 403 }
-      )
-    }
-
     if (!user.isActive) {
       return NextResponse.json(
         { 
