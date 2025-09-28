@@ -93,30 +93,6 @@ export async function GET(
             }
           },
           gameLogs: {
-            include: {
-              player: {
-                include: {
-                  user: {
-                    select: {
-                      id: true,
-                      username: true,
-                      avatar: true
-                    }
-                  }
-                }
-              },
-              target: {
-                include: {
-                  user: {
-                    select: {
-                      id: true,
-                      username: true,
-                      avatar: true
-                    }
-                  }
-                }
-              }
-            },
             orderBy: { createdAt: 'desc' }
           },
           killConfirmations: {
@@ -280,31 +256,42 @@ export async function GET(
         })),
 
         // Game logs (activity history)
-        gameLogs: room.gameLogs.map(log => ({
-          id: log.id,
-          type: log.type,
-          message: log.message,
-          data: log.data,
-          createdAt: log.createdAt.toISOString(),
-          player: log.player ? {
-            id: log.player.id,
-            user: log.player.user
-          } : null,
-          target: log.target ? {
-            id: log.target.id,
-            user: log.target.user
-          } : null
-        })),
+        gameLogs: room.gameLogs.map(log => {
+          // Find player and target from the players array using playerId and targetId
+          const player = log.playerId ? room.players.find(p => p.id === log.playerId) : null
+          const target = log.targetId ? room.players.find(p => p.id === log.targetId) : null
+          
+          return {
+            id: log.id,
+            type: log.type,
+            message: log.message,
+            data: log.data,
+            createdAt: log.createdAt.toISOString(),
+            player: player ? {
+              id: player.id,
+              user: player.user
+            } : null,
+            target: target ? {
+              id: target.id,
+              user: target.user
+            } : null
+          }
+        }),
 
         // Recent activity (for quick overview)
-        recentActivity: recentActivity.map(log => ({
-          id: log.id,
-          type: log.type,
-          message: log.message,
-          createdAt: log.createdAt.toISOString(),
-          player: log.player?.user.username,
-          target: log.target?.user.username
-        })),
+        recentActivity: recentActivity.map(log => {
+          const player = log.playerId ? room.players.find(p => p.id === log.playerId) : null
+          const target = log.targetId ? room.players.find(p => p.id === log.targetId) : null
+          
+          return {
+            id: log.id,
+            type: log.type,
+            message: log.message,
+            createdAt: log.createdAt.toISOString(),
+            player: player?.user.username,
+            target: target?.user.username
+          }
+        }),
 
         // All kill confirmations
         killConfirmations: room.killConfirmations.map(confirmation => ({
