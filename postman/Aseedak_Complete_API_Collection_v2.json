@@ -60,6 +60,11 @@
       "key": "character_pack_id",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "room_id",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -385,6 +390,14 @@
             "method": "POST",
             "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
             "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/leave", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "leave"]}
+          }
+        },
+        {
+          "name": "Get Complete Room Details",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/{{room_code}}/complete", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "{{room_code}}", "complete"]}
           }
         }
       ]
