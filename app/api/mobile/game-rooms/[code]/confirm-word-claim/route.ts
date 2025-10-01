@@ -112,12 +112,15 @@ export async function POST(
         }
       })
 
-      // Transfer target to killer
+      // Transfer target AND words to killer
       await prisma.gamePlayer.update({
         where: { id: killConfirmation.killer.id },
         data: {
           targetId: killConfirmation.target.targetId,
-          kills: { increment: 1 }
+          kills: { increment: 1 },
+          word1: killConfirmation.target.word1,
+          word2: killConfirmation.target.word2,
+          word3: killConfirmation.target.word3
         }
       })
 
@@ -207,13 +210,50 @@ export async function POST(
           })
         }
       } else {
-        // Notify elimination
+        // Notify elimination with updated room data
+        const updatedRoom = await prisma.gameRoom.findUnique({
+          where: { id: killConfirmation.room.id },
+          include: {
+            players: {
+              include: {
+                user: {
+                  select: {
+                    id: true,
+                    username: true,
+                    avatar: true
+                  }
+                },
+                target: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                      }
+                    }
+                  }
+                }
+              },
+              orderBy: { position: 'asc' }
+            },
+            creator: {
+              select: {
+                id: true,
+                username: true,
+                avatar: true
+              }
+            }
+          }
+        })
+
         if (pusher) {
           await pusher.trigger(`room-${params.code}`, 'elimination', {
+            room: updatedRoom,
             eliminatedPlayer: killConfirmation.target.user,
             killer: killConfirmation.killer.user,
-          message: `${killConfirmation.target.user.username} was eliminated!`
-        })
+            message: `${killConfirmation.target.user.username} was eliminated!`
+          })
         }
       }
     } else {

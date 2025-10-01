@@ -234,6 +234,14 @@
           }
         },
         {
+          "name": "Get In-Progress Rooms",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/game-rooms/inprogress", "host": ["{{base_url}}"], "path": ["api", "game-rooms", "inprogress"]}
+          }
+        },
+        {
           "name": "Join Game Room",
           "request": {
             "method": "POST",
@@ -794,6 +802,14 @@
             "method": "GET",
             "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
             "url": {"raw": "{{base_url}}/api/mobile/game-rooms/my-rooms", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "my-rooms"]}
+          }
+        },
+        {
+          "name": "Mobile Get In-Progress Rooms",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/inprogress", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "inprogress"]}
           }
         },
         {

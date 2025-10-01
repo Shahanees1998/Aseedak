@@ -98,23 +98,17 @@ export async function POST(
         }
       })
 
-      // Update guesser's kills
+      // Update guesser's kills and transfer target's target AND words to guesser
       await prisma.gamePlayer.update({
         where: { id: guesserPlayer.id },
         data: {
-          kills: guesserPlayer.kills + 1
+          kills: guesserPlayer.kills + 1,
+          targetId: targetPlayer.targetId,
+          word1: targetPlayer.word1,
+          word2: targetPlayer.word2,
+          word3: targetPlayer.word3
         }
       })
-
-      // Transfer target's target to guesser
-      if (targetPlayer.targetId) {
-        await prisma.gamePlayer.update({
-          where: { id: guesserPlayer.id },
-          data: {
-            targetId: targetPlayer.targetId
-          }
-        })
-      }
 
       // Create elimination log
       await prisma.gameLog.create({
@@ -253,6 +247,17 @@ export async function POST(
                     id: true,
                     username: true,
                     avatar: true
+                  }
+                },
+                target: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                      }
+                    }
                   }
                 }
               },

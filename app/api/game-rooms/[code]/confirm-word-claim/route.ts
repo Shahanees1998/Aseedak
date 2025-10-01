@@ -113,23 +113,17 @@ export async function POST(
         }
       })
 
-      // Update killer's kills
+      // Update killer's kills and transfer target's target AND words to killer
       await prisma.gamePlayer.update({
         where: { id: wordClaim.killerId },
         data: {
-          kills: wordClaim.killer.kills + 1
+          kills: wordClaim.killer.kills + 1,
+          targetId: wordClaim.target.targetId,
+          word1: wordClaim.target.word1,
+          word2: wordClaim.target.word2,
+          word3: wordClaim.target.word3
         }
       })
-
-      // Transfer target's target to killer
-      if (wordClaim.target.targetId) {
-        await prisma.gamePlayer.update({
-          where: { id: wordClaim.killerId },
-          data: {
-            targetId: wordClaim.target.targetId
-          }
-        })
-      }
 
       // Create elimination log
       await prisma.gameLog.create({
@@ -269,6 +263,17 @@ export async function POST(
                     id: true,
                     username: true,
                     avatar: true
+                  }
+                },
+                target: {
+                  include: {
+                    user: {
+                      select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                      }
+                    }
                   }
                 }
               },
