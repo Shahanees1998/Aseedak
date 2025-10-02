@@ -88,7 +88,7 @@ export async function POST(
       )
     }
 
-    // Check if there's already a pending kill request
+    // Check if there's already a pending kill request and delete it
     const existingRequest = await prisma.killConfirmation.findFirst({
       where: {
         roomId: room.id,
@@ -99,10 +99,22 @@ export async function POST(
     })
 
     if (existingRequest) {
-      return NextResponse.json(
-        { message: 'You already have a pending kill request for this target' },
-        { status: 400 }
-      )
+      // Delete the existing request and create a new one
+      await prisma.killConfirmation.delete({
+        where: { id: existingRequest.id }
+      })
+      
+      // Also clean up any related game log entries for the old request
+      // await prisma.gameLog.deleteMany({
+      //   where: {
+      //     roomId: room.id,
+      //     type: 'kill_request',
+      //     data: {
+      //       path: ['killRequestId'],
+      //       equals: existingRequest.id
+      //     }
+      //   }
+      // })
     }
 
     // Create kill confirmation request
@@ -160,14 +172,18 @@ export async function POST(
       await pusher.trigger(`room-${params.code}`, 'kill-request', {
         killRequest,
         killer: player.user,
-        target: targetPlayer.user
+        target: targetPlayer.user,
+        replaced: !!existingRequest // Indicate if a previous request was replaced
       })
     }
 
     return NextResponse.json(
       { 
-        message: 'Kill request sent successfully',
-        killRequestId: killRequest.id
+        message: existingRequest 
+          ? 'Previous kill request replaced with new request' 
+          : 'Kill request sent successfully',
+        killRequestId: killRequest.id,
+        replaced: !!existingRequest
       },
       { status: 200 }
     )

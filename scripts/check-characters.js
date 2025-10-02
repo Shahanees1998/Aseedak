@@ -107,3 +107,4 @@ async function checkCharacters() {
 // Run the script
 checkCharacters()
 
+
