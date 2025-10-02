@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { withAuthAndExpiration, AuthenticatedRequest } from '@/lib/apiMiddleware'
+import { withAuthAndExpiration } from '@/lib/apiMiddleware'
+import { AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
