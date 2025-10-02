@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { checkAndExpireOldRooms } from '@/lib/roomExpiration'
 
 const prisma = new PrismaClient()
 
@@ -21,6 +22,9 @@ function verifyToken(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Check for expired rooms first
+    await checkAndExpireOldRooms()
+    
     const user = verifyToken(request)
     if (!user) {
       return NextResponse.json(

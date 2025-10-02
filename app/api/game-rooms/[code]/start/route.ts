@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
+import { withAuthAndExpiration, AuthenticatedRequest } from '@/lib/apiMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
 import { GameNotifications } from '@/lib/fcm'
@@ -10,7 +10,7 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { code: string } }
 ) {
-  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+  return withAuthAndExpiration(request, async (authenticatedReq: AuthenticatedRequest) => {
     try {
       const user = authenticatedReq.user!
 

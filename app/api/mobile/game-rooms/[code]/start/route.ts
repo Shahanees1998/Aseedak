@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import { pusher } from '@/lib/pusher'
 import { GameNotifications } from '@/lib/fcm'
+import { checkAndExpireOldRooms } from '@/lib/roomExpiration'
 
 const prisma = new PrismaClient()
 
@@ -11,6 +12,8 @@ export async function POST(
   { params }: { params: { code: string } }
 ) {
   try {
+    // Check for expired rooms first
+    await checkAndExpireOldRooms()
     const authHeader = request.headers.get('authorization')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json(

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
+import { withAuthAndExpiration, AuthenticatedRequest } from '@/lib/apiMiddleware'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
 export async function GET(request: NextRequest) {
-  return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
+  return withAuthAndExpiration(request, async (authenticatedReq: AuthenticatedRequest) => {
     try {
       const gameRooms = await prisma.gameRoom.findMany({
         include: {
