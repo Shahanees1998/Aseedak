@@ -8,7 +8,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
   
   const msg = {
     to: email,
-    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
+    from: process.env.FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Reset Your Aseedak Password',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -69,7 +69,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
 export async function sendOTPEmail(email: string, firstName: string, otp: string) {
   const msg = {
     to: email,
-    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
+    from: process.env.FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Verify Your Aseedak Account',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -123,7 +123,7 @@ export async function sendOTPEmail(email: string, firstName: string, otp: string
 export async function sendWelcomeEmail(email: string, firstName: string) {
   const msg = {
     to: email,
-    from: process.env.SENDGRID_FROM_EMAIL || 'noreply@aseedak.com',
+    from: process.env.FROM_EMAIL || 'noreply@aseedak.com',
     subject: 'Welcome to Aseedak!',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -198,14 +198,14 @@ export async function sendGameRoomInvitationEmail(
     throw new Error('Email service not configured')
   }
   
-  if (!process.env.SENDGRID_FROM_EMAIL) {
+  if (!process.env.FROM_EMAIL) {
     console.error('SENDGRID_FROM_EMAIL is not configured')
     throw new Error('From email not configured')
   }
   
   const msg = {
     to: email,
-    from: process.env.SENDGRID_FROM_EMAIL,
+    from: process.env.FROM_EMAIL,
     subject: `🎮 You're invited to join "${roomName}" - Aseedak Game Room`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
