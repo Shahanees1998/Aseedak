@@ -120,6 +120,66 @@ export async function sendOTPEmail(email: string, firstName: string, otp: string
   }
 }
 
+export async function sendForgotPasswordOTPEmail(email: string, firstName: string, otp: string) {
+  const msg = {
+    to: email,
+    from: process.env.FROM_EMAIL || 'noreply@aseedak.com',
+    subject: 'Reset Your Aseedak Password',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">Aseedak</h1>
+          <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Word Elimination Game</p>
+        </div>
+        
+        <div style="padding: 30px; background: #f8f9fa;">
+          <h2 style="color: #333; margin-top: 0;">Password Reset Request</h2>
+          <p style="color: #666; line-height: 1.6;">
+            Hi ${firstName},<br><br>
+            You requested to reset your password for your Aseedak account. Use the OTP below to verify your identity and reset your password:
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <div style="background: #e74c3c; color: white; padding: 20px; border-radius: 10px; font-size: 32px; font-weight: bold; letter-spacing: 5px; display: inline-block;">
+              ${otp}
+            </div>
+          </div>
+          
+          <p style="color: #666; font-size: 14px;">
+            This OTP will expire in 10 minutes. If you didn't request a password reset, please ignore this email and your password will remain unchanged.
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <p style="color: #666; font-size: 14px;">
+              Enter this code in the password reset page to continue.
+            </p>
+          </div>
+          
+          <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0;">
+            <p style="color: #856404; margin: 0; font-size: 14px;">
+              <strong>🔒 Security Notice:</strong> Never share this OTP with anyone. Aseedak will never ask for your OTP via phone or email.
+            </p>
+          </div>
+        </div>
+        
+        <div style="background: #333; padding: 20px; text-align: center;">
+          <p style="color: #999; margin: 0; font-size: 14px;">
+            © 2024 Aseedak. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `
+  }
+
+  try {
+    await sgMail.send(msg)
+    console.log('Forgot password OTP email sent successfully')
+  } catch (error) {
+    console.error('Error sending forgot password OTP email:', error)
+    throw error
+  }
+}
+
 export async function sendWelcomeEmail(email: string, firstName: string) {
   const msg = {
     to: email,

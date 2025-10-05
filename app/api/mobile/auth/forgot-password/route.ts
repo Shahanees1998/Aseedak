@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 import crypto from 'crypto'
-import { sendOTPEmail } from '@/lib/email'
+import { sendForgotPasswordOTPEmail } from '@/lib/email'
 
 const prisma = new PrismaClient()
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Send OTP email
     try {
-      await sendOTPEmail(user.email, user.firstName, otp)
+      await sendForgotPasswordOTPEmail(user.email, user.firstName, otp)
     } catch (emailError) {
       console.error('Email sending error:', emailError)
       // Still return success to user, but log the error
