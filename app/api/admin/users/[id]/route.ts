@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
+import { GameNotifications } from '@/lib/fcm'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 
@@ -74,6 +75,15 @@ export async function PUT(
         createdAt: true
       }
     })
+
+    // Send FCM notification to user about account update
+    try {
+      await GameNotifications.accountStatusChange(params.id, 'updated')
+      console.log(`✅ FCM notification sent to user ${params.id} about account update`)
+    } catch (fcmError) {
+      console.error('❌ FCM notification failed (non-critical):', fcmError)
+      // Don't fail the operation if FCM fails
+    }
 
     return NextResponse.json(
       { 

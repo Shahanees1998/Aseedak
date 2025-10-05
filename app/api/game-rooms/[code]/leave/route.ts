@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
+import { GameNotifications } from '@/lib/fcm'
 
 const prisma = new PrismaClient()
 
@@ -131,6 +132,26 @@ export async function POST(
         }
       } else {
         console.warn('⚠️ Pusher not configured - skipping real-time notification')
+      }
+
+      // Send FCM notifications to other room members
+      try {
+        const otherMemberIds = updatedRoom?.players
+          .filter(p => p.userId !== user.userId)
+          .map(p => p.userId) || []
+        
+        if (otherMemberIds.length > 0) {
+          await GameNotifications.playerLeft(
+            otherMemberIds,
+            player.user.username,
+            room.name,
+            room.code
+          )
+          console.log(`✅ FCM notifications sent to ${otherMemberIds.length} room members`)
+        }
+      } catch (fcmError) {
+        console.error('❌ FCM notification failed (non-critical):', fcmError)
+        // Don't fail the leave operation if FCM fails
       }
     }
 

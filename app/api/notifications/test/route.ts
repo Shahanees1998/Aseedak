@@ -33,18 +33,20 @@ export async function POST(request: NextRequest) {
           )
           break
         case 'game_start':
-          result = await GameNotifications.gameStarted(
-            user.userId,
+          const gameStartResults = await GameNotifications.gameStarted(
+            [user.userId],
             'Test Game',
             'TEST123'
           )
+          result = gameStartResults[0] || { success: false, message: 'No results' }
           break
         case 'game_end':
-          result = await GameNotifications.gameEnded(
-            user.userId,
-            'Test Winner',
+          const gameEndResults = await GameNotifications.gameEnded(
+            [user.userId],
+            'Test Game',
             'TEST123'
           )
+          result = gameEndResults[0] || { success: false, message: 'No results' }
           break
         case 'avatar':
           result = await GameNotifications.newAvatarAssigned(

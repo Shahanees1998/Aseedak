@@ -178,17 +178,17 @@ export async function POST(
           })
 
           // Send FCM notifications to all joined players about game end
-          const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
-          for (const player of joinedPlayers) {
-            try {
-              await GameNotifications.gameEnded(
-                player.userId,
-                winner?.user.username || 'No one',
-                room.code
-              )
-            } catch (error) {
-              console.error(`Failed to send game end notification to ${player.user.username}:`, error)
-            }
+          try {
+            const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+            const participantIds = joinedPlayers.map(p => p.userId)
+            await GameNotifications.gameEnded(
+              participantIds,
+              room.name,
+              room.code
+            )
+            console.log(`✅ FCM notifications sent to ${participantIds.length} players about game end`)
+          } catch (error) {
+            console.error('❌ FCM notification failed (non-critical):', error)
           }
 
           message = `Game ended! ${winner?.user.username || 'No one'} won!`

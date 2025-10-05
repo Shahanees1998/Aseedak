@@ -100,27 +100,29 @@ export async function POST(request: NextRequest) {
         if (testType === 'all' || testType === 'game_start') {
           console.log('🧪 Testing game start notification...')
           const result = await GameNotifications.gameStarted(
-            user.userId,
+            [user.userId],
             testData.roomName,
             testData.roomCode
           )
+          const firstResult = result[0] || { success: false, message: 'No results', failedTokens: [] }
           testResults.push({
             type: 'game_start',
-            success: result.success,
-            message: result.message,
-            failedTokens: result.failedTokens
+            success: firstResult.success,
+            message: firstResult.message,
+            failedTokens: firstResult.failedTokens
           })
-          console.log(`✅ Game start test: ${result.success ? 'SUCCESS' : 'FAILED'}`)
+          console.log(`✅ Game start test: ${firstResult.success ? 'SUCCESS' : 'FAILED'}`)
         }
 
         // Test 4: Game End
         if (testType === 'all' || testType === 'game_end') {
           console.log('🧪 Testing game end notification...')
-          const result = await GameNotifications.gameEnded(
-            user.userId,
-            testData.winnerUsername,
+          const results = await GameNotifications.gameEnded(
+            [user.userId],
+            testData.roomName,
             testData.roomCode
           )
+          const result = results[0] || { success: false, message: 'No results', failedTokens: [] }
           testResults.push({
             type: 'game_end',
             success: result.success,

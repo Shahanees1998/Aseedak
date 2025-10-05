@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
 import { PrismaClient } from '@prisma/client'
 import { pusher } from '@/lib/pusher'
+import { GameNotifications } from '@/lib/fcm'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
@@ -254,6 +255,22 @@ export async function POST(
             }),
             winner: winner.user
           })
+          }
+
+          // Send FCM notifications to all joined players about game end and winner
+          const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
+          const participantIds = joinedPlayers.map(p => p.userId)
+          
+          try {
+            // Notify about game end
+            await GameNotifications.gameEnded(participantIds, room.name, room.code)
+            
+            // Notify about winner
+            await GameNotifications.gameWinner(participantIds, winner.user.username, room.name, room.code)
+            
+            console.log(`✅ FCM notifications sent to ${participantIds.length} players about game end and winner`)
+          } catch (fcmError) {
+            console.error('❌ FCM notification failed (non-critical):', fcmError)
           }
         }
       } else {

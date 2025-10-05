@@ -86,6 +86,7 @@ model User {
 
   // FCM Push Notifications
   fcmTokens            String[] @default([]) // Array of FCM device tokens
+  fcmEnabled           Boolean  @default(true) // Whether user has notifications enabled
   notificationSettings Json? // User notification preferences
 
   // Relations

@@ -268,41 +268,7 @@ export const GameNotifications = {
     )
   },
 
-  /**
-   * Notify user about game start
-   */
-  async gameStarted(userId: string, roomName: string, roomCode: string) {
-    return sendPushNotification(
-      {
-        title: '🚀 Game Started!',
-        body: `The game "${roomName}" has begun!`,
-        data: {
-          type: 'game_start',
-          roomName,
-          roomCode
-        }
-      },
-      { userId, roomId: roomCode, storeInDatabase: true }
-    )
-  },
 
-  /**
-   * Notify user about game end
-   */
-  async gameEnded(userId: string, winnerUsername: string, roomCode: string) {
-    return sendPushNotification(
-      {
-        title: '🏆 Game Ended!',
-        body: `${winnerUsername} won the game!`,
-        data: {
-          type: 'game_end',
-          winnerUsername,
-          roomCode
-        }
-      },
-      { userId, roomId: roomCode, storeInDatabase: true }
-    )
-  },
 
   /**
    * Notify user about new avatar assignment
@@ -383,6 +349,147 @@ export const GameNotifications = {
         { userId: adminId, userRole: 'ADMIN', roomId: roomCode, storeInDatabase: true }
       )
       results.push({ adminId, ...result })
+    }
+    return results
+  },
+
+  /**
+   * Notify user about account status change (suspended/updated)
+   */
+  async accountStatusChange(userId: string, status: 'suspended' | 'updated', reason?: string) {
+    const title = status === 'suspended' ? '⚠️ Account Suspended' : '✅ Account Updated'
+    const body = status === 'suspended' 
+      ? `Your account has been suspended. ${reason ? `Reason: ${reason}` : ''}`
+      : 'Your account information has been updated successfully.'
+
+    return sendPushNotification(
+      {
+        title,
+        body,
+        data: {
+          type: 'account_status_change',
+          status,
+          ...(reason && { reason })
+        }
+      },
+      { userId, storeInDatabase: true }
+    )
+  },
+
+  /**
+   * Notify all room members when someone joins
+   */
+  async playerJoined(roomMemberIds: string[], joinerUsername: string, roomName: string, roomCode: string) {
+    const results = []
+    for (const memberId of roomMemberIds) {
+      const result = await sendPushNotification(
+        {
+          title: '👋 Player Joined',
+          body: `${joinerUsername} joined "${roomName}"`,
+          data: {
+            type: 'player_joined',
+            joinerUsername,
+            roomName,
+            roomCode
+          }
+        },
+        { userId: memberId, roomId: roomCode, storeInDatabase: true }
+      )
+      results.push({ memberId, ...result })
+    }
+    return results
+  },
+
+  /**
+   * Notify all room members when someone leaves
+   */
+  async playerLeft(roomMemberIds: string[], leaverUsername: string, roomName: string, roomCode: string) {
+    const results = []
+    for (const memberId of roomMemberIds) {
+      const result = await sendPushNotification(
+        {
+          title: '👋 Player Left',
+          body: `${leaverUsername} left "${roomName}"`,
+          data: {
+            type: 'player_left',
+            leaverUsername,
+            roomName,
+            roomCode
+          }
+        },
+        { userId: memberId, roomId: roomCode, storeInDatabase: true }
+      )
+      results.push({ memberId, ...result })
+    }
+    return results
+  },
+
+  /**
+   * Notify all joined members when game starts
+   */
+  async gameStarted(joinedMemberIds: string[], roomName: string, roomCode: string) {
+    const results = []
+    for (const memberId of joinedMemberIds) {
+      const result = await sendPushNotification(
+        {
+          title: '🚀 Game Started!',
+          body: `The game "${roomName}" has begun!`,
+          data: {
+            type: 'game_started',
+            roomName,
+            roomCode
+          }
+        },
+        { userId: memberId, roomId: roomCode, storeInDatabase: true }
+      )
+      results.push({ memberId, ...result })
+    }
+    return results
+  },
+
+  /**
+   * Notify all participants when game ends
+   */
+  async gameEnded(participantIds: string[], roomName: string, roomCode: string) {
+    const results = []
+    for (const participantId of participantIds) {
+      const result = await sendPushNotification(
+        {
+          title: '🏁 Game Ended',
+          body: `The game "${roomName}" has ended`,
+          data: {
+            type: 'game_ended',
+            roomName,
+            roomCode
+          }
+        },
+        { userId: participantId, roomId: roomCode, storeInDatabase: true }
+      )
+      results.push({ participantId, ...result })
+    }
+    return results
+  },
+
+  /**
+   * Notify all participants about the winner
+   */
+  async gameWinner(participantIds: string[], winnerUsername: string, roomName: string, roomCode: string) {
+    const results = []
+    for (const participantId of participantIds) {
+      const result = await sendPushNotification(
+        {
+          title: '🏆 Winner!',
+          body: `${winnerUsername} won the game "${roomName}"!`,
+          data: {
+            type: 'game_winner',
+            winnerUsername,
+            roomName,
+            roomCode
+          }
+        },
+        { userId: participantId, roomId: roomCode, storeInDatabase: true }
+      )
+      results.push({ participantId, ...result })
     }
     return results
   }

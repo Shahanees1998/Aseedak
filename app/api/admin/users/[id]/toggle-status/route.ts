@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
 import { PrismaClient } from '@prisma/client'
+import { GameNotifications } from '@/lib/fcm'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
@@ -37,6 +38,18 @@ export async function PUT(
         createdAt: true
       }
     })
+
+    // Send FCM notification to user about account status change
+    try {
+      const status = validatedData.isActive ? 'updated' : 'suspended'
+      const reason = validatedData.isActive ? undefined : 'Account suspended by administrator'
+      
+      await GameNotifications.accountStatusChange(params.id, status, reason)
+      console.log(`✅ FCM notification sent to user ${params.id} about account ${status}`)
+    } catch (fcmError) {
+      console.error('❌ FCM notification failed (non-critical):', fcmError)
+      // Don't fail the operation if FCM fails
+    }
 
     return NextResponse.json(
       { 

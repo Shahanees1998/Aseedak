@@ -227,18 +227,13 @@ export async function POST(
     // Send FCM notifications to all joined players
     try {
       const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
-      for (const player of joinedPlayers) {
-        try {
-          await GameNotifications.gameStarted(
-            player.userId,
-            room.name,
-            params.code
-          )
-        } catch (error) {
-          console.error(`Failed to send game start notification to user ${player.userId}:`, error)
-        }
-      }
-      console.log('✅ FCM notifications sent for mobile game started')
+      const joinedPlayerIds = joinedPlayers.map(p => p.userId)
+      await GameNotifications.gameStarted(
+        joinedPlayerIds,
+        room.name,
+        params.code
+      )
+      console.log(`✅ FCM notifications sent to ${joinedPlayerIds.length} players about game start`)
     } catch (fcmError) {
       console.error('❌ FCM notification failed (non-critical):', fcmError)
       // Don't fail the start operation if FCM fails

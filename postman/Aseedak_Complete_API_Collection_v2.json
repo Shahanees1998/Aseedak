@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Aseedak Complete API Collection v2.2",
-    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, word decks, and enhanced store functionality with fixed schemas",
-    "version": "2.2.0",
+    "name": "Aseedak Complete API Collection v2.3",
+    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, word decks, enhanced store functionality, and FCM push notifications",
+    "version": "2.3.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -1200,6 +1200,102 @@
               "raw": "{\n  \"type\": \"payment_intent.succeeded\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"pi_test_123\"\n    }\n  }\n}"
             },
             "url": {"raw": "{{base_url}}/api/webhooks/stripe", "host": ["{{base_url}}"], "path": ["api", "webhooks", "stripe"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "📱 FCM Push Notifications",
+      "item": [
+        {
+          "name": "Register Device Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm_device_token_here\",\n  \"platform\": \"android\",\n  \"appVersion\": \"1.0.0\",\n  \"deviceModel\": \"Samsung Galaxy S21\",\n  \"osVersion\": \"Android 12\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Remove Device Token",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm_device_token_here\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Get Device Tokens",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Update Notification Settings",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fcmEnabled\": true,\n  \"gameInvitations\": true,\n  \"gameUpdates\": true,\n  \"eliminationAlerts\": true,\n  \"systemNotifications\": true\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/notifications/settings", "host": ["{{base_url}}"], "path": ["api", "notifications", "settings"]}
+          }
+        },
+        {
+          "name": "Get Notification Settings",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/notifications/settings", "host": ["{{base_url}}"], "path": ["api", "notifications", "settings"]}
+          }
+        },
+        {
+          "name": "Mobile Register Device Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm_device_token_here\",\n  \"platform\": \"android\",\n  \"appVersion\": \"1.0.0\",\n  \"deviceModel\": \"Samsung Galaxy S21\",\n  \"osVersion\": \"Android 12\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "mobile", "notifications", "device-token"]}
+          }
+        },
+        {
+          "name": "Mobile Remove Device Token",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"fcm_device_token_here\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "mobile", "notifications", "device-token"]}
           }
         }
       ]
