@@ -96,6 +96,42 @@
           }
         },
         {
+          "name": "Mobile Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/forgot-password", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "forgot-password"]}
+          }
+        },
+        {
+          "name": "Mobile Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"otp\": \"1234\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/verify-otp", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "verify-otp"]}
+          }
+        },
+        {
+          "name": "Mobile Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tempToken\": \"temporary_token_from_verify_otp\",\n  \"password\": \"newpassword123\"\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/auth/reset-password", "host": ["{{base_url}}"], "path": ["api", "mobile", "auth", "reset-password"]}
+          }
+        },
+        {
           "name": "Get Current User",
           "request": {
             "method": "GET",
