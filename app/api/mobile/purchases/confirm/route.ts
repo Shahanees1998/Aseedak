@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Unlock the item for the user
-    if (purchase.type === 'character') {
+    if (purchase.type === 'character' && purchase.itemId) {
       await prisma.character.update({
         where: { id: purchase.itemId },
         data: { isUnlocked: true }

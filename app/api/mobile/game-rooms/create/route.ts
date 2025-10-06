@@ -8,7 +8,7 @@ const prisma = new PrismaClient()
 
 const createRoomSchema = z.object({
   name: z.string().min(1, 'Room name is required'),
-  maxPlayers: z.number().min(2).max(6),
+  maxPlayers: z.number().min(2).max(20), // Increased max to 20
   difficulty: z.enum(['easy', 'medium', 'hard']),
   category: z.string(),
   timeLimit: z.number().min(30).max(300),
@@ -36,6 +36,31 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const validatedData = createRoomSchema.parse(body)
+
+    // Get user's max members limit
+    const userData = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { maxMembers: true }
+    })
+
+    if (!userData) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Check if requested maxPlayers exceeds user's limit
+    if (validatedData.maxPlayers > userData.maxMembers) {
+      return NextResponse.json(
+        { 
+          message: `You can only create rooms with up to ${userData.maxMembers} members. Upgrade your plan to increase this limit.`,
+          maxAllowed: userData.maxMembers,
+          requested: validatedData.maxPlayers
+        },
+        { status: 400 }
+      )
+    }
 
     // Generate unique room code
     const roomCode = crypto.randomBytes(4).toString('hex').toUpperCase()

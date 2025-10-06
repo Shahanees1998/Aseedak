@@ -32,6 +32,14 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'asc' }
     })
 
+    // Get user's purchased characters
+    const userCharacters = await prisma.userCharacter.findMany({
+      where: { userId: user.userId },
+      select: { characterId: true }
+    })
+
+    const ownedCharacterIds = new Set(userCharacters.map(uc => uc.characterId))
+
     // Get user's purchases to mark owned items
     const userPurchases = await prisma.userPurchase.findMany({
       where: {
@@ -47,7 +55,7 @@ export async function GET(request: NextRequest) {
       isOwned: userPurchases.some(p => p.type === 'character_pack' && p.itemId === pack.id),
       characters: pack.characters.map(char => ({
         ...char,
-        isOwned: char.isUnlocked || userPurchases.some(p => p.type === 'character' && p.itemId === char.id)
+        isOwned: char.isUnlocked || ownedCharacterIds.has(char.id) || userPurchases.some(p => p.type === 'character' && p.itemId === char.id)
       }))
     }))
 

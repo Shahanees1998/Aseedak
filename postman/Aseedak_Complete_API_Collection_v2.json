@@ -1,8 +1,8 @@
 {
   "info": {
-    "name": "Aseedak Complete API Collection v2.3",
-    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, word decks, enhanced store functionality, and FCM push notifications",
-    "version": "2.3.0",
+    "name": "Aseedak Complete API Collection v2.4",
+    "description": "Complete API collection for Aseedak word elimination game - All endpoints organized by category including character management, character packs, word decks, enhanced store functionality, FCM push notifications, and in-app purchases",
+    "version": "2.4.0",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -1332,6 +1332,150 @@
               "raw": "{\n  \"token\": \"fcm_device_token_here\"\n}"
             },
             "url": {"raw": "{{base_url}}/api/mobile/notifications/device-token", "host": ["{{base_url}}"], "path": ["api", "mobile", "notifications", "device-token"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "In-App Purchases",
+      "item": [
+        {
+          "name": "Update Max Members",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newMaxMembers\": 8,\n  \"paymentIntentId\": \"pi_1234567890\",\n  \"amount\": 499\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/update-max-members", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "update-max-members"]}
+          }
+        },
+        {
+          "name": "Get Max Members Info",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/update-max-members", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "update-max-members"]}
+          }
+        },
+        {
+          "name": "Get Member Upgrades",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/member-upgrades", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "member-upgrades"]}
+          }
+        },
+        {
+          "name": "Purchase Character",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"characterId\": \"{{character_id}}\",\n  \"paymentIntentId\": \"pi_1234567890\",\n  \"amount\": 299\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "characters"]}
+          }
+        },
+        {
+          "name": "Get User Characters",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "characters"]}
+          }
+        },
+        {
+          "name": "Get Available Characters",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/mobile/purchases/characters/available", "host": ["{{base_url}}"], "path": ["api", "mobile", "purchases", "characters", "available"]}
+          }
+        },
+        {
+          "name": "Get Game Characters",
+          "request": {
+            "method": "GET",
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "characters"]}
+          }
+        },
+        {
+          "name": "Assign Characters Randomly",
+          "request": {
+            "method": "POST",
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/assign-characters-random", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "assign-characters-random"]}
+          }
+        },
+        {
+          "name": "Assign Characters Manually",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"assignments\": [\n    {\n      \"playerId\": \"player_id_1\",\n      \"characterId\": \"{{character_id}}\"\n    }\n  ]\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/assign-characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "assign-characters"]}
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Character Management",
+      "item": [
+        {
+          "name": "Mark All Characters Unpaid",
+          "request": {
+            "method": "PUT",
+            "url": {"raw": "{{base_url}}/api/admin/characters/mark-all-unpaid", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "mark-all-unpaid"]}
+          }
+        },
+        {
+          "name": "Create Character (with isPaid)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Character\",\n  \"description\": \"Character description\",\n  \"imageUrl\": \"https://example.com/image.jpg\",\n  \"isActive\": true,\n  \"isPaid\": false,\n  \"price\": 0\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/characters", "host": ["{{base_url}}"], "path": ["api", "admin", "characters"]}
+          }
+        },
+        {
+          "name": "Update Character (with isPaid)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Character\",\n  \"description\": \"Updated description\",\n  \"imageUrl\": \"https://example.com/updated-image.jpg\",\n  \"isActive\": true,\n  \"isPaid\": true,\n  \"price\": 299\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/admin/characters/{{character_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "characters", "{{character_id}}"]}
           }
         }
       ]

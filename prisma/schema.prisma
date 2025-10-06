@@ -84,6 +84,9 @@ model User {
   gamesWon    Int @default(0)
   totalKills  Int @default(0)
 
+  // In-app purchases
+  maxMembers Int @default(4) // Maximum members user can add to games
+
   // FCM Push Notifications
   fcmTokens            String[] @default([]) // Array of FCM device tokens
   fcmEnabled           Boolean  @default(true) // Whether user has notifications enabled
@@ -94,6 +97,7 @@ model User {
   gamePlayers   GamePlayer[]
   notifications Notification[]
   purchases     UserPurchase[]
+  userCharacters UserCharacter[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -124,10 +128,12 @@ model Character {
   packId      String?        @db.ObjectId
   pack        CharacterPack? @relation(fields: [packId], references: [id])
   isUnlocked  Boolean        @default(false)
+  isPaid      Boolean        @default(false)
   price       Int            @default(0) // Price in cents
 
   // Relations
   gamePlayers GamePlayer[]
+  userCharacters UserCharacter[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -168,16 +174,35 @@ model UserPurchase {
   id                    String  @id @default(auto()) @map("_id") @db.ObjectId
   userId                String  @db.ObjectId
   user                  User    @relation(fields: [userId], references: [id])
-  type                  String // "character", "character_pack", "word_deck"
-  itemId                String  @db.ObjectId
+  type                  String // "character", "character_pack", "word_deck", "member_upgrade"
+  itemId                String? @db.ObjectId // Nullable for member upgrades
   stripePaymentIntentId String?
   amount                Int // Amount paid in cents
   status                String  @default("completed") // "pending", "completed", "failed", "refunded"
+  metadata              Json? // Additional data like new maxMembers value
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Relations
+  userCharacters UserCharacter[]
+
   @@map("user_purchases")
+}
+
+model UserCharacter {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @db.ObjectId
+  user        User      @relation(fields: [userId], references: [id])
+  characterId String    @db.ObjectId
+  character   Character @relation(fields: [characterId], references: [id])
+  purchaseId  String?   @db.ObjectId
+  purchase    UserPurchase? @relation(fields: [purchaseId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, characterId])
+  @@map("user_characters")
 }
 
 model Word {

@@ -88,14 +88,54 @@ export async function POST(
       )
     }
 
-    // Get active characters for random assignment
-    const characters = await prisma.character.findMany({
-      where: { isActive: true }
+    // Get creator's available characters (purchased + default unlocked)
+    const userCharacters = await (prisma as any).userCharacter.findMany({
+      where: { userId: decoded.userId },
+      include: {
+        character: {
+          select: {
+            id: true,
+            name: true,
+            isActive: true
+          }
+        }
+      }
     })
+
+    // Get default unlocked characters
+    const defaultCharacters = await prisma.character.findMany({
+      where: {
+        isActive: true,
+        isUnlocked: true
+      },
+      select: {
+        id: true,
+        name: true
+      }
+    })
+
+    // Get unpaid (free) characters
+    const unpaidCharacters = await prisma.character.findMany({
+      where: {
+        isActive: true,
+        isUnlocked: false
+      },
+      select: {
+        id: true,
+        name: true
+      }
+    })
+
+    // Combine all available characters
+    const characters = [
+      ...userCharacters.map((uc: { character: { id: string; name: string } }) => uc.character),
+      ...defaultCharacters,
+      ...unpaidCharacters
+    ]
 
     if (characters.length === 0) {
       return NextResponse.json(
-        { message: 'No active characters available for the game' },
+        { message: 'No characters available for the game. Purchase some characters or contact support.' },
         { status: 400 }
       )
     }

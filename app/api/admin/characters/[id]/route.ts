@@ -13,7 +13,7 @@ export async function PUT(
     try {
       const { id } = params
       const body = await request.json()
-      const { name, description, imageUrl, isActive } = body
+      const { name, description, imageUrl, isActive, isPaid, price } = body
 
       // Get existing character to check for image changes
       const existingCharacter = await prisma.character.findUnique({
@@ -41,7 +41,10 @@ export async function PUT(
           name: name || existingCharacter.name,
           description: description !== undefined ? description : existingCharacter.description,
           imageUrl: imageUrl || existingCharacter.imageUrl,
-          packId: existingCharacter.packId // Keep existing packId or null
+          packId: existingCharacter.packId, // Keep existing packId or null
+          isActive: typeof isActive === 'boolean' ? isActive : existingCharacter.isActive,
+          isPaid: typeof isPaid === 'boolean' ? isPaid : existingCharacter.isPaid,
+          price: typeof price === 'number' ? price : existingCharacter.price
         }
       })
 

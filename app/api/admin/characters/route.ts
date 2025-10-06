@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
     try {
       const body = await request.json()
-      const { name, description, imageUrl, isActive = true } = body
+      const { name, description, imageUrl, isActive = true, isPaid = false, price = 0 } = body
 
       if (!name || !imageUrl) {
         return NextResponse.json(
@@ -43,7 +43,10 @@ export async function POST(request: NextRequest) {
           name,
           description: description || '',
           imageUrl,
-          packId: null // Explicitly set to null since pack is optional
+          packId: null, // Explicitly set to null since pack is optional
+          isActive,
+          isPaid,
+          price: typeof price === 'number' ? price : 0
         }
       })
 
