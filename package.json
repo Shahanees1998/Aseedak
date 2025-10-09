@@ -16,6 +16,9 @@
     "prisma:studio": "prisma studio",
     "prisma:migrate": "prisma migrate dev",
     "setup:admin": "node scripts/setup.js",
+    "check:admin": "node scripts/check-admin-user.js",
+    "test:nextauth": "node scripts/test-nextauth.js",
+    "generate:secret": "node scripts/generate-nextauth-secret.js",
     "prepare": "husky install"
   },
   "dependencies": {
@@ -33,6 +36,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "next": "^14.0.4",
+    "next-auth": "^4.24.11",
     "next-cloudinary": "^6.16.0",
     "nodemailer": "^6.9.7",
     "primeflex": "^3.3.1",

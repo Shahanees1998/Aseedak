@@ -1,7 +1,8 @@
 "use client";
 
 import Layout from "@/layout/layout";
-import { useRequireAdmin } from "@/hooks/useAuth";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function AdminLayout({
@@ -9,9 +10,18 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useRequireAdmin();
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  if (loading) {
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/auth/login');
+    } else if (status === 'authenticated' && session?.user?.role !== 'ADMIN') {
+      router.push('/auth/login?error=access-denied');
+    }
+  }, [session, status, router]);
+
+  if (status === 'loading') {
     return (
       <div className="flex align-items-center justify-content-center min-h-screen">
         <div className="text-center">
@@ -22,7 +32,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!user) {
+  if (status === 'unauthenticated' || session?.user?.role !== 'ADMIN') {
     return null; // Will redirect to login
   }
 

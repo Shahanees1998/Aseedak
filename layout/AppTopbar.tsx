@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
 import AppBreadcrumb from "./AppBreadCrumb";
 import { LayoutContext } from "./context/layoutcontext";
-import { useAuth } from "@/hooks/useAuth";
+import { useSession } from "next-auth/react";
 import { Toast } from "primereact/toast";
 import { Avatar } from "primereact/avatar";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -15,7 +15,8 @@ const AppTopbar = forwardRef<AppTopbarRef>((props, ref) => {
     const { onMenuToggle, showProfileSidebar, showConfigSidebar } =
         useContext(LayoutContext);
     const menubuttonRef = useRef(null);
-    const { user } = useAuth();
+    const { data: session } = useSession();
+    const user = session?.user;
     const [profile, setProfile] = useState<any | null>(null);
     const toast = useRef<Toast>(null);
 

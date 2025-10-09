@@ -2,7 +2,7 @@ import { Badge } from "primereact/badge";
 import { Sidebar } from "primereact/sidebar";
 import { useContext, useState, useEffect } from "react";
 import { LayoutContext } from "./context/layoutcontext";
-import { useAuth } from "@/hooks/useAuth";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Avatar } from "primereact/avatar";
 import { Skeleton } from "primereact/skeleton";
@@ -31,7 +31,8 @@ interface Message {
 
 const AppProfileSidebar = () => {
     const { layoutState, setLayoutState } = useContext(LayoutContext);
-    const { user, logout } = useAuth();
+    const { data: session } = useSession();
+    const user = session?.user;
     const router = useRouter();
     const { t } = useTranslation();
     
@@ -66,7 +67,7 @@ const AppProfileSidebar = () => {
     };
 
     const handleSignOut = async () => {
-        await logout();
+        await signOut({ redirect: false });
         router.push('/auth/login');
     };
 
