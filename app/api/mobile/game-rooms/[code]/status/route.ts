@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 
-const prisma = new PrismaClient()
 
 function verifyToken(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -145,7 +144,5 @@ export async function GET(
       { message: 'Internal server error' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

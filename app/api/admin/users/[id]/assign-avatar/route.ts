@@ -111,9 +111,7 @@ export async function PUT(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   })
 }
 

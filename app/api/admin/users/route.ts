@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-
-const prisma = new PrismaClient()
 
 const userSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
@@ -45,8 +43,6 @@ export async function GET(request: NextRequest) {
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
     }
   });
 }
@@ -128,8 +124,6 @@ export async function POST(request: NextRequest) {
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
     }
   });
 }

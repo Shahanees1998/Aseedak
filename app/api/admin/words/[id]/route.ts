@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
-const prisma = new PrismaClient()
 
 const wordUpdateSchema = z.object({
   word1: z.string().min(1, 'Word 1 is required').optional(),
@@ -48,9 +47,7 @@ export async function PUT(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   });
 }
 
@@ -76,8 +73,6 @@ export async function DELETE(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   });
 }

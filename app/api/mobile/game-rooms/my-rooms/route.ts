@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { verifyJWT, extractTokenFromRequest } from '@/lib/jwt'
-
-const prisma = new PrismaClient()
 
 async function verifyToken(request: NextRequest) {
   const token = extractTokenFromRequest(request)
@@ -104,7 +102,5 @@ export async function GET(request: NextRequest) {
       { message: 'Internal server error' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

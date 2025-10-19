@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 import { signJWT } from '@/lib/jwt'
-
-const prisma = new PrismaClient()
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -99,7 +97,5 @@ export async function POST(request: NextRequest) {
       { message: 'Internal server error' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { GameNotifications } from '@/lib/fcm'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
 
 const userUpdateSchema = z.object({
   firstName: z.string().min(1, 'First name is required').optional(),
@@ -106,9 +105,7 @@ export async function PUT(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   });
 }
 
@@ -134,8 +131,6 @@ export async function DELETE(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   });
 }

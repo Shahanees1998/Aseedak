@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import prisma from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   return withAuth(request, async (authenticatedReq: AuthenticatedRequest) => {
@@ -19,8 +17,6 @@ export async function GET(request: NextRequest) {
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
     }
   })
 }
@@ -61,8 +57,6 @@ export async function POST(request: NextRequest) {
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
     }
   })
 }

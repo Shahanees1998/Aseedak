@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { verifyJWT } from '@/lib/jwt'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth.config'
-
-const prisma = new PrismaClient()
 
 /**
  * DUAL AUTH SUPPORT
@@ -106,7 +104,5 @@ export async function GET(request: NextRequest) {
       { error: 'Authentication failed' },
       { status: 401 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 import { pusher } from '@/lib/pusher'
 import { GameNotifications } from '@/lib/fcm'
 import { checkAndExpireOldRooms } from '@/lib/roomExpiration'
 
-const prisma = new PrismaClient()
 
 export async function POST(
   request: NextRequest,
@@ -290,7 +289,5 @@ export async function POST(
       { message: 'Internal server error' },
       { status: 500 }
     )
-  } finally {
-    await prisma.$disconnect()
   }
 }

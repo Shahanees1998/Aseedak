@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import crypto from 'crypto'
 import AdminNotifications from '@/lib/adminNotifications'
 
-const prisma = new PrismaClient()
 
 const createRoomSchema = z.object({
   name: z.string().min(1, 'Room name is required'),
@@ -135,8 +134,6 @@ export async function POST(request: NextRequest) {
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   })
 }

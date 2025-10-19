@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuthAndExpiration } from '@/lib/apiMiddleware'
 import { AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { pusher } from '@/lib/pusher'
 import { GameNotifications } from '@/lib/fcm'
 
-const prisma = new PrismaClient()
 
 export async function POST(
   request: NextRequest,
@@ -262,8 +261,6 @@ export async function POST(
         { message: 'Internal server error' },
         { status: 500 }
       )
-    } finally {
-      await prisma.$disconnect()
-    }
+    } 
   })
 }
