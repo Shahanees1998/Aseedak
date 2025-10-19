@@ -102,6 +102,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Performance indexes (email & username already indexed via @unique)
+  @@index([role])
+  @@index([isActive])
+  @@index([emailVerified])
+  @@index([createdAt])
   @@map("users")
 }
 
@@ -244,6 +249,10 @@ model GameRoom {
   startedAt  DateTime?
   finishedAt DateTime?
 
+  // Performance indexes (code already indexed via @unique)
+  @@index([status])
+  @@index([createdBy])
+  @@index([createdAt])
   @@map("game_rooms")
 }
 
@@ -283,6 +292,12 @@ model GamePlayer {
   targetConfirmations KillConfirmation[] @relation("TargetConfirmations")
 
   @@unique([userId, roomId])
+  // Performance indexes
+  @@index([userId])
+  @@index([roomId])
+  @@index([status])
+  @@index([joinStatus])
+  @@index([targetId])
   @@map("game_players")
 }
 

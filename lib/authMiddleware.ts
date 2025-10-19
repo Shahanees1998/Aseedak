@@ -8,7 +8,7 @@ export interface AuthenticatedRequest extends NextRequest {
 }
 
 /**
- * DUAL AUTH MIDDLEWARE
+ * OPTIMIZED DUAL AUTH MIDDLEWARE
  * Supports both JWT (mobile app) and NextAuth (web admin panel)
  * Priority: JWT Bearer Token → JWT Cookie → NextAuth Session
  */
@@ -25,8 +25,14 @@ export async function withAuth(
       const token = authHeader.substring(7);
       try {
         user = await verifyJWT(token);
+        // If JWT valid, skip other checks (FAST PATH for mobile)
+        if (user) {
+          const authenticatedReq = req as AuthenticatedRequest;
+          authenticatedReq.user = user;
+          return await handler(authenticatedReq);
+        }
       } catch (error) {
-        console.error('JWT Bearer token verification failed:', error);
+        // JWT invalid, continue to other methods
       }
     }
     
@@ -36,25 +42,38 @@ export async function withAuth(
       if (cookieToken) {
         try {
           user = await verifyJWT(cookieToken);
+          // If JWT valid, skip NextAuth check (FAST PATH)
+          if (user) {
+            const authenticatedReq = req as AuthenticatedRequest;
+            authenticatedReq.user = user;
+            return await handler(authenticatedReq);
+          }
         } catch (error) {
-          console.error('JWT cookie token verification failed:', error);
+          // JWT invalid, continue to NextAuth
         }
       }
     }
     
-    // METHOD 3: Try NextAuth session (NEW - for admin panel)
+    // METHOD 3: Try NextAuth session (ONLY if no JWT found)
+    // This is the slow path, only for web admin without JWT
     if (!user) {
-      try {
-        const session = await getServerSession(authOptions);
-        if (session?.user) {
-          user = {
-            userId: session.user.id,
-            email: session.user.email!,
-            role: session.user.role
-          };
+      // Only check NextAuth if there's a next-auth session cookie
+      const hasNextAuthCookie = req.cookies.get('next-auth.session-token') || 
+                               req.cookies.get('__Secure-next-auth.session-token');
+      
+      if (hasNextAuthCookie) {
+        try {
+          const session = await getServerSession(authOptions);
+          if (session?.user) {
+            user = {
+              userId: session.user.id,
+              email: session.user.email!,
+              role: session.user.role
+            };
+          }
+        } catch (error) {
+          // NextAuth session invalid
         }
-      } catch (error) {
-        console.error('NextAuth session verification failed:', error);
       }
     }
     
@@ -72,7 +91,6 @@ export async function withAuth(
 
     return await handler(authenticatedReq);
   } catch (error) {
-    console.error('Auth middleware error:', error);
     return NextResponse.json(
       { error: 'Authentication required' },
       { status: 401 }
