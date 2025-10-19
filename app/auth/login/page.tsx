@@ -159,7 +159,7 @@ export default function LoginPage() {
                 className="text-600 cursor-pointer hover:text-primary ml-auto transition-colors transition-duration-300 text-lg"
                 onClick={() => router.push('/auth/forgot-password')}
               >
-                Forgot password?
+                Forgot Your password?
               </a>
             </div>
 

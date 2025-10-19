@@ -18,6 +18,7 @@
     "setup:admin": "node scripts/setup.js",
     "check:admin": "node scripts/check-admin-user.js",
     "test:nextauth": "node scripts/test-nextauth.js",
+    "test:mobile": "node scripts/test-mobile-api-access.js",
     "generate:secret": "node scripts/generate-nextauth-secret.js",
     "prepare": "husky install"
   },
