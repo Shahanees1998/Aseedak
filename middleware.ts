@@ -6,7 +6,7 @@ export default withAuth(
     const token = req.nextauth.token
     const path = req.nextUrl.pathname
 
-    // Admin routes - require admin role
+    // Admin PAGES (not API routes) - require admin role
     if (path.startsWith('/admin')) {
       if (!token) {
         return NextResponse.redirect(new URL('/auth/login', req.url))
@@ -24,11 +24,15 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const path = req.nextUrl.pathname
 
+        // IMPORTANT: Allow ALL API routes to pass through
+        // They handle their own authentication via authMiddleware.ts
+        if (path.startsWith('/api/')) {
+          return true
+        }
+
         // Public paths - allow access
         if (
           path.startsWith('/auth/') ||
-          path.startsWith('/api/auth/') ||
-          path.startsWith('/api/mobile/') ||
           path.startsWith('/_next/') ||
           path.startsWith('/static/') ||
           path === '/' ||
@@ -37,7 +41,7 @@ export default withAuth(
           return true
         }
 
-        // Admin routes - require admin role
+        // Admin PAGES - require admin role
         if (path.startsWith('/admin')) {
           return !!token && token.role === 'ADMIN'
         }
@@ -57,9 +61,11 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
-     * - API routes that should remain open
+     * - images folder
+     * 
+     * NOTE: API routes will pass through but are handled by authMiddleware.ts
      */
-    '/((?!_next/static|_next/image|favicon.ico|public|images|api/mobile|api/auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|images).*)',
   ],
 }
 
