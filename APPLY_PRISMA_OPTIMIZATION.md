@@ -10,7 +10,6 @@
 
 ### Current (SLOW):
 ```typescript
-// Every API route creates new connection
 const prisma = new PrismaClient()  // ~500-1000ms
 // ... queries
 await prisma.$disconnect()  // ~100-200ms

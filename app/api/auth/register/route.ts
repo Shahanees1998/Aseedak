@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import crypto from 'crypto'
 import { sendOTPEmail } from '@/lib/email'
 import { GameNotifications } from '@/lib/fcm'
 import AdminNotifications from '@/lib/adminNotifications'
 
-const prisma = new PrismaClient()
 
 const registerSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),

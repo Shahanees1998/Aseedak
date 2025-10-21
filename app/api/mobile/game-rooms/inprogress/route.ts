@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { checkAndExpireOldRooms } from '@/lib/roomExpiration'
 
-const prisma = new PrismaClient()
 
 function verifyToken(request: NextRequest) {
   try {

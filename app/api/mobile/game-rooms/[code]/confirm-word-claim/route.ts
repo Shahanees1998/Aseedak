@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { pusher } from '@/lib/pusher'
 
-const prisma = new PrismaClient()
 
 const confirmWordClaimSchema = z.object({
   killConfirmationId: z.string(),

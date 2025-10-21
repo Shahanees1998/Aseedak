@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { pusher } from '@/lib/pusher'
 import { GameNotifications } from '@/lib/fcm'
 import { z } from 'zod'
 
-const prisma = new PrismaClient()
 
 const confirmKillSchema = z.object({
   killRequestId: z.string().min(1, 'Kill request ID is required'),

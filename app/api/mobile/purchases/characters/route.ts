@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import { verifyToken } from '@/lib/jwt-auth'
 
-const prisma = new PrismaClient()
 
 const purchaseCharacterSchema = z.object({
   characterId: z.string(),

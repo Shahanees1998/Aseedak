@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { uploadProfileImage, deleteProfileImage } from '@/lib/cloudinary'
 
-const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {

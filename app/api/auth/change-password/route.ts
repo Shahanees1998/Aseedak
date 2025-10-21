@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient()
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),

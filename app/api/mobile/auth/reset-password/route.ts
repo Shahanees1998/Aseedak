@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
-const prisma = new PrismaClient()
 
 const resetPasswordSchema = z.object({
   tempToken: z.string().min(1, 'Temporary token is required'),

@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import { verifyToken } from '@/lib/jwt-auth'
 
-const prisma = new PrismaClient()
 
 const updateMaxMembersSchema = z.object({
   newMaxMembers: z.number().min(4).max(20), // Allow up to 20 members

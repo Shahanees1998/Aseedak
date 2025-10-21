@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import jwt from 'jsonwebtoken'
 import { getStripe } from '@/lib/stripe'
 
-const prisma = new PrismaClient()
 
 const purchaseSchema = z.object({
   type: z.enum(['character', 'character_pack', 'word_deck']),

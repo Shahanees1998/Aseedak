@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 import { uploadProfileImage, deleteProfileImage } from '@/lib/cloudinary'
 
-const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
   try {

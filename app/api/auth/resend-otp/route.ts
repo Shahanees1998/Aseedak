@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 import crypto from 'crypto'
 import { sendOTPEmail } from '@/lib/email'
 
-const prisma = new PrismaClient()
 
 const resendOTPSchema = z.object({
   email: z.string().email('Invalid email address')

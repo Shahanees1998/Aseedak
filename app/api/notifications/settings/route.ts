@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth } from '@/lib/authMiddleware'
 import { AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
 
-const prisma = new PrismaClient()
 
 // Schema for notification settings
 const notificationSettingsSchema = z.object({

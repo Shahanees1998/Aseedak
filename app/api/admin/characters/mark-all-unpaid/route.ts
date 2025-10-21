@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/authMiddleware'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 
-const prisma = new PrismaClient()
 
 export async function PUT(request: NextRequest) {
   return withAuth(request, async (_req: AuthenticatedRequest) => {

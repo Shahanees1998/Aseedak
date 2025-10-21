@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUser, requireAuth, AuthenticatedUser } from '@/lib/jwt-auth'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { pusher } from '@/lib/pusher'
 import { z } from 'zod'
 
-const prisma = new PrismaClient()
 
 const guessSchema = z.object({
   word: z.string().min(1, 'Word is required')
