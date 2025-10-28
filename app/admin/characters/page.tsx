@@ -14,7 +14,6 @@ import { FileUpload } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Badge } from 'primereact/badge'
 import { InputNumber } from 'primereact/inputnumber'
-import { Checkbox } from 'primereact/checkbox'
 import { useToast } from '@/store/toast.context'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -351,12 +350,14 @@ export default function CharactersManagement() {
               <div className="col-12">
                 <div className="field">
                   <div className="flex align-items-center">
-                    <Checkbox
-                      inputId="isPaid"
+                    <input
+                      type="checkbox"
+                      id="isPaid"
                       checked={characterForm.isPaid}
-                      onChange={(e) => setCharacterForm(prev => ({ ...prev, isPaid: e.checked || false }))}
+                      onChange={(e) => setCharacterForm(prev => ({ ...prev, isPaid: e.target.checked }))}
+                      className="mr-2"
                     />
-                    <label htmlFor="isPaid" className="ml-2 text-900 font-medium">{t('admin.characters.isPaidCharacter')}</label>
+                    <label htmlFor="isPaid" className="text-900 font-medium">{t('admin.characters.isPaidCharacter')}</label>
                   </div>
                 </div>
               </div>
