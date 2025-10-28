@@ -79,6 +79,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Get user's purchased characters with full details
+    const purchasedCharacters = await prisma.userCharacter.findMany({
+      where: { userId: user.id },
+      include: {
+        character: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            imageUrl: true,
+            price: true,
+            isUnlocked: true,
+            isPaid: true
+          }
+        }
+      }
+    })
+
     return NextResponse.json({
       user: {
         id: user.id,
@@ -94,6 +112,10 @@ export async function GET(request: NextRequest) {
         gamesWon: user.gamesWon,
         totalKills: user.totalKills,
         emailVerified: user.emailVerified,
+        allowedGames: user.allowedGames,
+        maxMembers: user.maxMembers,
+        purchasedCharacters: purchasedCharacters.map(uc => uc.character),
+        purchasedCharactersCount: purchasedCharacters.length,
         createdAt: user.createdAt,
         status: user.isActive ? 'active' : 'inactive'
       }

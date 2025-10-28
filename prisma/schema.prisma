@@ -85,7 +85,8 @@ model User {
   totalKills  Int @default(0)
 
   // In-app purchases
-  maxMembers Int @default(4) // Maximum members user can add to games
+  allowedGames Int @default(5)
+  maxMembers   Int @default(4)
 
   // FCM Push Notifications
   fcmTokens            String[] @default([]) // Array of FCM device tokens
@@ -93,10 +94,10 @@ model User {
   notificationSettings Json? // User notification preferences
 
   // Relations
-  gameRooms     GameRoom[]
-  gamePlayers   GamePlayer[]
-  notifications Notification[]
-  purchases     UserPurchase[]
+  gameRooms      GameRoom[]
+  gamePlayers    GamePlayer[]
+  notifications  Notification[]
+  purchases      UserPurchase[]
   userCharacters UserCharacter[]
 
   createdAt DateTime @default(now())
@@ -137,7 +138,7 @@ model Character {
   price       Int            @default(0) // Price in cents
 
   // Relations
-  gamePlayers GamePlayer[]
+  gamePlayers    GamePlayer[]
   userCharacters UserCharacter[]
 
   createdAt DateTime @default(now())
@@ -196,12 +197,12 @@ model UserPurchase {
 }
 
 model UserCharacter {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @db.ObjectId
-  user        User      @relation(fields: [userId], references: [id])
-  characterId String    @db.ObjectId
-  character   Character @relation(fields: [characterId], references: [id])
-  purchaseId  String?   @db.ObjectId
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String        @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id])
+  characterId String        @db.ObjectId
+  character   Character     @relation(fields: [characterId], references: [id])
+  purchaseId  String?       @db.ObjectId
   purchase    UserPurchase? @relation(fields: [purchaseId], references: [id])
 
   createdAt DateTime @default(now())

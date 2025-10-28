@@ -857,6 +857,14 @@
           }
         },
         {
+          "name": "Get All Characters with Ownership",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/mobile/characters", "host": ["{{base_url}}"], "path": ["api", "mobile", "characters"]}
+          }
+        },
+        {
           "name": "Mobile Update User Profile",
           "request": {
             "method": "PUT",
@@ -954,6 +962,21 @@
             "method": "POST",
             "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
             "url": {"raw": "{{base_url}}/api/mobile/game-rooms/{{room_code}}/leave", "host": ["{{base_url}}"], "path": ["api", "mobile", "game-rooms", "{{room_code}}", "leave"]}
+          }
+        },
+        {
+          "name": "Update User After Purchase",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"},
+              {"key": "Authorization", "value": "Bearer {{jwt_token}}"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"newGamesPurchased\": 10,\n  \"maxMembers\": 8,\n  \"characters\": [\"{{character_id}}\"]\n}"
+            },
+            "url": {"raw": "{{base_url}}/api/user/update", "host": ["{{base_url}}"], "path": ["api", "user", "update"]}
           }
         }
       ]

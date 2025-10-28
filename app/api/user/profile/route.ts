@@ -35,6 +35,8 @@ export async function GET(request: NextRequest) {
           gamesPlayed: true,
           gamesWon: true,
           totalKills: true,
+          allowedGames: true,
+          maxMembers: true,
           createdAt: true
         }
       })
@@ -46,7 +48,31 @@ export async function GET(request: NextRequest) {
         )
       }
 
-      return NextResponse.json({ user: userProfile })
+      // Get user's purchased characters with full details
+      const purchasedCharacters = await prisma.userCharacter.findMany({
+        where: { userId: user.userId },
+        include: {
+          character: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              imageUrl: true,
+              price: true,
+              isUnlocked: true,
+              isPaid: true
+            }
+          }
+        }
+      })
+
+      return NextResponse.json({ 
+        user: {
+          ...userProfile,
+          purchasedCharacters: purchasedCharacters.map(uc => uc.character),
+          purchasedCharactersCount: purchasedCharacters.length
+        }
+      })
 
     } catch (error) {
       console.error('Error fetching user profile:', error)
@@ -106,14 +132,38 @@ export async function PUT(request: NextRequest) {
           gamesPlayed: true,
           gamesWon: true,
           totalKills: true,
+          allowedGames: true,
+          maxMembers: true,
           createdAt: true
+        }
+      })
+
+      // Get user's purchased characters with full details
+      const purchasedCharacters = await prisma.userCharacter.findMany({
+        where: { userId: user.userId },
+        include: {
+          character: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+              imageUrl: true,
+              price: true,
+              isUnlocked: true,
+              isPaid: true
+            }
+          }
         }
       })
 
       return NextResponse.json(
         { 
           message: 'Profile updated successfully',
-          user: updatedUser
+          user: {
+            ...updatedUser,
+            purchasedCharacters: purchasedCharacters.map(uc => uc.character),
+            purchasedCharactersCount: purchasedCharacters.length
+          }
         },
         { status: 200 }
       )

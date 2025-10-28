@@ -42,6 +42,29 @@ export async function POST(
       )
     }
 
+    // Check if user has allowed games remaining
+    const userData = await prisma.user.findUnique({
+      where: { id: user.userId },
+      select: { allowedGames: true }
+    })
+
+    if (!userData) {
+      return NextResponse.json(
+        { message: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    if (userData.allowedGames <= 0) {
+      return NextResponse.json(
+        { 
+          message: 'You have no games remaining. Please purchase more games to play.',
+          allowedGames: userData.allowedGames
+        },
+        { status: 400 }
+      )
+    }
+
     // Check if there are enough joined players to start
     const joinedPlayers = room.players.filter(p => p.joinStatus === 'JOINED')
     if (joinedPlayers.length < 2) {
@@ -157,6 +180,14 @@ export async function POST(
         }
       })
     }
+
+    // Decrement user's allowedGames
+    await prisma.user.update({
+      where: { id: user.userId },
+      data: {
+        allowedGames: { decrement: 1 }
+      }
+    })
 
     // Update room status
     const updatedRoom = await prisma.gameRoom.update({
