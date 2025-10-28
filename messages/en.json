@@ -302,7 +302,13 @@
       "errorUploading": "Failed to upload image",
       "errorSaving": "Error saving character",
       "errorDeleting": "Error deleting character",
-      "errorUpdatingStatus": "Error updating character status"
+      "errorUpdatingStatus": "Error updating character status",
+      "isPaid": "Paid/Free",
+      "paid": "Paid",
+      "free": "Free",
+      "price": "Price",
+      "isPaidCharacter": "Is this a paid character?",
+      "priceHint": "Enter price in cents (e.g., 299 = $2.99)"
     },
     "users": {
       "title": "User Management",

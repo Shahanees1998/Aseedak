@@ -302,7 +302,13 @@
       "errorUploading": "فشل في رفع الصورة",
       "errorSaving": "خطأ في حفظ الشخصية",
       "errorDeleting": "خطأ في حذف الشخصية",
-      "errorUpdatingStatus": "خطأ في تحديث حالة الشخصية"
+      "errorUpdatingStatus": "خطأ في تحديث حالة الشخصية",
+      "isPaid": "مدفوع/مجاني",
+      "paid": "مدفوع",
+      "free": "مجاني",
+      "price": "السعر",
+      "isPaidCharacter": "هل هذه شخصية مدفوعة؟",
+      "priceHint": "أدخل السعر بالبنسات (مثال: 299 = $2.99)"
     },
     "users": {
       "title": "إدارة المستخدمين",

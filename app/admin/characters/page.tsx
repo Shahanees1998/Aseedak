@@ -140,7 +140,9 @@ export default function CharactersManagement() {
       name: character.name,
       description: character.description,
       imageUrl: character.imageUrl,
-      isActive: character.isActive
+      isActive: character.isActive,
+      isPaid: character.isPaid,
+      price: character.price
     })
     setCharacterDialogVisible(true)
   }
@@ -275,7 +277,7 @@ export default function CharactersManagement() {
               icon="pi pi-plus"
               onClick={() => {
                 setEditingCharacter(null)
-                setCharacterForm({ name: '', description: '', imageUrl: '', isActive: true })
+                setCharacterForm({ name: '', description: '', imageUrl: '', isActive: true, isPaid: false, price: 0 })
                 setCharacterDialogVisible(true)
               }}
               className="p-button-primary"
@@ -295,6 +297,13 @@ export default function CharactersManagement() {
             <Column header={t('admin.characters.image')} body={imageBodyTemplate} style={{ width: '80px' }} />
             <Column field="name" header={t('admin.characters.name')} sortable />
             <Column field="description" header={t('admin.characters.description')} />
+            <Column header={t('admin.characters.isPaid')} body={(rowData: Character) => (
+              <Badge 
+                value={rowData.isPaid ? t('admin.characters.paid') : t('admin.characters.free')} 
+                severity={rowData.isPaid ? 'warning' : 'success'} 
+              />
+            )} style={{ width: '100px' }} />
+            <Column field="price" header={t('admin.characters.price')} sortable body={(rowData: Character) => `$${(rowData.price / 100).toFixed(2)}`} style={{ width: '100px' }} />
             <Column header={t('admin.characters.status')} body={statusBodyTemplate} style={{ width: '100px' }} />
             <Column field="createdAt" header={t('admin.characters.created')} sortable style={{ width: '150px' }} />
             <Column header={t('admin.characters.actions')} body={actionsBodyTemplate} style={{ width: '120px' }} />
@@ -338,6 +347,38 @@ export default function CharactersManagement() {
                   />
                 </div>
               </div>
+
+              <div className="col-12">
+                <div className="field">
+                  <div className="flex align-items-center">
+                    <Checkbox
+                      inputId="isPaid"
+                      checked={characterForm.isPaid}
+                      onChange={(e) => setCharacterForm(prev => ({ ...prev, isPaid: e.checked || false }))}
+                    />
+                    <label htmlFor="isPaid" className="ml-2 text-900 font-medium">{t('admin.characters.isPaidCharacter')}</label>
+                  </div>
+                </div>
+              </div>
+
+              {characterForm.isPaid && (
+                <div className="col-12">
+                  <div className="field">
+                    <label htmlFor="characterPrice" className="block text-900 font-medium mb-2">{t('admin.characters.price')} (cents) *</label>
+                    <InputNumber
+                      id="characterPrice"
+                      value={characterForm.price}
+                      onValueChange={(e) => setCharacterForm(prev => ({ ...prev, price: e.value || 0 }))}
+                      mode="decimal"
+                      min={0}
+                      suffix=" ¢"
+                      className="w-full"
+                      required
+                    />
+                    <small className="text-color-secondary">{t('admin.characters.priceHint')}</small>
+                  </div>
+                </div>
+              )}
 
               <div className="col-12">
                 <div className="field">
