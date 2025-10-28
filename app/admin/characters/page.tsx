@@ -13,6 +13,8 @@ import { Dialog } from 'primereact/dialog'
 import { FileUpload } from 'primereact/fileupload'
 import { Image } from 'primereact/image'
 import { Badge } from 'primereact/badge'
+import { InputNumber } from 'primereact/inputnumber'
+import { Checkbox } from 'primereact/checkbox'
 import { useToast } from '@/store/toast.context'
 import { useTranslation } from '@/hooks/useTranslation'
 
@@ -22,6 +24,8 @@ interface Character {
   description: string
   imageUrl: string
   isActive: boolean
+  isPaid: boolean
+  price: number
   createdAt: string
 }
 
@@ -38,7 +42,9 @@ export default function CharactersManagement() {
     name: '',
     description: '',
     imageUrl: '',
-    isActive: true
+    isActive: true,
+    isPaid: false,
+    price: 0
   })
   const [uploadingImage, setUploadingImage] = useState(false)
 
@@ -117,7 +123,7 @@ export default function CharactersManagement() {
         showToast('success', t('common.success'), editingCharacter ? t('admin.characters.characterUpdated') : t('admin.characters.characterCreated'))
         setCharacterDialogVisible(false)
         setEditingCharacter(null)
-        setCharacterForm({ name: '', description: '', imageUrl: '', isActive: true })
+        setCharacterForm({ name: '', description: '', imageUrl: '', isActive: true, isPaid: false, price: 0 })
         fetchCharacters()
       } else {
         const error = await response.json()
