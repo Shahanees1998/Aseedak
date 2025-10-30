@@ -857,6 +857,28 @@
           }
         },
         {
+          "name": "Get My Word Decks (with isPaid/isPurchased)",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+            "url": {"raw": "{{base_url}}/api/user/word-decks", "host": ["{{base_url}}"], "path": ["api", "user", "word-decks"]}
+          },
+          "response": [
+            {
+              "name": "Example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [{"key": "Authorization", "value": "Bearer {{jwt_token}}"}],
+                "url": {"raw": "{{base_url}}/api/user/word-decks", "host": ["{{base_url}}"], "path": ["api", "user", "word-decks"]}
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"decks\": [\n    {\n      \"id\": \"deck_id\",\n      \"name\": \"Deck_1\",\n      \"description\": \"Default deck for legacy words\",\n      \"price\": 0,\n      \"isActive\": true,\n      \"wordCount\": 20,\n      \"isPaid\": false,\n      \"isPurchased\": false\n    },\n    {\n      \"id\": \"deck_id_2\",\n      \"name\": \"Premium Deck\",\n      \"description\": \"Challenging words\",\n      \"price\": 1999,\n      \"isActive\": true,\n      \"wordCount\": 30,\n      \"isPaid\": true,\n      \"isPurchased\": true\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
           "name": "Get All Characters with Ownership",
           "request": {
             "method": "GET",
@@ -974,7 +996,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"newGamesPurchased\": 10,\n  \"maxMembers\": 8,\n  \"characters\": [\"{{character_id}}\"]\n}"
+              "raw": "{\n  \"newGamesPurchased\": 10,\n  \"maxMembers\": 8,\n  \"characters\": [\"{{character_id}}\"],\n  \"wordDecks\": [\"{{word_deck_id}}\"]\n}"
             },
             "url": {"raw": "{{base_url}}/api/user/update", "host": ["{{base_url}}"], "path": ["api", "user", "update"]}
           }

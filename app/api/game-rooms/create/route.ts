@@ -49,12 +49,26 @@ export async function POST(request: NextRequest) {
       // Generate unique room code
       const roomCode = crypto.randomBytes(4).toString('hex').toUpperCase()
 
-      // Get all active words
+      // Determine allowed decks: free (price 0) + user's purchased word_decks
+      const [freeDecks, purchases] = await Promise.all([
+        prisma.wordDeck.findMany({ where: { isActive: true, price: 0 }, select: { id: true } }),
+        prisma.userPurchase.findMany({
+          where: { userId: user.userId, status: 'completed', type: 'word_deck' },
+          select: { itemId: true }
+        })
+      ])
+
+      const purchasedDeckIds = purchases.map(p => p.itemId).filter(Boolean) as string[]
+      const freeDeckIds = freeDecks.map(d => d.id)
+      const allowedDeckIds = Array.from(new Set([...freeDeckIds, ...purchasedDeckIds]))
+
+      // Get active words only from allowed decks
       const words = await prisma.word.findMany({
         where: {
-          isActive: true
+          isActive: true,
+          deckId: { in: allowedDeckIds }
         },
-        take: 50 // Get more words than needed for variety
+        take: 50
       })
 
       if (words.length < validatedData.maxPlayers) {

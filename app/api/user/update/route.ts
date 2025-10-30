@@ -7,6 +7,7 @@ const updateUserSchema = z.object({
   newGamesPurchased: z.number().int().min(0).optional(),
   maxMembers: z.number().int().min(1).optional(),
   characters: z.array(z.string()).optional(), // Array of character IDs purchased
+  wordDecks: z.array(z.string()).optional() // Array of word deck IDs purchased
 })
 
 export async function PUT(request: NextRequest) {
@@ -74,6 +75,42 @@ export async function PUT(request: NextRequest) {
         )
       }
 
+      // If purchasing word decks, create UserPurchase records (completed)
+      let purchasedDecks = 0
+      if (validatedData.wordDecks && validatedData.wordDecks.length > 0) {
+        // Verify decks exist and are active
+        const decks = await prisma.wordDeck.findMany({
+          where: { id: { in: validatedData.wordDecks }, isActive: true },
+          select: { id: true, price: true }
+        })
+
+        if (decks.length !== validatedData.wordDecks.length) {
+          return NextResponse.json(
+            { message: 'Some word decks are invalid or inactive' },
+            { status: 400 }
+          )
+        }
+
+        // Create a purchase row per deck (idempotent: skip if already purchased)
+        for (const deck of decks) {
+          const existing = await prisma.userPurchase.findFirst({
+            where: { userId: user.userId, type: 'word_deck', itemId: deck.id, status: 'completed' }
+          })
+          if (!existing) {
+            await prisma.userPurchase.create({
+              data: {
+                userId: user.userId,
+                type: 'word_deck',
+                itemId: deck.id,
+                amount: deck.price,
+                status: 'completed'
+              }
+            })
+            purchasedDecks += 1
+          }
+        }
+      }
+
       // Update user if there's any data to update
       let updatedUser = null
       if (Object.keys(updateData).length > 0) {
@@ -125,7 +162,8 @@ export async function PUT(request: NextRequest) {
         message: 'User updated successfully',
         user: updatedUser,
         purchasedCharacters: validatedData.characters?.length || 0,
-        totalCharactersOwned: characterCount || undefined
+        totalCharactersOwned: characterCount || undefined,
+        purchasedWordDecks: purchasedDecks || undefined
       })
 
     } catch (error) {
@@ -144,4 +182,5 @@ export async function PUT(request: NextRequest) {
     }
   })
 }
+
 

@@ -771,33 +771,33 @@ export default function AdminDashboard() {
 
           {/* Tabs */}
           <TabView>
-            {/* Words Tab */}
-            <TabPanel header={t('admin.wordsTab')}>
+            {/* Decks Tab */}
+            <TabPanel header="Decks">
               <div className="flex justify-content-between align-items-center mb-4">
-                <h6 className="m-0">{t('admin.wordsTitle')}</h6>
+                <h6 className="m-0">Decks Management</h6>
                 <Button
-                  label={t('admin.addWord')}
+                  label="Add Deck"
                   icon="pi pi-plus"
                   onClick={() => {
-                    setEditingWord(null)
-                    setWordForm({ word1: '', word2: '', word3: '', isActive: true })
-                    setWordDialogVisible(true)
+                    setEditingDeck(null)
+                    setDeckDialogVisible(true)
                   }}
                   className="p-button-primary"
                 />
               </div>
 
               <DataTable
-                value={words}
+                value={wordDecks}
                 paginator
                 rows={10}
                 rowsPerPageOptions={[5, 10, 25]}
                 className="p-datatable-sm"
-                emptyMessage={t('admin.noWords')}
+                emptyMessage="No decks"
               >
-                <Column field="word1" header={t('admin.word1')} sortable />
-                <Column field="word2" header={t('admin.word2')} sortable />
-                <Column field="word3" header={t('admin.word3')} sortable />
+                <Column field="name" header="Name" sortable />
+                <Column field="description" header="Description" sortable />
+                <Column field="price" header="Price" sortable body={priceTemplate} />
+                <Column field="wordCount" header="# Cards" sortable />
                 <Column 
                   field="isActive" 
                   header={t('admin.status')} 
@@ -808,7 +808,24 @@ export default function AdminDashboard() {
                     />
                   )}
                 />
-                <Column header={t('admin.actions')} body={wordActionsBodyTemplate} />
+                <Column header={t('admin.actions')} body={(row) => (
+                  <div className="flex gap-2">
+                    <Button
+                      icon="pi pi-pencil"
+                      className="p-button-rounded p-button-text p-button-sm"
+                      onClick={() => editDeck(row)}
+                      tooltip="Edit Deck"
+                      tooltipOptions={{ position: 'top' }}
+                    />
+                    <Button
+                      icon="pi pi-trash"
+                      className="p-button-rounded p-button-text p-button-sm p-button-danger"
+                      onClick={() => deleteDeck(row.id)}
+                      tooltip="Delete Deck"
+                      tooltipOptions={{ position: 'top' }}
+                    />
+                  </div>
+                )} />
               </DataTable>
             </TabPanel>
 
